@@ -29,7 +29,7 @@ Or copy the extension files to your pi extensions directory manually:
 cp -r . ~/.pi/agent/extensions/slop-footer
 
 # Or use directly for testing
-pi -e ./index.ts
+pi -e ./src/index.ts
 ```
 
 ## Configuration

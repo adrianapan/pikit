@@ -31,7 +31,7 @@ cp -r . ~/.pi/agent/extensions/slop-startup
 Or load it directly for testing:
 
 ```bash
-pi -e ./index.ts
+pi -e ./src/index.ts
 ```
 
 ## What it shows

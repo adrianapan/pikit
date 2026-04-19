@@ -2,7 +2,7 @@ import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, AssistantMessage 
 import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
 
 import type { SegmentContext, StatusLineSegmentId } from "./types.js";
-import { renderSegment } from "./segments.js";
+import { renderSegment } from "./segments/index.js";
 import { getGitStatus, invalidateGitStatus, invalidateGitBranch } from "./git-status.js";
 import { getEffectiveConfig, clearUserConfigCache, loadUserConfig } from "./config.js";
 import { getIcons } from "./icons.js";
@@ -43,18 +43,13 @@ function buildFooterContent(
 
   // Render left segments
   const leftParts: string[] = [];
-  let leftWidth = 0;
   for (const segId of leftSegments) {
-    const { content, width, visible } = renderSegmentWithWidth(segId, ctx);
+    const { content, visible } = renderSegmentWithWidth(segId, ctx);
     if (visible) {
       leftParts.push(content);
-      leftWidth += width + 1; // +1 for space between
     }
   }
-  if (leftParts.length > 0) {
-    leftWidth -= 1; // Remove trailing space
-  }
-  
+
   // Render right segments
   const rightParts: string[] = [];
   let rightWidth = 0;
@@ -68,16 +63,16 @@ function buildFooterContent(
   if (rightParts.length > 0) {
     rightWidth -= 1; // Remove trailing space
   }
-  
+
   let leftStr = leftParts.join(" ");
   let rightStr = rightParts.join(" ");
-  
+
   // Handle case with no right segments
   if (rightParts.length === 0) {
     const finalLeft = truncateToWidth(leftStr, maxContentWidth);
     return " " + finalLeft + " ".repeat(Math.max(0, maxContentWidth - visibleWidth(finalLeft))) + " ";
   }
-  
+
   // If right side alone is too big, just show right side
   if (rightWidth >= maxContentWidth) {
     return " " + truncateToWidth(rightStr, maxContentWidth) + " ";
@@ -87,9 +82,9 @@ function buildFooterContent(
   const maxLeftWidth = maxContentWidth - rightWidth - 1;
   const finalLeft = truncateToWidth(leftStr, Math.max(0, maxLeftWidth));
   const finalLeftWidth = visibleWidth(finalLeft);
-  
+
   const padding = maxContentWidth - finalLeftWidth - rightWidth;
-  
+
   const result = " " + finalLeft + " ".repeat(padding) + rightStr + " ";
   return truncateToWidth(result, availableWidth);
 }
@@ -109,11 +104,11 @@ export default function slopFooter(pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     sessionStartTime = Date.now();
     currentCtx = ctx;
-    
+
     if (typeof ctx.getThinkingLevel === 'function') {
       getThinkingLevelFn = () => ctx.getThinkingLevel();
     }
-    
+
     if (ctx.hasUI) {
       setupFooter(ctx);
     }
@@ -150,7 +145,7 @@ export default function slopFooter(pi: ExtensionAPI) {
     description: "Configure footer extension (reload, debug)",
     handler: async (args, ctx) => {
       currentCtx = ctx;
-      
+
       if (!args || args.trim().toLowerCase() === "reload") {
         clearUserConfigCache();
         if (ctx.hasUI) {
@@ -188,7 +183,7 @@ export default function slopFooter(pi: ExtensionAPI) {
     let input = 0, output = 0, cacheRead = 0, cacheWrite = 0, cost = 0;
     let lastAssistant: AssistantMessage | undefined;
     let thinkingLevelFromSession = "off";
-    
+
     const sessionEvents = ctx.sessionManager?.getBranch?.() ?? [];
     for (const e of sessionEvents) {
       if (e.type === "thinking_level_change" && e.thinkingLevel) {
@@ -248,7 +243,7 @@ export default function slopFooter(pi: ExtensionAPI) {
     ctx.ui.setFooter((tui: any, theme: Theme, footerData: ReadonlyFooterDataProvider) => {
       footerDataRef = footerData;
       tuiRef = tui;
-      
+
       // Subscribe to branch changes for re-render
       const unsub = footerData.onBranchChange(() => tui.requestRender());
 
@@ -257,17 +252,17 @@ export default function slopFooter(pi: ExtensionAPI) {
         invalidate() {},
         render(width: number): string[] {
           if (!currentCtx) return [];
-          
+
           const effectiveConfig = getEffectiveConfig();
           const segmentCtx = buildSegmentContext(currentCtx, width, theme);
-          
+
           const content = buildFooterContent(
             segmentCtx,
             effectiveConfig.leftSegments,
             effectiveConfig.rightSegments,
             width
           );
-          
+
           return [content];
         },
       };

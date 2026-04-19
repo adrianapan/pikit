@@ -7,36 +7,35 @@ import type { IconSet } from "./icons.js";
 // Default segment configuration
 const DEFAULT_LEFT_SEGMENTS: StatusLineSegmentId[] = [
   "pi",
-    "separator",
-    "model",
-    "separator",
-    "thinking",
-    "separator",
-    "path",
-    "git"
-  
+  "separator",
+  "model",
+  "separator",
+  "thinking",
+  "separator",
+  "path",
+  "git",
 ];
 
 const DEFAULT_RIGHT_SEGMENTS: StatusLineSegmentId[] = [
   "context_pct",
-    "separator",
-    "token_total",
-    "token_in",
-    "token_out",
-    "separator",
-    "cost"
+  "separator",
+  "token_total",
+  "token_in",
+  "token_out",
+  "separator",
+  "cost",
 ];
 
 const DEFAULT_SEGMENT_OPTIONS: StatusLineSegmentOptions = {
   model: { showThinkingLevel: false },
   path: { mode: "basename" },
-  git: { 
-    showBranch: true, 
-    showStaged: true, 
-    showUnstaged: true, 
-    showUntracked: true 
+  git: {
+    showBranch: true,
+    showStaged: true,
+    showUnstaged: true,
+    showUntracked: true,
   },
-  context_pct: { showAutoIcon: false }
+  context_pct: { showAutoIcon: false },
 };
 
 // Cache for user config

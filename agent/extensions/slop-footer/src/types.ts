@@ -46,14 +46,14 @@ export type StatusLineSegmentId =
 // Per-segment options
 export interface StatusLineSegmentOptions {
   model?: { showThinkingLevel?: boolean };
-  path?: { 
+  path?: {
     mode?: "basename" | "abbreviated" | "full";
     maxLength?: number;
   };
-  git?: { 
-    showBranch?: boolean; 
-    showStaged?: boolean; 
-    showUnstaged?: boolean; 
+  git?: {
+    showBranch?: boolean;
+    showStaged?: boolean;
+    showUnstaged?: boolean;
     showUntracked?: boolean;
   };
   thinking?: { prefix?: string };

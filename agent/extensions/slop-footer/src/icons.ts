@@ -61,9 +61,9 @@ export const ASCII_ICONS: IconSet = {
 export function hasNerdFonts(): boolean {
   if (process.env.SLOP_FOOTER_NERD_FONTS === "1") return true;
   if (process.env.SLOP_FOOTER_NERD_FONTS === "0") return false;
-  
+
   if (process.env.GHOSTTY_RESOURCES_DIR) return true;
-  
+
   const term = (process.env.TERM_PROGRAM || "").toLowerCase();
   const nerdTerms = ["iterm", "wezterm", "kitty", "ghostty", "alacritty"];
   return nerdTerms.some(t => term.includes(t));

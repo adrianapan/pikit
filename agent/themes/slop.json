@@ -27,13 +27,13 @@
     "userMessageBg": "#201e1c",
     "userMessageText": "text",
 
-    "customMessageBg": "#1f1d1b",
+    "customMessageBg": "#2d2838",
     "customMessageText": "text",
     "customMessageLabel": "#9575cd",
 
     "toolPendingBg": "#222018",
-    "toolSuccessBg": "#1f1d1b",
-    "toolErrorBg": "#cc6666",
+    "toolSuccessBg": "#283228",
+    "toolErrorBg": "#3c2828",
     "toolTitle": "#e88720",
     "toolOutput": "text",
     "toolDiffAdded": "#b5bd68",

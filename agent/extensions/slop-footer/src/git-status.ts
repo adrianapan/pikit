@@ -127,8 +127,8 @@ export function getGitStatus(providerBranch: string | null): GitStatus {
   const branch = getCurrentBranch(providerBranch);
 
   if (cachedStatus && now - cachedStatus.timestamp < CACHE_TTL_MS) {
-    return { 
-      branch, 
+    return {
+      branch,
       staged: cachedStatus.staged,
       unstaged: cachedStatus.unstaged,
       untracked: cachedStatus.untracked,
@@ -148,8 +148,8 @@ export function getGitStatus(providerBranch: string | null): GitStatus {
   }
 
   if (cachedStatus) {
-    return { 
-      branch, 
+    return {
+      branch,
       staged: cachedStatus.staged,
       unstaged: cachedStatus.unstaged,
       untracked: cachedStatus.untracked,

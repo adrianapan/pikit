@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "A customizable footer status bar for pi",
   "type": "module",
-  "files": [
-    "*.ts",
-    "*.json",
-    "README.md"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adrianapan/pi-slop-footer.git"
@@ -25,7 +20,7 @@
   ],
   "pi": {
     "extensions": [
-      "./index.ts"
+      "./src/index.ts"
     ]
   },
   "author": "Adrian Apan",
