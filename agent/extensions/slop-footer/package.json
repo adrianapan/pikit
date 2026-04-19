@@ -1,0 +1,33 @@
+{
+  "name": "slop-footer",
+  "version": "1.0.0",
+  "description": "A customizable footer status bar for pi",
+  "type": "module",
+  "files": [
+    "*.ts",
+    "*.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pi-slop-footer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrianapan/pi-slop-footer/issues"
+  },
+  "homepage": "https://github.com/adrianapan/pi-slop-footer#readme",
+  "keywords": [
+    "pi",
+    "extension",
+    "footer",
+    "pi-package",
+    "pi-coding-agent"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "author": "Adrian Apan",
+  "license": "MIT"
+}

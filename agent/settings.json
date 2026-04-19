@@ -1,0 +1,31 @@
+{
+  "defaultModel": "qwen3.5:4b",
+  "defaultProvider": "ollama",
+  "lastChangelogVersion": "0.67.68",
+  "packages": [
+    {
+      "source": "npm:@ollama/pi-web-search",
+      "extensions": [
+        "+index.ts"
+      ]
+    }
+  ],
+  "theme": "slop",
+  "showHardwareCursor": false,
+  "defaultThinkingLevel": "medium",
+  "terminal": {
+    "showImages": false,
+    "clearOnShrink": true
+  },
+  "hideThinkingBlock": true,
+  "steeringMode": "one-at-a-time",
+  "followUpMode": "one-at-a-time",
+  "workingVibe": "zen",
+  "enabledModels": [
+    "ollama/qwen3.5:4b",
+    "ollama/gemma4:e4b"
+  ],
+  "doubleEscapeAction": "tree",
+  "treeFilterMode": "default",
+  "quietStartup": true
+}

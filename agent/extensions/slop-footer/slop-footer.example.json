@@ -1,0 +1,75 @@
+{
+  "_comment": "Place this file at ~/.pi/agent/slop-footer.json",
+
+  "leftSegments": [
+    "pi",
+    "separator",
+    "model",
+    "separator",
+    "thinking",
+    "separator",
+    "path",
+    "git"
+  ],
+
+  "rightSegments": [
+    "context_pct",
+    "separator",
+    "token_total",
+    "token_in",
+    "token_out",
+    "separator",
+    "cost"
+  ],
+
+  "icons": {
+    "pi": "\uE22C",
+    "model": "\uEC19",
+    "folder": "\uF115",
+    "branch": "\uF126",
+    "git": "\uF1D3",
+    "tokens": "\uede8",
+    "contextPct": "\ueea8",
+    "contextTotal": "\uE70F",
+    "cost": "\uF155",
+    "cacheRead": "\uF1C0",
+    "cacheWrite": "\uF1C0",
+    "input": "\uf062",
+    "output": "\uf063",
+    "thinking": "\uf400",
+    "separator": "\uE0B1",
+    "auto": "\uF0068"
+  },
+
+  "colors": {
+    "pi": "accent",
+    "model": "#d787af",
+    "path": "#00afaf",
+    "git": "success",
+    "gitDirty": "warning",
+    "gitClean": "success",
+    "thinking": "muted",
+    "thinkingHigh": "accent",
+    "context": "dim",
+    "contextWarn": "warning",
+    "contextError": "error",
+    "cost": "text",
+    "tokens": "muted",
+    "separator": "dim"
+  },
+
+  "segmentOptions": {
+    "path": {
+      "mode": "basename"
+    },
+    "git": {
+      "showBranch": true,
+      "showStaged": true,
+      "showUnstaged": true,
+      "showUntracked": true
+    },
+    "context_pct": {
+      "showAutoIcon": false
+    }
+  }
+}
