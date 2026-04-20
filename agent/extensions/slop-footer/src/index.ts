@@ -4,7 +4,7 @@ import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
 import type { SegmentContext, StatusLineSegmentId } from "./types.js";
 import { renderSegment } from "./segments/index.js";
 import { getGitStatus, invalidateGitStatus, invalidateGitBranch } from "./git-status.js";
-import { getEffectiveConfig, clearUserConfigCache, loadUserConfig } from "./config.js";
+import { getEffectiveConfig } from "./config.js";
 import { getIcons } from "./icons.js";
 import { getDefaultColors } from "./theme.js";
 
@@ -138,41 +138,6 @@ export default function slopFooter(pi: ExtensionAPI) {
       setTimeout(() => tuiRef?.requestRender(), 300);
       setTimeout(() => tuiRef?.requestRender(), 500);
     }
-  });
-
-  // Command to reload config
-  pi.registerCommand("footer", {
-    description: "Configure footer extension (reload, debug)",
-    handler: async (args, ctx) => {
-      currentCtx = ctx;
-
-      if (!args || args.trim().toLowerCase() === "reload") {
-        clearUserConfigCache();
-        if (ctx.hasUI) {
-          setupFooter(ctx);
-        }
-        const userConfig = loadUserConfig();
-        if (userConfig) {
-          ctx.ui.notify(`Footer config reloaded`, "info");
-        } else {
-          ctx.ui.notify(`No config file found at ~/.pi/agent/slop-footer.json`, "warning");
-        }
-        return;
-      }
-
-      if (args.trim().toLowerCase() === "debug") {
-        const cfg = getEffectiveConfig();
-        const lines = [
-          `Left: ${cfg.leftSegments.join(", ")}`,
-          `Right: ${cfg.rightSegments.join(", ")}`,
-          `Custom icons: ${Object.keys(cfg.icons).join(", ") || "none"}`,
-        ];
-        ctx.ui.notify(lines.join(" | "), "info");
-        return;
-      }
-
-      ctx.ui.notify("Usage: /footer [reload|debug]", "info");
-    },
   });
 
   function buildSegmentContext(ctx: any, width: number, theme: Theme): SegmentContext {
