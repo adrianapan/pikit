@@ -34,7 +34,7 @@ pi -e ./src/index.ts
 
 ## Configuration
 
-Create `~/.pi/agent/slop-footer.json` to customize the footer:
+Create `~/.pi/agent/configs/slop-footer.json` to customize the footer:
 
 ```json
 {
@@ -166,7 +166,7 @@ After installing a Nerd Font, set it in iTerm2:
 
 ### Custom Icons
 
-To swap out any icon, add an `icons` key to your `~/.pi/agent/slop-footer.json`. You can browse all available Nerd Font glyphs at [nerdfonts.com/cheat-sheet](https://www.nerdfonts.com/cheat-sheet) — copy the **UTF-8 codepoint** (e.g. `\uF126`) or the glyph character directly and paste it into your config:
+To swap out any icon, add an `icons` key to your `~/.pi/agent/configs/slop-footer.json`. You can browse all available Nerd Font glyphs at [nerdfonts.com/cheat-sheet](https://www.nerdfonts.com/cheat-sheet) — copy the **UTF-8 codepoint** (e.g. `\uF126`) or the glyph character directly and paste it into your config:
 
 ```json
 {

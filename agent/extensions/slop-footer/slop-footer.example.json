@@ -1,5 +1,5 @@
 {
-  "_comment": "Place this file at ~/.pi/agent/slop-footer.json",
+  "_comment": "Place this file at ~/.pi/agent/configs/slop-footer.json",
 
   "leftSegments": [
     "pi",

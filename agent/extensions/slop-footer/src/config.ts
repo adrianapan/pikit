@@ -45,7 +45,7 @@ const CACHE_TTL = 5000; // 5 seconds
 
 function getConfigPath(): string {
   const homeDir = process.env.HOME || process.env.USERPROFILE || "";
-  return join(homeDir, ".pi", "agent", "slop-footer.json");
+  return join(homeDir, ".pi", "agent", "configs", "slop-footer.json");
 }
 
 export function loadUserConfig(): SlopFooterUserConfig | null {
