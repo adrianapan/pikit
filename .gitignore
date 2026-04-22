@@ -16,3 +16,4 @@ coverage
 *.lock
 *.tsbuildinfo
 *auth.json
+agent/settings.json
