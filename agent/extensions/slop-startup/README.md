@@ -65,3 +65,22 @@ The extension scans standard pi paths to count what is active:
 ## Recent sessions discovery
 
 Sessions are found by scanning `~/.pi/agent/sessions/` and `~/.pi/sessions/` for `.jsonl` files. The parent directory name is used as the project name. Entries are deduplicated and sorted by modification time.
+
+### Installing a Nerd Font (macOS)
+
+On macOS with Homebrew:
+
+```bash
+brew install fontconfig
+brew install --cask font-jetbrains-mono-nerd-font
+```
+
+Other Nerd Fonts are available via `brew search nerd-font`.
+
+### Configuring iTerm2
+
+After installing a Nerd Font, set it in iTerm2:
+
+1. Open **Settings → Profiles → Text**
+2. Set **Font** to `JetBrainsMonoNL Nerd Font Propo`, size `12`
+3. Enable **Use a different font for non-ASCII text** and set the same font there — this is required for the icons to render correctly
