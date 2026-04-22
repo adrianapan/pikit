@@ -17,3 +17,4 @@ coverage
 *.tsbuildinfo
 *auth.json
 agent/settings.json
+agent/models.json
