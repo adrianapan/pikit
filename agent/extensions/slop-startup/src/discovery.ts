@@ -12,6 +12,7 @@ export interface LoadedCounts {
   extensions: number;
   skills: number;
   promptTemplates: number;
+  mcpServers: number;
 }
 
 function formatTimeAgo(ms: number): string {
@@ -208,5 +209,17 @@ export function discoverLoadedCounts(): LoadedCounts {
 
   for (const dir of templateDirs) countTemplatesInDir(dir);
 
-  return { contextFiles, extensions, skills, promptTemplates };
+  // MCP servers — count unique server names from the pi config
+  let mcpServers = 0;
+  const mcpConfigPath = join(homeDir, ".pi", "agent", "configs", "slop-mcp.json");
+  if (existsSync(mcpConfigPath)) {
+    try {
+      const cfg = JSON.parse(readFileSync(mcpConfigPath, "utf-8"));
+      if (cfg?.mcpServers && typeof cfg.mcpServers === "object") {
+        mcpServers = Object.keys(cfg.mcpServers).length;
+      }
+    } catch {}
+  }
+
+  return { contextFiles, extensions, skills, promptTemplates, mcpServers };
 }

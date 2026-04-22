@@ -37,7 +37,7 @@ function buildFooterContent(
   ctx: SegmentContext,
   leftSegments: StatusLineSegmentId[],
   rightSegments: StatusLineSegmentId[],
-  availableWidth: number
+  availableWidth: number,
 ): string {
   const maxContentWidth = Math.max(0, availableWidth - 2);
 
@@ -225,7 +225,7 @@ export default function slopFooter(pi: ExtensionAPI) {
             segmentCtx,
             effectiveConfig.leftSegments,
             effectiveConfig.rightSegments,
-            width
+            width,
           );
 
           return [content];

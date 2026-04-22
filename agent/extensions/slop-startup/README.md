@@ -48,7 +48,7 @@ pi -e ./src/index.ts
 | Section | Description |
 |---------|-------------|
 | **Tips** | Keyboard shortcuts: `/` for commands, `!` for bash, `Shift+Tab` to cycle thinking |
-| **Loaded** | Count of context files, extensions, skills, and prompt templates discovered |
+| **Loaded** | Count of context files, extensions, skills, prompt templates, and MCP servers discovered |
 | **Recent sessions** | Up to 3 recent session names with time elapsed (e.g. `3h ago`) |
 
 ## Loaded counts discovery
@@ -61,6 +61,7 @@ The extension scans standard pi paths to count what is active:
 | Extensions | `~/.pi/agent/settings.json`, `<cwd>/.pi/settings.json` (npm packages), plus `~/.pi/agent/extensions/`, `<cwd>/.pi/extensions/`, `<cwd>/extensions/` (local dirs) |
 | Skills | `~/.pi/agent/skills/`, `<cwd>/.pi/skills/`, `<cwd>/skills/` (dirs with `SKILL.md`) |
 | Prompt templates | `~/.pi/agent/prompts/`, `~/.pi/agent/commands/`, `~/.claude/commands/`, `<cwd>/.pi/commands/`, `<cwd>/.claude/commands/` |
+| MCP servers | `~/.pi/agent/configs/slop-mcp.json` |
 
 ## Recent sessions discovery
 

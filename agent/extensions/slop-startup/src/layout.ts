@@ -47,13 +47,14 @@ function buildRightColumn(
         );
 
   // Loaded counts
-  const { contextFiles, extensions, skills, promptTemplates } = counts;
+  const { contextFiles, extensions, skills, promptTemplates, mcpServers } = counts;
   const itemPrefix = dim("- ");
   const countLines: string[] = [
     ` ${itemPrefix}${theme.fg(contextFiles > 0 ? "success" : "dim", `${contextFiles}`)} context file${contextFiles !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(extensions > 0 ? "success" : "dim", `${extensions}`)} extension${extensions !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(skills > 0 ? "success" : "dim", `${skills}`)} skill${skills !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(promptTemplates > 0 ? "success" : "dim", `${promptTemplates}`)} prompt template${promptTemplates !== 1 ? "s" : ""}`,
+    ` ${itemPrefix}${theme.fg(mcpServers > 0 ? "success" : "dim", `${mcpServers}`)} MCP server${mcpServers !== 1 ? "s" : ""} configured`,
   ];
 
   return [

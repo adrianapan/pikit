@@ -18,3 +18,5 @@ coverage
 *auth.json
 agent/settings.json
 agent/models.json
+agent/cache/
+agent/configs/slop-mcp.json
