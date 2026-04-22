@@ -55,15 +55,124 @@ A warm, earthy color palette (`themes/slop.json`). Primary: `#d67858` (terracott
 
 ## First-run setup
 
-`agent/settings.json` and `agent/models.json` are excluded from this repo — they contain preferences that vary per machine.
+### 1. Install pi
 
-When you clone and run `pi` for the first time, everything defaults to pi's built-in defaults, which means the **slop theme won't be active**. To enable it, create `~/.pi/agent/settings.json` (or add to it if it exists):
+```bash
+npm install -g @mariozechner/pi-coding-agent
+```
+
+Requires Node.js 18+. On macOS, the easiest way to get Node is via [nvm](https://github.com/nvm-sh/nvm) or [Homebrew](https://brew.sh).
+
+### 2. Clone this repo
+
+Pi looks for its config in `~/.pi/`. Clone this repo directly into that directory:
+
+```bash
+git clone git@github.com:AdrianApan/pi-dev.git ~/.pi
+# or via HTTPS
+git clone https://github.com/AdrianApan/pi-dev.git ~/.pi
+```
+
+> If `~/.pi/` already exists from a previous pi install, back it up first: `mv ~/.pi ~/.pi.bak`
+
+### 3. Authenticate
+
+Launch pi:
+
+```bash
+pi
+```
+
+**Via subscription** (Claude Pro/Max, ChatGPT Plus/Pro, GitHub Copilot, Google Gemini) — run inside pi:
+
+```
+/login
+```
+
+Select your provider and complete the OAuth flow in the browser. Tokens are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
+
+**Via API key** — set the environment variable before launching:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+pi
+```
+
+| Provider | Environment variable |
+|----------|---------------------|
+| Anthropic | `ANTHROPIC_API_KEY` |
+| OpenAI | `OPENAI_API_KEY` |
+| Google Gemini | `GEMINI_API_KEY` |
+| OpenRouter | `OPENROUTER_API_KEY` |
+| Groq | `GROQ_API_KEY` |
+
+See the full provider list in the [pi providers docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/providers.md).
+
+### 4. Enable the slop theme
+
+Inside pi, open settings and select the theme:
+
+```
+/settings
+```
+
+Navigate to **Theme** and select `slop`.
+
+### 5. Set up Nerd Fonts (recommended)
+
+Slop-footer and slop-startup use Nerd Font icons for git status, model info, and other indicators. Most modern terminals (Ghostty, WezTerm, Kitty, Alacritty) auto-detect support — iTerm2 needs a small one-time config.
+
+**Install a Nerd Font on macOS:**
+
+```bash
+brew install --cask font-jetbrains-mono-nerd-font
+```
+
+Other fonts available via `brew search nerd-font`.
+
+**Configure iTerm2:**
+
+1. Open **Settings → Profiles → Text**
+2. Set **Font** to `JetBrainsMonoNL Nerd Font Propo`, size `12`
+3. Enable **Use a different font for non-ASCII text** and set the same font there — required for icons to render correctly
+
+No config needed for Ghostty, WezTerm, Kitty, or Alacritty — icons work out of the box. If icons still look wrong, force Nerd Font mode:
+
+```bash
+export SLOP_FOOTER_NERD_FONTS=1
+```
+
+### 6. Configure MCP servers (optional)
+
+Copy the example config and edit it with your servers:
+
+```bash
+cp ~/.pi/agent/extensions/slop-mcp/slop-mcp.json.example ~/.pi/agent/configs/slop-mcp.json
+```
+
+See [`agent/extensions/slop-mcp/README.md`](agent/extensions/slop-mcp/README.md) for the full configuration reference.
+
+### 7. Add custom or local models (optional)
+
+`agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint:
 
 ```json
+// ~/.pi/agent/models.json
 {
-  "theme": "slop"
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://localhost:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "models": [
+        { "id": "llama3.1:8b" }
+      ]
+    }
+  }
 }
 ```
+
+The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/models.md) for the full reference including API types, auth, and OpenAI compatibility options.
 
 ---
 
