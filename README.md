@@ -55,43 +55,15 @@ A warm, earthy color palette (`themes/slop.json`). Primary: `#d67858` (terracott
 
 ## First-run setup
 
-`agent/settings.json` and `agent/models.json` are both excluded from this repo — they contain personal API keys, local model definitions, and preferences that vary per machine.
+`agent/settings.json` and `agent/models.json` are excluded from this repo — they contain preferences that vary per machine.
 
-When you clone and run `pi` for the first time, everything defaults to pi's built-in defaults, which means:
-- The **slop theme won't be active**
-- Any **local Ollama models** you use won't be registered
-
-**Activate the slop theme** — create `~/.pi/agent/settings.json` (or add to it if it exists):
+When you clone and run `pi` for the first time, everything defaults to pi's built-in defaults, which means the **slop theme won't be active**. To enable it, create `~/.pi/agent/settings.json` (or add to it if it exists):
 
 ```json
 {
   "theme": "slop"
 }
 ```
-
-**Register local models** — create `~/.pi/agent/models.json`. Example for Ollama:
-
-```json
-{
-  "providers": {
-    "ollama": {
-      "api": "openai-completions",
-      "apiKey": "ollama",
-      "baseUrl": "http://127.0.0.1:11434/v1",
-      "models": [
-        {
-          "id": "your-model-name",
-          "contextWindow": 131072,
-          "input": ["text", "image"],
-          "reasoning": true
-        }
-      ]
-    }
-  }
-}
-```
-
-See the [Model Configuration](#model-configuration) section below for all supported providers and options.
 
 ---
 
