@@ -27,6 +27,8 @@ A customizable footer that replaces pi's default status bar. Renders live data i
 
 Segments are configured via `slop-footer.json`. Supports Nerd Font icons with plain-ASCII fallbacks. Git status is cached and invalidated automatically on file writes or git operations.
 
+<img src="agent/extensions/slop-footer/demo.png" alt="slop-footer">
+
 ### slop-spinners
 
 Replaces the default "Thinking..." working message with ~180 rotating verbs. A new verb is picked every 2.5 seconds with a typewriter reveal effect (42ms per character). Hooks into `turn_start` / `message_update` / `turn_end` to start, stop, and clean up timers.
@@ -42,6 +44,8 @@ Key features: lazy server startup, proxy tool pattern, disk metadata cache, prop
 ### slop-startup
 
 Renders a two-column welcome box at session start showing: active model + provider, current working directory, keyboard shortcut hints, counts of loaded context files / extensions / skills / prompt templates / MCP servers, and up to three recent sessions with relative timestamps. Hidden below 44 terminal columns.
+
+<img src="agent/extensions/slop-startup/demo.png" alt="slop-startup">
 
 ### slop theme
 
