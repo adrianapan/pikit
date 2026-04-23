@@ -30,13 +30,14 @@ protected-paths/
 
 ## Default protected paths
 
-These three entries apply when no config file is present:
+These entries apply when no config file is present:
 
 | Path | Blocked ops | Rationale |
 |------|-------------|-----------|
 | `.env` | `read`, `write`, `edit` | Contains secrets — block everything |
 | `.git/` | `read`, `write`, `edit` | Git internals — block everything |
 | `node_modules/` | `write`, `edit` | Reads allowed (docs/types); writes blocked |
+| `~/.pi/agent/auth.json` | `read`, `write`, `edit` | Auth credentials — block everything |
 
 ## Configuration
 
@@ -50,9 +51,10 @@ cp ~/.pi/agent/extensions/protected-paths/protected-paths.example.json \
 ```json
 {
   "paths": [
-    { "path": ".env",          "deny": ["read", "write", "edit"] },
-    { "path": ".git/",         "deny": ["read", "write", "edit"] },
-    { "path": "node_modules/", "deny": ["write", "edit"] }
+    { "path": ".env",                    "deny": ["read", "write", "edit"] },
+    { "path": ".git/",                   "deny": ["read", "write", "edit"] },
+    { "path": "node_modules/",           "deny": ["write", "edit"] },
+    { "path": "~/.pi/agent/auth.json",   "deny": ["read", "write", "edit"] }
   ]
 }
 ```

@@ -7,9 +7,10 @@
  * Config shape:
  * {
  *   "paths": [
- *     { "path": ".env",          "deny": ["read", "write", "edit"] },
- *     { "path": ".git/",         "deny": ["read", "write", "edit"] },
- *     { "path": "node_modules/", "deny": ["write", "edit"] }
+ *     { "path": ".env",                    "deny": ["read", "write", "edit"] },
+ *     { "path": ".git/",                   "deny": ["read", "write", "edit"] },
+ *     { "path": "node_modules/",           "deny": ["write", "edit"] },
+ *     { "path": "~/.pi/agent/auth.json",   "deny": ["read", "write", "edit"] }
  *   ]
  * }
  *
@@ -35,6 +36,7 @@ export const DEFAULT_PATHS: PathEntry[] = [
   { path: ".env",          deny: ["read", "write", "edit"] },
   { path: ".git/",         deny: ["read", "write", "edit"] },
   { path: "node_modules/", deny: ["write", "edit"] },
+  { path: "~/.pi/agent/auth.json", deny: ["read", "write", "edit"] },
 ];
 
 const CONFIG_PATH = join(homedir(), ".pi", "agent", "configs", "protected-paths.json");
