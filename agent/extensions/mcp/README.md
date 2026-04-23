@@ -250,6 +250,132 @@ export SLACK_MCP_TOKEN="xoxp-..."
 export GITHUB_TOKEN="ghp-..."
 ```
 
+## Server setup guides
+
+### Slack
+
+Slack's MCP server uses the Streamable HTTP transport and requires a registered Slack app with OAuth. Messages sent via the MCP server appear **as you** — your name, your avatar, no bot badge.
+
+> **Work Slack / Enterprise Grid**: admin approval for app installs may be required. Creating the app is always fine; the install step is where you'd hit that gate. If approval is required you'll see a "Request to Install" prompt and will need to ask your Slack admin.
+
+#### 1. Create the app
+
+Go to [api.slack.com/apps](https://api.slack.com/apps) → **Create New App** → **From a manifest** → pick your workspace → paste this manifest:
+
+```json
+{
+  "display_information": {
+    "name": "pidev-mcp",
+    "description": "MCP client access to Slack",
+    "background_color": "#2c2d30"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "pidev-mcp",
+      "always_online": false
+    }
+  },
+  "oauth_config": {
+    "redirect_urls": ["http://localhost:8080/callback"],
+    "scopes": {
+      "bot": ["users:read"],
+      "user": [
+        "search:read.public", "search:read.private",
+        "search:read.mpim", "search:read.im",
+        "search:read.files", "search:read.users",
+        "chat:write",
+        "channels:history", "groups:history",
+        "mpim:history", "im:history",
+        "canvases:read", "canvases:write",
+        "users:read", "users:read.email"
+      ]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": true
+  }
+}
+```
+
+> The `bot_user` block and `users:read` bot scope are a required hack — Slack's OAuth flow silently fails without a bot user present. The bot is never used at runtime; all actions go through your user token.
+
+#### 2. Enable two settings
+
+- **OAuth & Permissions** → scroll down → find *Proof Key for Code Exchange (PKCE)* → **Opt In**
+- **Agents & AI Apps** → *Model Context Protocol* → toggle **On**
+
+#### 3. Install to workspace
+
+Still in the app settings, hit **Install to Workspace**. Either it completes immediately (you're good) or you hit an admin approval gate — in which case request approval from your Slack admin and continue once approved.
+
+#### 4. Get your user token (one-time)
+
+The pi MCP extension uses a static Bearer token, so you need to complete the OAuth flow once to extract it. Run this in a terminal to catch the callback:
+
+```bash
+node -e "
+const http = require('http');
+const server = http.createServer((req, res) => {
+  const code = new URL(req.url, 'http://localhost:8080').searchParams.get('code');
+  if (code) {
+    res.end('Got it — check your terminal');
+    console.log('CODE:', code);
+    server.close();
+  }
+});
+server.listen(8080, () => console.log('Waiting at http://localhost:8080/callback...'));
+"
+```
+
+Then open this URL in your browser (replace `YOUR_CLIENT_ID` with the value from **Basic Information → App Credentials**):
+
+```
+https://slack.com/oauth/v2_user/authorize?client_id=YOUR_CLIENT_ID&scope=&user_scope=search:read.public,channels:history,groups:history,im:history,mpim:history,chat:write,users:read&redirect_uri=http://localhost:8080/callback&response_type=code
+```
+
+Approve in the browser. The code appears in your terminal. Exchange it for a token:
+
+```bash
+curl -X POST https://slack.com/api/oauth.v2.user.access \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "code=THE_CODE_FROM_ABOVE" \
+  -d "redirect_uri=http://localhost:8080/callback"
+```
+
+Copy the `authed_user.access_token` value from the JSON response — that's your `xoxp-...` token.
+
+#### 5. Store the token
+
+Add it to `~/.pi/agent/configs/.env` (see [env-loader](../env-loader/README.md)):
+
+```
+SLACK_MCP_TOKEN=xoxp-...
+```
+
+#### 6. Add to mcp.json
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "url": "https://mcp.slack.com/mcp",
+      "headers": { "Authorization": "Bearer ${SLACK_MCP_TOKEN}" }
+    }
+  }
+}
+```
+
+Restart pi and run `/mcp connect slack` to verify.
+
+#### Notes
+
+- The token does not expire unless explicitly revoked in your Slack app settings
+- Messages sent via `chat:write` appear as you — not as a bot
+- The bot user shows in the workspace app directory but never joins channels or posts anything
+- Colleagues cannot tell the difference between you typing a message and the MCP server sending it on your behalf
+
+---
+
 ## Tool naming (direct tools)
 
 When using `directTools`, each tool is registered as:
