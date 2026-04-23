@@ -1,15 +1,17 @@
 # Custom pi.dev setup
 
-My opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal coding agent. This repo tweaks the TUI experience with a custom startup screen, footer status bar, dynamic spinner verbs, and a warm color theme — plus a permission gate for dangerous commands and a web-access extension for searching the web and fetching pages.
+My opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal coding agent. This repo tweaks the TUI experience with a custom startup screen, footer status bar, dynamic spinner verbs, and a warm color theme — plus a permission gate for dangerous commands, protected-paths for sensitive files, and a web-access extension for searching the web and fetching pages.
 
 ## What's in here
 
 ```
 agent/
 ├── configs/
-│   ├── footer.json   # Footer segment configuration (tracked)
-│   ├── mcp.json      # MCP server config — gitignored, see mcp/mcp.json.example
-│   └── .env          # Secret env vars — gitignored, see env-loader/.env.example
+│   ├── footer.json              # Footer segment configuration (tracked)
+│   ├── mcp.json                 # MCP server config — gitignored, see mcp/mcp.json.example
+│   ├── permission-gate.json     # Permission gate patterns — gitignored, see permission-gate.example.json
+│   ├── protected-paths.json     # Protected path entries — gitignored, see protected-paths.example.json
+│   └── .env                     # Secret env vars — gitignored, see env-loader/.env.example
 ├── themes/
 │   └── slop.json     # Custom warm color theme
 └── extensions/
@@ -17,6 +19,7 @@ agent/
     ├── footer/       # Status bar with git, tokens, cost, context
     ├── mcp/          # MCP server bridge with lazy connections and proxy tool
     ├── permission-gate/ # Confirms dangerous bash commands before running
+    ├── protected-paths/ # Blocks read/write access to sensitive files and directories
     ├── spinners/     # Rotating spinner verbs while the agent thinks
     ├── startup/      # Welcome header shown at session start
     └── web-access/   # Web search, page fetching, and PDF extraction
@@ -52,6 +55,10 @@ Key features: lazy server startup, proxy tool pattern, disk metadata cache, prop
 ### permission-gate
 
 Intercepts `bash` tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod/chown 777`). Blocks silently in non-interactive mode. Patterns are fully configurable via `configs/permission-gate.json` — when the file is present it replaces the built-in defaults entirely; when absent the three defaults apply. Set `blockWithoutUI: false` to let commands through in headless/CI contexts. See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md).
+
+### protected-paths
+
+Blocks `read`, `write`, and `edit` tool calls to sensitive files and directories. Each entry defines a path and an explicit ops denylist, so you can block writes to `node_modules/` while still allowing reads for docs and type references. Bare entries like `.env` and `node_modules/` use exact path-segment matching — no false positives. Absolute and `~/`-prefixed entries are resolved and matched with `startsWith`. The agent is told why it was blocked and recovers gracefully. See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md).
 
 ### web-access
 
@@ -158,7 +165,18 @@ No config needed for Ghostty, WezTerm, Kitty, or Alacritty — icons work out of
 export FOOTER_NERD_FONTS=1
 ```
 
-### 6. Configure permission patterns (optional)
+### 6. Configure protected paths (optional)
+
+The `protected-paths` extension ships with three built-in entries (`.env`, `.git/`, `node_modules/`). To customise them, copy the example config:
+
+```bash
+cp ~/.pi/agent/extensions/protected-paths/protected-paths.example.json \
+   ~/.pi/agent/configs/protected-paths.json
+```
+
+Edit `protected-paths.json` to add, remove, or replace entries. See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md) for the full reference.
+
+### 7. Configure permission patterns (optional)
 
 The `permission-gate` extension ships with three built-in patterns. To customise them, copy the example config:
 
@@ -169,7 +187,7 @@ cp ~/.pi/agent/extensions/permission-gate/permission-gate.example.json \
 
 Edit `permission-gate.json` to add, remove, or replace patterns. See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md) for the full reference.
 
-### 7. Configure MCP servers (optional)
+### 8. Configure MCP servers (optional)
 
 Copy the example config and edit it with your servers:
 
@@ -179,7 +197,7 @@ cp ~/.pi/agent/extensions/mcp/mcp.json.example ~/.pi/agent/configs/mcp.json
 
 See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for the full configuration reference.
 
-### 8. Set up environment variables (optional)
+### 9. Set up environment variables (optional)
 
 If any extensions require API tokens (MCP servers, web-access search, etc.), store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
 
@@ -191,7 +209,7 @@ Edit the file with your actual values. The `env-loader` extension injects these 
 
 See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README.md) for details.
 
-### 9. Add custom or local models (optional)
+### 10. Add custom or local models (optional)
 
 `agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint:
 
