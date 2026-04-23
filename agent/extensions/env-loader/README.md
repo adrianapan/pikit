@@ -25,6 +25,7 @@ Create `~/.pi/agent/configs/.env` (gitignored — never committed):
 ```
 SLACK_MCP_TOKEN=xoxp-...
 GITHUB_TOKEN=ghp-...
+GEMINI_API_KEY=AIza...
 ```
 
 Copy the example to get started:
@@ -60,9 +61,10 @@ Use `/env` to verify what was loaded (key names only — values are never shown)
 
 ```
 /env
-→ 2 var(s) loaded from .env:
+→ 3 var(s) loaded from .env:
     SLACK_MCP_TOKEN
     GITHUB_TOKEN
+    GEMINI_API_KEY
 ```
 
 If a var was already set in your shell, it shows up in the skipped count rather than the loaded list.

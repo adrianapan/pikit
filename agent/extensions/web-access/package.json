@@ -1,0 +1,33 @@
+{
+  "name": "web-access",
+  "version": "1.0.0",
+  "description": "Web search and content extraction for pi",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pi-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrianapan/pi-dev/issues"
+  },
+  "homepage": "https://github.com/adrianapan/pi-dev#readme",
+  "keywords": [
+    "pi",
+    "extension",
+    "web-search",
+    "web-access",
+    "pi-package",
+    "pi-coding-agent"
+  ],
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  },
+  "author": "Adrian Apan",
+  "license": "MIT",
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "linkedom": "^0.16.0",
+    "turndown": "^7.2.0",
+    "unpdf": "^1.4.0"
+  }
+}

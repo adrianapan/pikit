@@ -1,6 +1,6 @@
 # Custom pi.dev setup
 
-My opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal coding agent. This repo tweaks the TUI experience with a custom startup screen, footer status bar, dynamic spinner verbs, and a warm color theme.
+My opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal coding agent. This repo tweaks the TUI experience with a custom startup screen, footer status bar, dynamic spinner verbs, and a warm color theme — plus a web-access extension for searching the web and fetching pages.
 
 ## What's in here
 
@@ -17,7 +17,8 @@ agent/
     ├── footer/       # Status bar with git, tokens, cost, context
     ├── mcp/          # MCP server bridge with lazy connections and proxy tool
     ├── spinners/     # Rotating spinner verbs while the agent thinks
-    └── startup/      # Welcome header shown at session start
+    ├── startup/      # Welcome header shown at session start
+    └── web-access/   # Web search, page fetching, and PDF extraction
 ```
 
 ### env-loader
@@ -46,6 +47,10 @@ Sample verbs: Architecting, Boondoggling, Flibbertigibbeting, Hyperspacing, Loll
 Bridges [Model Context Protocol (MCP)](https://modelcontextprotocol.io) servers into pi with minimal context overhead. Instead of registering every MCP tool individually at startup (which can burn thousands of tokens), it registers a single `mcp` proxy tool. The LLM searches for tools with `mcp({ search: "keyword" })`, inspects schemas with `mcp({ describe: "tool_name" })`, and calls them with `mcp({ tool: "tool_name", args: '{...}' })`. Servers start lazily — only when a tool is actually invoked. Tool metadata is cached to disk so discovery works without live connections.
 
 Key features: lazy server startup, proxy tool pattern, disk metadata cache, proper session restart lifecycle, per-server `directTools` opt-in, config merging across all standard MCP locations, `${VAR}` env interpolation, and connected-server count in the footer status bar. Use `/mcp` for status, `/mcp tools [server]` to list tools, `/mcp reconnect [server]`, `/mcp search <query>`.
+
+### web-access
+
+Gives the agent web access via three tools: `web_search` (Google Search grounding via Gemini AI, returns a synthesized answer with source citations), `fetch_content` (fetches any URL and extracts clean readable markdown — handles regular pages and PDFs), and `get_search_content` (retrieves full stored content when a response was truncated). Requires `GEMINI_API_KEY` for search; page fetching and PDF extraction work without any key. See [`agent/extensions/web-access/README.md`](agent/extensions/web-access/README.md).
 
 ### startup
 
@@ -160,7 +165,7 @@ See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for the f
 
 ### 7. Set up environment variables (optional)
 
-If any MCP servers or extensions require API tokens, store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
+If any extensions require API tokens (MCP servers, web-access search, etc.), store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
 
 ```bash
 cp ~/.pi/agent/extensions/env-loader/.env.example ~/.pi/agent/configs/.env
