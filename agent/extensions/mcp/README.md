@@ -233,16 +233,22 @@ Header values support `${VAR}` interpolation from the environment, same as `env`
 
 ## Environment variables
 
-All `${VAR}` references in `env` and `headers` are read from the environment pi inherits at startup — the same environment your shell has when you run `pi`. Add secrets to your shell profile so they're always available:
+All `${VAR}` references in `env` and `headers` are read from the environment pi inherits at startup. The recommended way to manage these without touching your shell profile is the **env-loader** extension — see [`agent/extensions/env-loader/README.md`](../env-loader/README.md).
 
-```bash
-# ~/.zshrc (or ~/.bash_profile, ~/.bashrc, etc.)
-export GITHUB_TOKEN="ghp_..."
-export SLACK_MCP_TOKEN="xoxp-..."
-export MY_API_KEY="..."
+Create `~/.pi/agent/configs/.env` (gitignored):
+
+```
+SLACK_MCP_TOKEN=xoxp-...
+GITHUB_TOKEN=ghp-...
 ```
 
-Then reload (`source ~/.zshrc`) or open a new terminal before starting pi.
+Alternatively, export the variables in your shell profile before launching pi:
+
+```bash
+# ~/.zshrc
+export SLACK_MCP_TOKEN="xoxp-..."
+export GITHUB_TOKEN="ghp-..."
+```
 
 ## Tool naming (direct tools)
 

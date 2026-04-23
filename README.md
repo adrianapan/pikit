@@ -8,15 +8,21 @@ My opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal c
 agent/
 ├── configs/
 │   ├── footer.json   # Footer segment configuration (tracked)
-│   └── mcp.json      # MCP server config — gitignored, see mcp/mcp.json.example
+│   ├── mcp.json      # MCP server config — gitignored, see mcp/mcp.json.example
+│   └── .env          # Secret env vars — gitignored, see env-loader/.env.example
 ├── themes/
 │   └── slop.json     # Custom warm color theme
 └── extensions/
+    ├── env-loader/   # Injects .env tokens into process.env at startup
     ├── footer/       # Status bar with git, tokens, cost, context
     ├── mcp/          # MCP server bridge with lazy connections and proxy tool
     ├── spinners/     # Rotating spinner verbs while the agent thinks
     └── startup/      # Welcome header shown at session start
 ```
+
+### env-loader
+
+Injects `~/.pi/agent/configs/.env` into `process.env` at startup. Keeps API tokens and secrets out of your shell profile (`~/.zshrc`, etc.) and scoped to pi. Loads synchronously before `session_start` so all other extensions see the vars immediately. Shell environment always takes precedence — existing values are never overwritten. Use `/env` to verify which keys were loaded (values are never shown).
 
 ### footer
 
@@ -152,7 +158,19 @@ cp ~/.pi/agent/extensions/mcp/mcp.json.example ~/.pi/agent/configs/mcp.json
 
 See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for the full configuration reference.
 
-### 7. Add custom or local models (optional)
+### 7. Set up environment variables (optional)
+
+If any MCP servers or extensions require API tokens, store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
+
+```bash
+cp ~/.pi/agent/extensions/env-loader/.env.example ~/.pi/agent/configs/.env
+```
+
+Edit the file with your actual values. The `env-loader` extension injects these into `process.env` at startup. Use `/env` inside pi to verify what was loaded.
+
+See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README.md) for details.
+
+### 8. Add custom or local models (optional)
 
 `agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint:
 
