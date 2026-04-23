@@ -3,7 +3,7 @@ import { errorMessage, isAbortError } from "./utils.js";
 import type { SearchQueryResult, SearchResult } from "./types.js";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-2.5-flash-lite";
 
 interface GeminiResponse {
   candidates?: Array<{

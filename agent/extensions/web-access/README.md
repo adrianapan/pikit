@@ -4,7 +4,7 @@ Web search and content extraction for pi. Search the web via Gemini AI, fetch an
 
 ## Features
 
-- **Web search**: Queries Gemini AI with Google Search grounding — returns a synthesized answer with source citations
+- **Web search**: Queries Gemini AI with Google Search grounding — returns a synthesized answer with source citations. Uses `gemini-2.5-flash-lite` (hardcoded in `src/search.ts`), the cheapest model in the 2.5 family that supports the `google_search` grounding tool.
 - **Page fetching**: Fetches any URL and extracts clean readable markdown via Readability + Turndown
 - **PDF extraction**: Detects PDFs by URL or content-type and extracts their text — no API key required
 - **Multi-URL support**: Fetch several URLs in parallel in a single call
@@ -22,7 +22,7 @@ web-access/
     ├── types.ts     — shared interfaces (SearchResult, ExtractedContent, StoredData)
     ├── config.ts    — reads GEMINI_API_KEY from process.env, clear error if missing
     ├── storage.ts   — in-memory result store with session persistence via appendEntry
-    ├── search.ts    — web_search via Gemini API with google_search grounding
+    ├── search.ts    — web_search via Gemini API with google_search grounding (model: gemini-2.5-flash-lite)
     ├── extract.ts   — fetch pipeline: Readability → Turndown, PDF detection and routing
     ├── pdf.ts       — PDF text extraction via unpdf
     └── utils.ts     — shared helpers (truncate, errorMessage, abort check, PDF detection)
