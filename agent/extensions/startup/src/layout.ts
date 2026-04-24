@@ -1,131 +1,94 @@
 import type { Theme } from "@mariozechner/pi-coding-agent";
 import { VERSION } from "@mariozechner/pi-coding-agent";
-import { basename } from "node:path";
-import { visibleWidth } from "@mariozechner/pi-tui";
 import { bold, centerText, fitToWidth, hasNerdFonts } from "./helpers.js";
-import type { RecentSession, LoadedCounts } from "./discovery.js";
+import { visibleWidth } from "@mariozechner/pi-tui";
+import type { LoadedCounts } from "./discovery.js";
 
-function buildLeftColumn(
-  theme: Theme,
-  modelName: string,
-  providerName: string,
-  cwd: string,
-  colWidth: number,
-): string[] {
-  const nerd = hasNerdFonts();
-  const iconModel   = nerd ? "\uEC19"             : "🧠";
-  const iconFolder  = nerd ? "\uF115"             : "📂";
-  const iconPiBox   = nerd ? "\udb81\udcf9"       : "🏷";
+const PI_ART = [
+  "██████╗ ██╗",
+  "██╔══██╗██║",
+  "██████╔╝██║",
+  "██╔═══╝ ██║",
+  "╚═╝     ╚═╝",
+];
+
+function buildLeftColumn(theme: Theme, colWidth: number): string[] {
   return [
     "",
-    "",
-    centerText(bold(`\x1b[38;2;215;135;175m${iconModel}\x1b[0m`), colWidth),
-    centerText(theme.fg("text", modelName), colWidth),
-    centerText(theme.fg("dim", providerName), colWidth),
-    "",
-    centerText(bold(theme.fg("dim", iconFolder)), colWidth),
-    centerText(theme.fg("text", basename(cwd)), colWidth),
-    "",
-    centerText(bold(theme.fg("dim", iconPiBox)), colWidth),
-    centerText(theme.fg("text", "pi agent"), colWidth),
-    centerText(theme.fg("dim", `v${VERSION}`), colWidth),
+    ...PI_ART.map((line) => centerText(bold(theme.fg("accent", line)), colWidth)),
   ];
 }
 
-function buildRightColumn(
-  theme: Theme,
-  recentSessions: RecentSession[],
-  counts: LoadedCounts,
-  colWidth: number,
-): string[] {
-  const hChar = "─";
+function buildTipsColumn(theme: Theme, colWidth: number): string[] {
   const dim = (s: string) => theme.fg("dim", s);
-  const separator = ` ${dim(hChar.repeat(colWidth - 2))}`;
-
-  // Recent sessions
-  const sessionLines: string[] =
-    recentSessions.length === 0
-      ? [` ${dim("No recent sessions")}`]
-      : recentSessions.map(
-          (s) => ` ${dim("• ")}${theme.fg("text", s.name)}${dim(` (${s.timeAgo})`)}`,
-        );
-
-  // Loaded counts
-  const { contextFiles, extensions, skills, promptTemplates, mcpServers } = counts;
-  const itemPrefix = dim("- ");
-  const countLines: string[] = [
-    ` ${itemPrefix}${theme.fg(contextFiles > 0 ? "success" : "dim", `${contextFiles}`)} context file${contextFiles !== 1 ? "s" : ""}`,
-    ` ${itemPrefix}${theme.fg(extensions > 0 ? "success" : "dim", `${extensions}`)} extension${extensions !== 1 ? "s" : ""}`,
-    ` ${itemPrefix}${theme.fg(skills > 0 ? "success" : "dim", `${skills}`)} skill${skills !== 1 ? "s" : ""}`,
-    ` ${itemPrefix}${theme.fg(promptTemplates > 0 ? "success" : "dim", `${promptTemplates}`)} prompt template${promptTemplates !== 1 ? "s" : ""}`,
-    ` ${itemPrefix}${theme.fg(mcpServers > 0 ? "success" : "dim", `${mcpServers}`)} MCP server${mcpServers !== 1 ? "s" : ""} configs`,
-  ];
-
   return [
-    ` ${bold(theme.fg("accent", "Tips"))}`,
+    "",
     ` ${dim("/")} for commands`,
     ` ${dim("!")} to run bash`,
-    ` ${dim("Shift+Tab")} cycle thinking`,
     ` ${dim("Ctrl+P")} cycle model`,
-    separator,
-    ` ${bold(theme.fg("accent", "Loaded"))}`,
-    ...countLines,
-    separator,
-    ` ${bold(theme.fg("accent", "Recent sessions"))}`,
-    ...sessionLines,
-    "",
+    ` ${dim("Shift+Tab")} cycle thinking`,
   ];
+}
+
+function buildRightColumn(theme: Theme, counts: LoadedCounts, colWidth: number): string[] {
+  const dim = (s: string) => theme.fg("dim", s);
+  const { contextFiles, extensions, skills, promptTemplates, mcpServers } = counts;
+  const itemPrefix = dim("• ");
+  const countLines: string[] = [
+    ` ${itemPrefix}${theme.fg(extensions > 0 ? "success" : "dim", `${extensions}`)} extension${extensions !== 1 ? "s" : ""}`,
+    ` ${itemPrefix}${theme.fg(skills > 0 ? "success" : "dim", `${skills}`)} skill${skills !== 1 ? "s" : ""}`,
+    ` ${itemPrefix}${theme.fg(mcpServers > 0 ? "success" : "dim", `${mcpServers}`)} MCP config${mcpServers !== 1 ? "s" : ""}`,
+    //@TODO: to be re-added when we add a new shortcut to the right column
+    // ` ${itemPrefix}${theme.fg(promptTemplates > 0 ? "success" : "dim", `${promptTemplates}`)} prompt template${promptTemplates !== 1 ? "s" : ""}`,
+    ` ${itemPrefix}${theme.fg(contextFiles > 0 ? "success" : "dim", `${contextFiles}`)} context file${contextFiles !== 1 ? "s" : ""}`,
+  ];
+
+  return ["", ...countLines, ""];
 }
 
 export function renderBox(
   theme: Theme,
-  modelName: string,
-  providerName: string,
-  cwd: string,
-  recentSessions: RecentSession[],
   counts: LoadedCounts,
   termWidth: number,
 ): string[] {
   const minLayoutWidth = 44;
   if (termWidth < minLayoutWidth) return [];
 
-  const boxWidth = Math.min(termWidth, Math.max(76, Math.min(termWidth - 2, 96)));
-  const leftCol = 26;
-  const rightCol = Math.max(1, boxWidth - leftCol - 3);
+  const boxWidth = Math.min(termWidth, Math.max(76, Math.min(termWidth - 2, 78)));
+  const leftCol = 20;
+  const configCol = 28;
+  const tipsCol = Math.max(1, boxWidth - leftCol - configCol - 2);
   const hChar = "─";
-
+  const nerd = hasNerdFonts();
   const dim = (s: string) => theme.fg("dim", s);
-  const v = dim("│");
-  const tl = dim("╭");
-  const tr = dim("╮");
-  const bl = dim("╰");
-  const br = dim("╯");
 
-  const leftLines = buildLeftColumn(theme, modelName, providerName, cwd, leftCol);
-  const rightLines = buildRightColumn(theme, recentSessions, counts, rightCol);
-  const contentWidth = boxWidth - 2;
+  const leftLines = buildLeftColumn(theme, leftCol);
+  const configLines = buildRightColumn(theme, counts, configCol);
+  const tipsLines = buildTipsColumn(theme, tipsCol);
 
   const lines: string[] = [];
+  lines.push("");
 
-  // Top border with title: ───<icon> pi agent vX.X.X ───...
-  const icon = hasNerdFonts() ? "\uE22C" : "π";
-  const titleText = ` pi agent v${VERSION}`;
-  const titleStyled = dim(hChar.repeat(2)) + theme.fg("accent", icon) + dim(" ") + dim(titleText);
-  const titleVisLen = 2 + visibleWidth(icon) + 1 + visibleWidth(titleText);
-  const afterTitle = contentWidth - titleVisLen;
-  lines.push(tl + titleStyled + (afterTitle > 0 ? dim(hChar.repeat(afterTitle)) : "") + tr);
+  const icon = nerd ? "\uE22C" : "";
+  const titleContent = icon !== "" ? `  pi.dev agent v${VERSION}` : ` pi.dev agent v${VERSION} `;
+  const titleVisLen = 2 + visibleWidth(icon) + visibleWidth(titleContent);
+  const afterTitle = (boxWidth - 2) - titleVisLen;
+  lines.push(
+    dim("╭") +
+    dim(hChar.repeat(2)) + theme.fg("accent", icon) + dim(titleContent) +
+    dim(hChar.repeat(Math.max(1, afterTitle))) +
+    dim("╮")
+  );
 
-  // Two-column content rows
-  const maxRows = Math.max(leftLines.length, rightLines.length);
+  const maxRows = Math.max(leftLines.length, configLines.length, tipsLines.length);
   for (let i = 0; i < maxRows; i++) {
-    const left = fitToWidth(leftLines[i] ?? "", leftCol);
-    const right = fitToWidth(rightLines[i] ?? "", rightCol);
-    lines.push(v + left + v + right + v);
+    const left   = fitToWidth(leftLines[i]   ?? "", leftCol);
+    const config = fitToWidth(configLines[i] ?? "", configCol);
+    const tips   = fitToWidth(tipsLines[i]   ?? "", tipsCol);
+    lines.push(dim("│") + left + config + tips + dim("│"));
   }
 
-  // Bottom border with column separator
-  const bottomLine = dim(hChar.repeat(leftCol)) + dim("┴") + dim(hChar.repeat(rightCol));
-  lines.push(bl + bottomLine + br);
+  lines.push(dim("╰") + dim(hChar.repeat(boxWidth - 2)) + dim("╯"));
   lines.push("");
 
   return lines;

@@ -69,7 +69,7 @@ Gives the agent web access via three tools: `web_search` (Google Search groundin
 
 ### startup
 
-Renders a two-column welcome box at session start showing: active model + provider, current working directory, keyboard shortcut hints, counts of loaded context files / extensions / skills / prompt templates / MCP servers, and up to three recent sessions with relative timestamps. Hidden below 44 terminal columns.
+Renders a three-column welcome box at session start showing: the pi logo, keyboard shortcut hints, and counts of loaded extensions / skills / MCP configs / prompt templates / context files. Agent version is shown in the top border. Hidden below 44 terminal columns.
 
 <img src="agent/extensions/startup/demo.png" alt="startup">
 

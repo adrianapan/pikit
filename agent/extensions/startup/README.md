@@ -1,16 +1,15 @@
 # startup
 
-A startup header for the pi coding agent. Displays a two-column welcome box at session start showing model info, current project, loaded configuration counts, quick tips, and recent sessions.
+A startup header for the pi coding agent. Displays a three-column welcome box at session start showing the pi logo, loaded configuration counts, and quick keyboard shortcuts.
 
 <img src="demo.png" alt="startup">
 
 ## Features
 
-- **Model info**: Shows the active model name and provider
-- **Project context**: Displays the current working directory name
-- **Loaded counts**: Reports how many context files, extensions, skills, prompt templates, and MCP servers are active
-- **Recent sessions**: Lists the 3 most recently touched sessions with relative timestamps
-- **Quick tips**: Inline keyboard shortcut reminders (`/`, `!`, `Shift+Tab`)
+- **Pi logo**: ASCII art rendered in the accent colour
+- **Loaded counts**: Reports how many extensions, skills, MCP configs, prompt templates, and context files are active
+- **Quick tips**: Inline keyboard shortcut reminders (`/`, `!`, `Ctrl+P`, `Shift+Tab`)
+- **Version banner**: Agent version shown in the top border
 - **Responsive layout**: Box adapts to terminal width; hidden below 44 columns
 - **Nerd Font icons**: Uses Nerd Font glyphs where available, falls back to plain Unicode symbols automatically
 
@@ -36,20 +35,11 @@ pi -e ./src/index.ts
 
 ## What it shows
 
-### Left column
-| Item | Description |
-|------|-------------|
-| Model name | Name of the active model (e.g. `claude-sonnet-4-6`) |
-| Provider | Model provider (e.g. `anthropic`) |
-| Working directory | `basename` of the current `cwd` |
-| pi agent version | Running version of the pi agent |
-
-### Right column
-| Section | Description |
-|---------|-------------|
-| **Tips** | Keyboard shortcuts: `/` for commands, `!` for bash, `Shift+Tab` to cycle thinking |
-| **Loaded** | Count of context files, extensions, skills, prompt templates, and MCP servers discovered |
-| **Recent sessions** | Up to 3 recent session names with time elapsed (e.g. `3h ago`) |
+| Column | Content |
+|--------|---------|
+| Left | Pi ASCII art logo |
+| Centre | Counts of extensions, skills, MCP configs, prompt templates, and context files |
+| Right | Keyboard shortcuts: `/` for commands, `!` for bash, `Ctrl+P` cycle model, `Shift+Tab` cycle thinking |
 
 ## Loaded counts discovery
 
@@ -62,10 +52,6 @@ The extension scans standard pi paths to count what is active:
 | Skills | `~/.pi/agent/skills/`, `<cwd>/.pi/skills/`, `<cwd>/skills/` (dirs with `SKILL.md`) |
 | Prompt templates | `~/.pi/agent/prompts/`, `~/.pi/agent/commands/`, `~/.claude/commands/`, `<cwd>/.pi/commands/`, `<cwd>/.claude/commands/` |
 | MCP servers | `~/.pi/agent/configs/mcp.json` |
-
-## Recent sessions discovery
-
-Sessions are found by scanning `~/.pi/agent/sessions/` and `~/.pi/sessions/` for `.jsonl` files. The parent directory name is used as the project name. Entries are deduplicated and sorted by modification time.
 
 ## Icons
 
