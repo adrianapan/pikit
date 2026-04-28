@@ -1,6 +1,6 @@
 <img src="banner.png" alt="opinionated pi.dev configuration">
 
-An opinionated [pi.dev](https://pi.dev/) configuration. Batteries included.
+<h3 align="center">An opinionated <a href="https://pi.dev/">pi.dev</a> configuration. Batteries included.</h3>
 
 <p align="center">
   <a href="#whats-in-here">What's in here</a> &nbsp;·&nbsp;
