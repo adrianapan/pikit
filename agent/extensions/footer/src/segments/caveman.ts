@@ -19,7 +19,7 @@ export const cavemanSegment = {
     if (!state) return { content: "", visible: false };
 
     const status = state.enabled ? state.mode : "off";
-    const content = withIcon(ctx.icons.caveman, `Caveman mode: ${status}`);
+    const content = withIcon(ctx.icons.caveman, `Caveman: ${status.toUpperCase()}`);
     return { content: color(ctx, "caveman", content), visible: true };
   },
 };

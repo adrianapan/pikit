@@ -36,7 +36,7 @@ export const NERD_ICONS: IconSet = {
   thinking: "\uf400",   // nf-oct-light_bulb
   separator: "\uE0B1",  // nf-pl-left_soft_divider
   auto: "\uF0068",      // nf-md-lightning_bolt
-  caveman: "\ueeff",    // nf-fa-hammer
+  caveman: "🪨",    // or use "\ueeff" (nf-fa-hammer)
 };
 
 // ASCII/Unicode fallback icons
