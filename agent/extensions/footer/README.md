@@ -16,19 +16,13 @@ A customizable footer for the pi coding agent. Provides a rich status bar at the
 
 ## Installation
 
-Install from npm using pi:
+This extension is included in the pi-dev repo and auto-discovered from
+`~/.pi/agent/extensions/`. No additional installation is required.
+
+To use it outside this repo, copy the extension directory to your
+pi extensions folder manually or load it directly:
 
 ```bash
-pi install npm:footer
-```
-
-Or copy the extension files to your pi extensions directory manually:
-
-```bash
-# Copy to global extensions directory
-cp -r . ~/.pi/agent/extensions/footer
-
-# Or use directly for testing
 pi -e ./src/index.ts
 ```
 
