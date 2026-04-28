@@ -2,7 +2,7 @@ import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, AssistantMessage,
 import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
 import type { TUI } from "@mariozechner/pi-tui";
 
-import type { SegmentContext, StatusLineSegmentId } from "./types.js";
+import type { SegmentContext, StatusLineSegmentId, UsageStats, SessionEvent, ThinkingLevelEvent, AssistantMessageEvent, ToolResultEvent, UserBashEvent } from "./types.js";
 import { renderSegment } from "./segments/index.js";
 import { getGitStatus, invalidateGitStatus, invalidateGitBranch } from "./git-status.js";
 import { getEffectiveConfig } from "./config.js";
@@ -102,7 +102,7 @@ export default function slopFooter(pi: ExtensionAPI) {
   let tuiRef: TUI | null = null;
 
   // Track session start
-  pi.on("session_start", async (_event, ctx) => {
+  pi.on("session_start", async (_event: unknown, ctx: ExtensionContext) => {
     sessionStartTime = Date.now();
     currentCtx = ctx;
 
@@ -116,7 +116,7 @@ export default function slopFooter(pi: ExtensionAPI) {
   });
 
   // Invalidate git status on file changes
-  pi.on("tool_result", async (event, _ctx) => {
+  pi.on("tool_result", async (event: ToolResultEvent, _ctx: ExtensionContext) => {
     if (event.toolName === "write" || event.toolName === "edit") {
       invalidateGitStatus();
     }
@@ -131,7 +131,7 @@ export default function slopFooter(pi: ExtensionAPI) {
   });
 
   // Also catch user escape commands (! prefix)
-  pi.on("user_bash", async (event, _ctx) => {
+  pi.on("user_bash", async (event: UserBashEvent, _ctx: ExtensionContext) => {
     if (GIT_BRANCH_PATTERNS.some(p => p.test(event.command))) {
       invalidateGitStatus();
       invalidateGitBranch();
@@ -145,29 +145,35 @@ export default function slopFooter(pi: ExtensionAPI) {
     const effectiveConfig = getEffectiveConfig();
     const colors = effectiveConfig.colors ?? getDefaultColors();
 
-    // Build usage stats from session
-    let input = 0, output = 0, cacheRead = 0, cacheWrite = 0, cost = 0;
-    let lastAssistant: AssistantMessage | undefined;
-    let thinkingLevelFromSession = "off";
+    const sessionEvents = (ctx.sessionManager?.getBranch?.() ?? []) as SessionEvent[];
 
-    const sessionEvents = ctx.sessionManager?.getBranch?.() ?? [];
-    for (const e of sessionEvents) {
-      if (e.type === "thinking_level_change" && e.thinkingLevel) {
-        thinkingLevelFromSession = e.thinkingLevel;
-      }
-      if (e.type === "message" && e.message.role === "assistant") {
-        const m = e.message as AssistantMessage;
-        if (m.stopReason === "error" || m.stopReason === "aborted") {
-          continue;
-        }
-        input += m.usage.input;
-        output += m.usage.output;
-        cacheRead += m.usage.cacheRead;
-        cacheWrite += m.usage.cacheWrite;
-        cost += m.usage.cost.total;
-        lastAssistant = m;
-      }
-    }
+    const isThinkingEvent = (e: SessionEvent): e is ThinkingLevelEvent =>
+      e.type === "thinking_level_change";
+
+    const isAssistantMessageEvent = (e: SessionEvent): e is AssistantMessageEvent =>
+      e.type === "message" && (e as AssistantMessageEvent).message.role === "assistant";
+
+    const thinkingLevelFromSession = sessionEvents
+      .filter(isThinkingEvent)
+      .reduce((_, e) => e.thinkingLevel ?? "off", "off");
+
+    const completedMessages = sessionEvents
+      .filter(isAssistantMessageEvent)
+      .map(e => e.message as AssistantMessage)
+      .filter(m => m.stopReason !== "error" && m.stopReason !== "aborted");
+
+    const usageStats = completedMessages.reduce<UsageStats>(
+      (acc, m) => ({
+        input: acc.input + m.usage.input,
+        output: acc.output + m.usage.output,
+        cacheRead: acc.cacheRead + m.usage.cacheRead,
+        cacheWrite: acc.cacheWrite + m.usage.cacheWrite,
+        cost: acc.cost + m.usage.cost.total,
+      }),
+      { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 },
+    );
+
+    const lastAssistant = completedMessages.at(-1);
 
     // Calculate context percentage
     const contextTokens = lastAssistant
@@ -190,7 +196,7 @@ export default function slopFooter(pi: ExtensionAPI) {
       model: ctx.model,
       thinkingLevel: thinkingLevelFromSession || getThinkingLevelFn?.() || "off",
       sessionId: ctx.sessionManager?.getSessionId?.(),
-      usageStats: { input, output, cacheRead, cacheWrite, cost },
+      usageStats,
       contextPercent,
       contextWindow,
       autoCompactEnabled: ctx.settingsManager?.getCompactionSettings?.()?.enabled ?? true,

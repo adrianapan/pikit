@@ -104,6 +104,29 @@ export interface SegmentContext {
   icons: IconSet;
 }
 
+// Minimal event shapes used by the footer handlers
+export interface ToolResultEvent {
+  toolName: string;
+  input?: { command?: string };
+}
+
+export interface UserBashEvent {
+  command: string;
+}
+
+// Minimal session event shapes used for footer stats
+export interface ThinkingLevelEvent {
+  type: "thinking_level_change";
+  thinkingLevel?: string;
+}
+
+export interface AssistantMessageEvent {
+  type: "message";
+  message: { role: string };
+}
+
+export type SessionEvent = ThinkingLevelEvent | AssistantMessageEvent | { type: string };
+
 // Rendered segment output
 export interface RenderedSegment {
   content: string;
