@@ -2,79 +2,12 @@ import { readdirSync, existsSync, statSync, readFileSync } from "node:fs";
 import { join, basename } from "node:path";
 import { homedir as osHomedir } from "node:os";
 
-export interface RecentSession {
-  name: string;
-  timeAgo: string;
-}
-
 export interface LoadedCounts {
   contextFiles: number;
   extensions: number;
   skills: number;
   promptTemplates: number;
   mcpServers: number;
-}
-
-function formatTimeAgo(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  if (minutes > 0) return `${minutes}m ago`;
-  return "just now";
-}
-
-export function getRecentSessions(maxCount = 3): RecentSession[] {
-  const homeDir = osHomedir();
-  const sessionsDirs = [
-    join(homeDir, ".pi", "agent", "sessions"),
-    join(homeDir, ".pi", "sessions"),
-  ];
-  const sessions: { name: string; mtime: number }[] = [];
-
-  function scanDir(dir: string) {
-    if (!existsSync(dir)) return;
-    try {
-      for (const entry of readdirSync(dir)) {
-        const entryPath = join(dir, entry);
-        try {
-          const stats = statSync(entryPath);
-          if (stats.isDirectory()) {
-            scanDir(entryPath);
-          } else if (entry.endsWith(".jsonl")) {
-            const parentName = basename(dir);
-            let projectName = parentName;
-            if (parentName.startsWith("--")) {
-              const parts = parentName.split("-").filter((p) => p);
-              projectName = parts[parts.length - 1] || parentName;
-            }
-            sessions.push({ name: projectName, mtime: stats.mtimeMs });
-          }
-        } catch {}
-      }
-    } catch {}
-  }
-
-  for (const dir of sessionsDirs) scanDir(dir);
-  if (sessions.length === 0) return [];
-
-  sessions.sort((a, b) => b.mtime - a.mtime);
-  const seen = new Set<string>();
-  const unique: typeof sessions = [];
-  for (const s of sessions) {
-    if (!seen.has(s.name)) {
-      seen.add(s.name);
-      unique.push(s);
-    }
-  }
-
-  const now = Date.now();
-  return unique.slice(0, maxCount).map((s) => ({
-    name: s.name.length > 20 ? s.name.slice(0, 17) + "…" : s.name,
-    timeAgo: formatTimeAgo(now - s.mtime),
-  }));
 }
 
 export function discoverLoadedCounts(): LoadedCounts {
