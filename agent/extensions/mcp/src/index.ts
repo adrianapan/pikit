@@ -99,73 +99,72 @@ export default function mcpExtension(pi: ExtensionAPI) {
     const isHttp = !!serverConfig.url;
 
     const promise = (async () => {
-      const excluded = new Set(serverConfig.excludeTools ?? []);
+      try {
+        const excluded = new Set(serverConfig.excludeTools ?? []);
 
-      if (isHttp) {
-        // ── HTTP (Streamable HTTP) transport ─────────────────────────────────────────
-        const client = new McpHttpClient(serverName, serverConfig);
-        try {
-          await client.initialize();
-        } catch (err) {
-          client.close();
-          connecting.delete(serverName);
-          const msg = err instanceof Error ? err.message : String(err);
-          throw new Error(`Failed to connect to "${serverName}" via HTTP: ${msg}`);
-        }
-        const tools = (await client.listTools()).filter((t) => !excluded.has(t.name));
-        clients.set(serverName, client);
-        connecting.delete(serverName);
-        toolsCache.set(serverName, tools);
-        saveServerCache(serverName, tools);
-        return client;
-      } else {
-        // ── stdio transport ───────────────────────────────────────────────────────
-        const client = new McpStdioClient(serverName, serverConfig);
-        const stderrLines: string[] = [];
-        const openedUrls = new Set<string>();
-        const removeStderr = client.onStderr((line) => {
-          stderrLines.push(line);
-          // Auto-open auth URLs (e.g. mcp-remote OAuth flow) as they appear.
-          // Only open URLs that look like real OAuth prompts: URLs with query params
-          // (authorization URLs always have ?client_id=... etc.) or localhost URLs
-          // (OAuth callbacks). Plain server URLs logged as status info are skipped.
-          const urlMatch = line.match(/https?:\/\/\S+/);
-          if (urlMatch && !openedUrls.has(urlMatch[0]) && isOAuthUrl(urlMatch[0])) {
-            openedUrls.add(urlMatch[0]);
-            const url = urlMatch[0];
-            ctx?.ui?.notify(`MCP [${serverName}]: opening browser for authentication\n${url}`, "info");
-            setTimeout(() => openBrowser(url), 1000);
+        if (isHttp) {
+          // ── HTTP (Streamable HTTP) transport ─────────────────────────────────────────
+          const client = new McpHttpClient(serverName, serverConfig);
+          try {
+            await client.initialize();
+          } catch (err) {
+            client.close();
+            const msg = err instanceof Error ? err.message : String(err);
+            throw new Error(`Failed to connect to "${serverName}" via HTTP: ${msg}`);
           }
-        });
+          const tools = (await client.listTools()).filter((t) => !excluded.has(t.name));
+          clients.set(serverName, client);
+          toolsCache.set(serverName, tools);
+          saveServerCache(serverName, tools);
+          return client;
+        } else {
+          // ── stdio transport ───────────────────────────────────────────────────────
+          const client = new McpStdioClient(serverName, serverConfig);
+          const stderrLines: string[] = [];
+          const openedUrls = new Set<string>();
+          const removeStderr = client.onStderr((line) => {
+            stderrLines.push(line);
+            // Auto-open auth URLs (e.g. mcp-remote OAuth flow) as they appear.
+            // Only open URLs that look like real OAuth prompts: URLs with query params
+            // (authorization URLs always have ?client_id=... etc.) or localhost URLs
+            // (OAuth callbacks). Plain server URLs logged as status info are skipped.
+            const urlMatch = line.match(/https?:\/\/\S+/);
+            if (urlMatch && !openedUrls.has(urlMatch[0]) && isOAuthUrl(urlMatch[0])) {
+              openedUrls.add(urlMatch[0]);
+              const url = urlMatch[0];
+              ctx?.ui?.notify(`MCP [${serverName}]: opening browser for authentication\n${url}`, "info");
+              setTimeout(() => openBrowser(url), 1000);
+            }
+          });
 
-        try {
-          await client.initialize();
-        } catch (err) {
+          try {
+            await client.initialize();
+          } catch (err) {
+            removeStderr();
+            client.close();
+            const msg = err instanceof Error ? err.message : String(err);
+            const detail = stderrLines.length ? `\n${stderrLines.join("\n")}` : "";
+            throw new Error(`Failed to connect to "${serverName}": ${msg}${detail}`);
+          }
+
           removeStderr();
-          client.close();
-          connecting.delete(serverName);
-          const msg = err instanceof Error ? err.message : String(err);
-          const detail = stderrLines.length ? `\n${stderrLines.join("\n")}` : "";
-          throw new Error(`Failed to connect to "${serverName}": ${msg}${detail}`);
+          // initialize() succeeded — the connection is good.
+          // All stderr collected during startup was just chatter (mcp-remote logs,
+          // protocol traffic, etc.). Suppress it entirely; no regex filtering needed.
+          // If initialize() had thrown, the full stderr would be included in the error above.
+
+          const tools = (await client.listTools()).filter((t) => !excluded.has(t.name));
+          clients.set(serverName, client);
+          toolsCache.set(serverName, tools);
+          saveServerCache(serverName, tools);
+          return client;
         }
-
-        removeStderr();
-        // initialize() succeeded — the connection is good.
-        // All stderr collected during startup was just chatter (mcp-remote logs,
-        // protocol traffic, etc.). Suppress it entirely; no regex filtering needed.
-        // If initialize() had thrown, the full stderr would be included in the error above.
-
-        const tools = (await client.listTools()).filter((t) => !excluded.has(t.name));
-        clients.set(serverName, client);
+      } finally {
         connecting.delete(serverName);
-        toolsCache.set(serverName, tools);
-        saveServerCache(serverName, tools);
-        return client;
       }
     })();
 
     connecting.set(serverName, promise);
-    promise.catch(() => connecting.delete(serverName));
     return promise;
   }
 
