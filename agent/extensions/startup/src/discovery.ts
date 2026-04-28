@@ -10,48 +10,35 @@ export interface LoadedCounts {
   mcpServers: number;
 }
 
-export function discoverLoadedCounts(): LoadedCounts {
-  const homeDir = osHomedir();
-  const cwd = process.cwd();
-
-  // Context files
-  let contextFiles = 0;
-  const contextPaths = [
+function countContextFiles(homeDir: string, cwd: string): number {
+  const paths = [
     join(homeDir, ".pi", "agent", "AGENTS.md"),
     join(homeDir, ".claude", "AGENTS.md"),
     join(cwd, "AGENTS.md"),
     join(cwd, "CLAUDE.md"),
     join(cwd, ".pi", "AGENTS.md"),
   ];
-  for (const p of contextPaths) {
-    if (existsSync(p)) contextFiles++;
-  }
+  return paths.filter(existsSync).length;
+}
 
-  // Extensions
-  let extensions = 0;
-  const countedExtensions = new Set<string>();
+function countExtensions(homeDir: string, cwd: string): number {
+  const seen = new Set<string>();
 
   const settingsPaths = [
     join(homeDir, ".pi", "agent", "settings.json"),
     join(cwd, ".pi", "settings.json"),
   ];
-  for (const settingsPath of settingsPaths) {
-    if (!existsSync(settingsPath)) continue;
+  for (const path of settingsPaths) {
+    if (!existsSync(path)) continue;
     try {
-      const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-      const packages = settings?.packages;
-      if (Array.isArray(packages)) {
-        for (const pkg of packages) {
-          const source = typeof pkg === "string" ? pkg : pkg?.source;
-          if (typeof source !== "string" || !source.trim().startsWith("npm:")) continue;
-          const body = source.trim().slice(4);
-          const vIdx = body.lastIndexOf("@");
-          const name = vIdx > 0 ? body.slice(0, vIdx) : body;
-          if (name && !countedExtensions.has(name)) {
-            countedExtensions.add(name);
-            extensions++;
-          }
-        }
+      const settings = JSON.parse(readFileSync(path, "utf-8"));
+      for (const pkg of (settings?.packages ?? [])) {
+        const source = typeof pkg === "string" ? pkg : pkg?.source;
+        if (typeof source !== "string" || !source.trim().startsWith("npm:")) continue;
+        const body = source.trim().slice(4);
+        const vIdx = body.lastIndexOf("@");
+        const name = vIdx > 0 ? body.slice(0, vIdx) : body;
+        if (name) seen.add(name);
       }
     } catch {}
   }
@@ -73,86 +60,92 @@ export function discoverLoadedCounts(): LoadedCounts {
               existsSync(join(entryPath, "index.js")) ||
               existsSync(join(entryPath, "package.json")))
           ) {
-            if (!countedExtensions.has(entry)) {
-              countedExtensions.add(entry);
-              extensions++;
-            }
+            seen.add(entry);
           }
         } catch {}
       }
     } catch {}
   }
 
-  // Skills
-  let skills = 0;
-  const countedSkills = new Set<string>();
-  const skillDirs = [
+  return seen.size;
+}
+
+function countSkills(homeDir: string, cwd: string): number {
+  const seen = new Set<string>();
+  const dirs = [
     join(homeDir, ".pi", "agent", "skills"),
     join(cwd, ".pi", "skills"),
     join(cwd, "skills"),
   ];
-  for (const dir of skillDirs) {
+  for (const dir of dirs) {
     if (!existsSync(dir)) continue;
     try {
       for (const entry of readdirSync(dir)) {
         const entryPath = join(dir, entry);
         try {
           if (statSync(entryPath).isDirectory() && existsSync(join(entryPath, "SKILL.md"))) {
-            if (!countedSkills.has(entry)) {
-              countedSkills.add(entry);
-              skills++;
-            }
+            seen.add(entry);
           }
         } catch {}
       }
     } catch {}
   }
+  return seen.size;
+}
 
-  // Prompt templates
-  let promptTemplates = 0;
-  const countedTemplates = new Set<string>();
-  const templateDirs = [
+function collectTemplateNames(dir: string): Set<string> {
+  const names = new Set<string>();
+  if (!existsSync(dir)) return names;
+  try {
+    for (const entry of readdirSync(dir)) {
+      const entryPath = join(dir, entry);
+      try {
+        if (statSync(entryPath).isDirectory()) {
+          for (const name of collectTemplateNames(entryPath)) names.add(name);
+        } else if (entry.endsWith(".md")) {
+          names.add(basename(entry, ".md"));
+        }
+      } catch {}
+    }
+  } catch {}
+  return names;
+}
+
+function countTemplates(homeDir: string, cwd: string): number {
+  const dirs = [
     join(homeDir, ".pi", "agent", "prompts"),
     join(homeDir, ".pi", "agent", "commands"),
     join(homeDir, ".claude", "commands"),
     join(cwd, ".pi", "commands"),
     join(cwd, ".claude", "commands"),
   ];
-
-  function countTemplatesInDir(dir: string) {
-    if (!existsSync(dir)) return;
-    try {
-      for (const entry of readdirSync(dir)) {
-        const entryPath = join(dir, entry);
-        try {
-          const stats = statSync(entryPath);
-          if (stats.isDirectory()) {
-            countTemplatesInDir(entryPath);
-          } else if (entry.endsWith(".md")) {
-            const name = basename(entry, ".md");
-            if (!countedTemplates.has(name)) {
-              countedTemplates.add(name);
-              promptTemplates++;
-            }
-          }
-        } catch {}
-      }
-    } catch {}
+  const allNames = new Set<string>();
+  for (const dir of dirs) {
+    for (const name of collectTemplateNames(dir)) allNames.add(name);
   }
+  return allNames.size;
+}
 
-  for (const dir of templateDirs) countTemplatesInDir(dir);
+function countMcpServers(homeDir: string): number {
+  const configPath = join(homeDir, ".pi", "agent", "configs", "mcp.json");
+  if (!existsSync(configPath)) return 0;
+  try {
+    const cfg = JSON.parse(readFileSync(configPath, "utf-8"));
+    if (cfg?.mcpServers && typeof cfg.mcpServers === "object") {
+      return Object.keys(cfg.mcpServers).length;
+    }
+  } catch {}
+  return 0;
+}
 
-  // MCP servers — count unique server names from the pi config
-  let mcpServers = 0;
-  const mcpConfigPath = join(homeDir, ".pi", "agent", "configs", "mcp.json");
-  if (existsSync(mcpConfigPath)) {
-    try {
-      const cfg = JSON.parse(readFileSync(mcpConfigPath, "utf-8"));
-      if (cfg?.mcpServers && typeof cfg.mcpServers === "object") {
-        mcpServers = Object.keys(cfg.mcpServers).length;
-      }
-    } catch {}
-  }
-
-  return { contextFiles, extensions, skills, promptTemplates, mcpServers };
+export function discoverLoadedCounts(): LoadedCounts {
+  const homeDir = osHomedir();
+  const cwd = process.cwd();
+  return {
+    contextFiles: countContextFiles(homeDir, cwd),
+    extensions: countExtensions(homeDir, cwd),
+    skills: countSkills(homeDir, cwd),
+    promptTemplates: countTemplates(homeDir, cwd),
+    mcpServers: countMcpServers(homeDir),
+  };
 }
