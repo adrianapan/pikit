@@ -1,5 +1,5 @@
 import type { RenderedSegment, SegmentContext, SemanticColor } from "../types.js";
-import { applyColor } from "../theme.js";
+import { applyColor, rainbow } from "../theme.js";
 
 const LEVEL_TEXT: Record<string, string> = {
   off: "Off",
@@ -48,8 +48,11 @@ export const thinkingSegment = {
 
     const prefix = opts.prefix ?? "";
     const text = prefix ? `${prefix}${label}` : label;
-    const icon = ctx.icons.thinking ? applyColor(ctx.theme, textColor as any, ctx.icons.thinking) : "";
-    const coloredText = applyColor(ctx.theme, textColor as any, text);
+    const useRainbow = level === "xhigh" || level === "max";
+    const icon = ctx.icons.thinking
+      ? applyColor(ctx.theme, textColor as any, ctx.icons.thinking)
+      : "";
+    const coloredText = useRainbow ? rainbow(text) : applyColor(ctx.theme, textColor as any, text);
     const content = icon ? `${icon} ${coloredText}` : coloredText;
 
     return { content, visible: true };

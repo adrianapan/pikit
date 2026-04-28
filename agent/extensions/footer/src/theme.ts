@@ -60,6 +60,33 @@ export function fg(
   return applyColor(theme, color, text);
 }
 
+function hslToAnsi(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const v = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(v * 255);
+  };
+  return `\x1b[38;2;${f(0)};${f(8)};${f(4)}m`;
+}
+
+// Spread hues evenly across all non-space characters
+export function rainbow(text: string): string {
+  const visibleChars = [...text].filter(c => c !== " " && c !== ":").length;
+  let result = "";
+  let colorIndex = 0;
+  for (const char of text) {
+    if (char === " " || char === ":") {
+      result += char;
+    } else {
+      const hue = (colorIndex / Math.max(visibleChars - 1, 1)) * 300;
+      result += hslToAnsi(hue, 0.85, 0.65) + char;
+      colorIndex++;
+    }
+  }
+  return result + "\x1b[0m";
+}
+
 export function getDefaultColors(): Required<ColorScheme> {
   return { ...DEFAULT_COLORS };
 }
