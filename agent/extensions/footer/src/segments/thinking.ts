@@ -1,4 +1,4 @@
-import type { RenderedSegment, SegmentContext } from "../types.js";
+import type { RenderedSegment, SegmentContext, SemanticColor } from "../types.js";
 import { applyColor } from "../theme.js";
 
 const LEVEL_TEXT: Record<string, string> = {
@@ -10,7 +10,18 @@ const LEVEL_TEXT: Record<string, string> = {
   xhigh: "Extra High",
 };
 
-const LEVEL_COLOR: Record<string, string> = {
+// Per-level semantic color keys in the color scheme
+const LEVEL_COLOR_KEY: Record<string, SemanticColor> = {
+  off: "thinkingOff",
+  minimal: "thinkingMinimal",
+  low: "thinkingLow",
+  medium: "thinkingMedium",
+  high: "thinkingHigh",
+  xhigh: "thinkingXhigh",
+};
+
+// Fallback defaults — used when the user hasn't configured a per-level color
+const LEVEL_COLOR_FALLBACK: Record<string, string> = {
   off: "dim",
   minimal: "muted",
   low: "muted",
@@ -26,7 +37,11 @@ export const thinkingSegment = {
     const opts = ctx.options.thinking ?? {};
 
     const label = LEVEL_TEXT[level] || level;
-    const textColor = LEVEL_COLOR[level] ?? "muted";
+
+    // Try the user-configured per-level color first, fall back to hardcoded default
+    const colorKey = LEVEL_COLOR_KEY[level];
+    const configured = colorKey !== undefined ? ctx.colors[colorKey] : undefined;
+    const textColor = configured ?? LEVEL_COLOR_FALLBACK[level] ?? "muted";
 
     const prefix = opts.prefix ?? "";
     const text = prefix ? `${prefix}${label}` : label;
