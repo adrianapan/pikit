@@ -90,7 +90,8 @@ export interface UsageStats {
 
 // Context passed to segment render functions
 export interface SegmentContext {
-  model: { id: string; name?: string; reasoning?: boolean; contextWindow?: number } | undefined;
+  model: { id: string; name?: string; reasoning?: boolean; contextWindow?: number; provider?: string; baseUrl?: string } | undefined;
+  isLocalModel: boolean;
   thinkingLevel: string;
   sessionId: string | undefined;
   usageStats: UsageStats;

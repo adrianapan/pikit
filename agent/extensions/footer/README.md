@@ -112,7 +112,7 @@ Create `~/.pi/agent/configs/footer.json` to customize the footer:
 | Segment | Description | `segmentOptions` |
 |---------|-------------|-----------------|
 | `pi` | Pi logo/icon | — |
-| `model` | Current model name | `showThinkingLevel` (bool, default `false`) — appends thinking level inline with a `·` separator |
+| `model` | Current model name and provider | `showThinkingLevel` (bool, default `false`) — appends thinking level inline with a `·` separator. Provider is shown as a dim `(provider)` label after the model name (e.g. `(ollama)`, `(anthropic)`). |
 | `thinking` | Standalone thinking/reasoning level indicator | `prefix` (string) — prepended to the level label, e.g. `"Thinking: "`<br><br>Each level can be colored independently via `thinkingOff`, `thinkingMinimal`, `thinkingLow`, `thinkingMedium`, `thinkingHigh`, `thinkingXhigh`, `thinkingMax` in the `colors` config. Omitted entries fall back to the built-in defaults.<br><br>`xhigh` and `max` render the label text as a rainbow gradient (hues spread evenly across characters); the `colors` config for those levels only affects the icon. |
 | `path` | Current working directory | `mode`: `"basename"` (default) · `"abbreviated"` (with `~`, capped at `maxLength`) · `"full"` |
 | `git` | Git branch and status | `showBranch`, `showStaged`, `showUnstaged`, `showUntracked` (all bool, all default `true`) |

@@ -192,8 +192,11 @@ export default function slopFooter(pi: ExtensionAPI) {
       ? ctx.modelRegistry?.isUsingOAuth?.(ctx.model) ?? false
       : false;
 
+    const isLocalModel = /localhost|127\.0\.0\.1|::1/.test((ctx.model as any)?.baseUrl ?? "");
+
     return {
       model: ctx.model,
+      isLocalModel,
       thinkingLevel: thinkingLevelFromSession || getThinkingLevelFn?.() || "off",
       sessionId: ctx.sessionManager?.getSessionId?.(),
       usageStats,

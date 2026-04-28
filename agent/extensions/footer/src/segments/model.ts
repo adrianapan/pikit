@@ -1,6 +1,7 @@
 import type { RenderedSegment, SegmentContext } from "../types.js";
 import { hasNerdFonts } from "../icons.js";
 import { color, withIcon } from "./helpers.js";
+import { applyColor } from "../theme.js";
 
 const SEP_DOT = " · ";
 
@@ -26,6 +27,11 @@ function getThinkingText(level: string): string | undefined {
   return THINKING_TEXT[level];
 }
 
+function getProviderLabel(provider: string | undefined): string | undefined {
+  if (!provider) return undefined;
+  return `(${provider})`;
+}
+
 export const modelSegment = {
   id: "model" as const,
   render(ctx: SegmentContext): RenderedSegment {
@@ -37,6 +43,11 @@ export const modelSegment = {
     }
 
     let content = withIcon(ctx.icons.model, modelName);
+
+    const providerLabel = getProviderLabel(ctx.model?.provider);
+    if (providerLabel) {
+      content += ` ${applyColor(ctx.theme, "dim", providerLabel)}`;
+    }
 
     if (opts.showThinkingLevel !== false && ctx.model?.reasoning) {
       const level = ctx.thinkingLevel || "off";

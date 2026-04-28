@@ -8,7 +8,7 @@ export const costSegment = {
     const value = cost.toFixed(2);
     const costDisplay = applyColor(ctx.theme, "dim", `${ctx.icons.cost}${value}`);
 
-    if (!ctx.usingSubscription) {
+    if (ctx.isLocalModel) {
       const suffix = applyColor(ctx.theme, "dim", " (local model)");
       return { content: costDisplay + suffix, visible: true };
     }
