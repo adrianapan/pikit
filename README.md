@@ -1,8 +1,17 @@
 <img src="banner.png" alt="opinionated pi.dev configuration">
 
-# Opinionated pi.dev configuration
+An opinionated [pi.dev](https://pi.dev/) configuration. Batteries included.
 
-Opinionated configuration for [pi.dev](https://pi.dev/), a minimal terminal coding agent. This repo tweaks the TUI experience with a custom startup screen, footer status bar, dynamic spinner verbs, and a warm color theme — plus a permission gate for dangerous commands, protected-paths for sensitive files, and a web-access extension for searching the web and fetching pages.
+<p align="center">
+  <a href="#whats-in-here">What's in here</a> &nbsp;·&nbsp;
+  <a href="#extensions">Extensions</a> &nbsp;·&nbsp;
+  <a href="#skills">Skills</a> &nbsp;·&nbsp;
+  <a href="#theme">Theme</a> &nbsp;·&nbsp;
+  <a href="#first-run-setup">First-run setup</a> &nbsp;·&nbsp;
+  <a href="#about-pidev">About pi.dev</a>
+</p>
+
+---
 
 ## What's in here
 
@@ -33,69 +42,58 @@ agent/
     └── web-access/   # Web search, page fetching, and PDF extraction
 ```
 
+---
+
+## Extensions
+
 ### caveman
 
-Compresses pi's LLM responses from polished prose to prehistoric grunt. Three modes injected into the system prompt via `before_agent_start`:
-
-- **lite** — Professional, no fluff. Strips filler words, pleasantries, and preamble. Direct answers, tight sentences.
-- **full** — Classic caveman (default). Short words, short sentences. Simple language. "Me fix bug. Code work now."
-- **ultra** — Maximum compression. One line or one word where possible. Pure signal, zero noise.
-
-| Command | Description |
-|---------|-------------|
-| `/caveman` | Toggle on (full as default) / off |
-| `/caveman lite` | Professional, no fluff |
-| `/caveman full` | Classic caveman (default) |
-| `/caveman ultra` | Maximum compression |
-
-Active mode shows in the footer between the thinking block and path: `🪨 full`. Hidden when off. See [`agent/extensions/caveman/README.md`](agent/extensions/caveman/README.md).
+Compresses pi's responses from polished prose to prehistoric grunt. Three modes — `lite` (professional, no filler), `full` (classic caveman), `ultra` (maximum compression) — injected into the system prompt. Toggled via `/caveman`; active mode shows in the footer. → [`README`](agent/extensions/caveman/README.md)
 
 ### env-loader
 
-Injects `~/.pi/agent/configs/.env` into `process.env` at startup. Keeps API tokens and secrets out of your shell profile (`~/.zshrc`, etc.) and scoped to pi. Loads synchronously before `session_start` so all other extensions see the vars immediately. Shell environment always takes precedence — existing values are never overwritten. Use `/env` to verify which keys were loaded (values are never shown).
+Loads `~/.pi/agent/configs/.env` into `process.env` at startup, keeping API tokens out of your shell profile. Shell environment always wins — existing vars are never overwritten. Check what was loaded (without exposing values) via `/env`. → [`README`](agent/extensions/env-loader/README.md)
 
 ### footer
 
-A customizable footer that replaces pi's default status bar. Renders live data in left- and right-aligned segments:
-
-- **Left**: agent icon, separator, active model, thinking level, current path, git branch + dirty state
-- **Right**: context window %, total/input/output token counts, estimated API cost
-
-Segments are configured via `footer.json`. Supports Nerd Font icons with plain-ASCII fallbacks. Git status is cached and invalidated automatically on file writes or git operations.
-
-### spinners
-
-Replaces the default "Thinking..." working message with 186 rotating verbs. A new verb is picked every 2.5 seconds with a typewriter reveal effect (42ms per character). Hooks into `turn_start` / `message_update` / `turn_end` to start, stop, and clean up timers.
-
-Sample verbs: Architecting, Boondoggling, Flibbertigibbeting, Hyperspacing, Lollygagging, Perambulating...
+Replaces pi's default status bar with a configurable strip showing model, thinking level, current path, git branch, token counts, and estimated cost. Segments are defined in `footer.json`; Nerd Font icons with plain-ASCII fallbacks. → [`README`](agent/extensions/footer/README.md)
 
 ### mcp
 
-Bridges [Model Context Protocol (MCP)](https://modelcontextprotocol.io) servers into pi with minimal context overhead. Instead of registering every MCP tool individually at startup (which can burn thousands of tokens), it registers a single `mcp` proxy tool. The LLM searches for tools with `mcp({ search: "keyword" })`, inspects schemas with `mcp({ describe: "tool_name" })`, and calls them with `mcp({ tool: "tool_name", args: '{...}' })`. Servers start lazily — only when a tool is actually invoked. Tool metadata is cached to disk so discovery works without live connections.
-
-Supports two transports: **stdio** (local process or `mcp-remote` bridge) and **HTTP** (Streamable HTTP with a pre-existing token). For OAuth-protected servers like Sentry and Atlassian, `mcp-remote` handles the full OAuth flow automatically — pi detects the auth URL from stderr and opens your browser, no manual steps. Slack requires a registered app (one-time setup) but the same automatic browser flow applies via `mcp-remote --static-oauth-client-info`. GitHub uses a plain Personal Access Token.
-
-Key features: lazy server startup, proxy tool pattern, disk metadata cache, proper session restart lifecycle, per-server `directTools` opt-in, `${VAR}` env interpolation, and auto OAuth browser-open for stdio servers. Use `/mcp` for status, `/mcp tools [server]` to list tools, `/mcp reconnect [server]`, `/mcp search <query>`. See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for full setup guides for each provider.
+Bridges MCP servers into pi via a single proxy tool instead of loading all tool schemas at startup. The LLM searches and calls tools on demand; servers start lazily and metadata is cached to disk. Supports stdio and HTTP transports with automatic OAuth browser-open for protected servers. Configured via `mcp.json`; use `/mcp` to check status, list tools, and manage connections. → [`README`](agent/extensions/mcp/README.md)
 
 ### permission-gate
 
-Intercepts `bash` tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod/chown 777`). Blocks silently in non-interactive mode. Patterns are fully configurable via `configs/permission-gate.json` — when the file is present it replaces the built-in defaults entirely; when absent the three defaults apply. Set `blockWithoutUI: false` to let commands through in headless/CI contexts. See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md).
+Intercepts bash tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod 777`). Blocks silently in headless mode. Patterns are fully configurable via `permission-gate.json`. → [`README`](agent/extensions/permission-gate/README.md)
 
 ### protected-paths
 
-Blocks `read`, `write`, and `edit` tool calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes to `node_modules/` while still allowing reads for docs and type references. Bare entries like `.env` and `node_modules/` use exact path-segment matching — no false positives. Absolute and `~/`-prefixed entries are resolved and matched with `startsWith`. The agent is told why it was blocked and recovers gracefully. See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md).
+Blocks read, write, and edit calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes while still allowing reads. Ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `auth.json`); fully configurable via `protected-paths.json`. → [`README`](agent/extensions/protected-paths/README.md)
 
-### web-access
+### spinners
 
-Gives the agent web access via three tools: `web_search` (Google Search grounding via Gemini AI, returns a synthesized answer with source citations), `fetch_content` (fetches any URL and extracts clean readable markdown — handles regular pages and PDFs), and `get_search_content` (retrieves full stored content when a response was truncated). Requires `GEMINI_API_KEY` for search; page fetching and PDF extraction work without any key. See [`agent/extensions/web-access/README.md`](agent/extensions/web-access/README.md).
+Replaces "Thinking..." with 186 rotating verbs, cycling every 2.5 seconds with a typewriter reveal. Zero config. → [`README`](agent/extensions/spinners/README.md)
 
 ### startup
 
-Renders a three-column welcome box at session start showing: the pi logo, keyboard shortcut hints, and counts of loaded extensions / skills / MCP configs / prompt templates / context files. Agent version is shown in the top border. Hidden below 44 terminal columns.
+Renders a welcome box at session start with the pi logo, keyboard hints, and counts of loaded extensions, skills, MCP configs, and context files. Zero config. → [`README`](agent/extensions/startup/README.md)
 
-### slop theme
+### web-access
 
-A warm, earthy color palette (`themes/slop.json`). Primary: `#d67858` (terracotta). Text: `#f5f2ee` (warm white). Covers all 51 required pi color tokens including syntax highlighting and thinking level indicators.
+Gives the agent web search and page fetching. `web_search` uses Gemini AI for a synthesized answer with source citations; `fetch_content` extracts clean markdown from any URL or PDF. Search requires `GEMINI_API_KEY`; fetching works without a key. → [`README`](agent/extensions/web-access/README.md)
+
+---
+
+## Skills
+
+- **`pi-extension-builder`** — loaded when you ask pi to build or modify an extension in this repo. Covers file structure, code conventions, and documentation requirements. Invoke explicitly with `/skill:pi-extension-builder`.
+- **`add-ollama-cloud-model`** — loaded when you ask pi to add an Ollama Cloud model. Fetches the model page, extracts capabilities, and writes the correct entry to `models.json`. Invoke explicitly with `/skill:add-ollama-cloud-model`.
+
+---
+
+## Theme
+
+**slop** — a warm, earthy palette with terracotta primary (`#d67858`) and warm-white text (`#f5f2ee`), covering all 51 pi color tokens including syntax highlighting and thinking level indicators. Activate via `/settings → Theme → slop`.
 
 ---
 
@@ -121,7 +119,16 @@ git clone https://github.com/adrianapan/pi-dev.git ~/.pi
 
 > If `~/.pi/` already exists from a previous pi install, back it up first: `mv ~/.pi ~/.pi.bak`
 
-### 3. Authenticate
+### 3. Install extension dependencies
+
+This repo uses npm workspaces. A single install at the root handles all extension dependencies:
+
+```bash
+cd ~/.pi
+npm install
+```
+
+### 4. Authenticate
 
 Launch pi:
 
@@ -152,19 +159,13 @@ pi
 | OpenRouter | `OPENROUTER_API_KEY` |
 | Groq | `GROQ_API_KEY` |
 
-See the full provider list in the [pi providers docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/providers.md).
+See the full provider list in the [pi providers docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md).
 
-### 4. Enable the slop theme
+### 5. Enable the slop theme
 
-Inside pi, open settings and select the theme:
+Open `/settings` inside pi, navigate to **Theme**, and select `slop`.
 
-```
-/settings
-```
-
-Navigate to **Theme** and select `slop`.
-
-### 5. Set up Nerd Fonts (recommended)
+### 6. Set up Nerd Fonts (recommended)
 
 The footer and startup extensions use Nerd Font icons for git status, model info, and other indicators. Most modern terminals (Ghostty, WezTerm, Kitty, Alacritty) auto-detect support — iTerm2 needs a small one-time config.
 
@@ -188,7 +189,7 @@ No config needed for Ghostty, WezTerm, Kitty, or Alacritty — icons work out of
 export FOOTER_NERD_FONTS=1
 ```
 
-### 6. Configure protected paths (optional)
+### 7. Configure protected paths (optional)
 
 The `protected-paths` extension ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `~/.pi/agent/auth.json`). To customise them, copy the example config:
 
@@ -197,9 +198,9 @@ cp ~/.pi/agent/extensions/protected-paths/protected-paths.example.json \
    ~/.pi/agent/configs/protected-paths.json
 ```
 
-Edit `protected-paths.json` to add, remove, or replace entries. See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md) for the full reference.
+See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md) for the full reference.
 
-### 7. Configure permission patterns (optional)
+### 8. Configure permission patterns (optional)
 
 The `permission-gate` extension ships with three built-in patterns. To customise them, copy the example config:
 
@@ -208,9 +209,9 @@ cp ~/.pi/agent/extensions/permission-gate/permission-gate.example.json \
    ~/.pi/agent/configs/permission-gate.json
 ```
 
-Edit `permission-gate.json` to add, remove, or replace patterns. See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md) for the full reference.
+See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md) for the full reference.
 
-### 8. Configure MCP servers (optional)
+### 9. Configure MCP servers (optional)
 
 Copy the example config and edit it with your servers:
 
@@ -220,17 +221,6 @@ cp ~/.pi/agent/extensions/mcp/mcp.json.example ~/.pi/agent/configs/mcp.json
 
 See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for the full configuration reference.
 
-### 9. Install extension dependencies
-
-This repo uses npm workspaces. A single install at the root handles all extension dependencies:
-
-```bash
-cd ~/.pi
-npm install
-```
-
-All packages are hoisted to `~/.pi/node_modules/` — no per-extension `node_modules/` directories, no individual install steps. Any new extension you add with a `package.json` is picked up automatically on the next `npm install`.
-
 ### 10. Set up environment variables (optional)
 
 If any extensions require API tokens (MCP servers, web-access search, etc.), store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
@@ -239,7 +229,7 @@ If any extensions require API tokens (MCP servers, web-access search, etc.), sto
 cp ~/.pi/agent/extensions/env-loader/.env.example ~/.pi/agent/configs/.env
 ```
 
-Edit the file with your actual values. The `env-loader` extension injects these into `process.env` at startup. Use `/env` inside pi to verify what was loaded.
+Edit the file with your actual values. Use `/env` inside pi to verify what was loaded.
 
 See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README.md) for details.
 
@@ -247,7 +237,7 @@ See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README
 
 `agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint.
 
-The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/models.md) for the full reference.
+The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md) for the full reference.
 
 #### Ollama — local models
 
@@ -368,14 +358,11 @@ At startup pi reads every skill's `name` and `description` into the system promp
 
 Skill locations: `~/.pi/agent/skills/`, `.pi/skills/`, `.agents/skills/`, or listed in `settings.json`.
 
-This repo ships with two skills:
-
-- **`pi-extension-builder`** — loaded when you ask to build or modify an extension in this repo. Covers file structure, code conventions, modularity, and documentation requirements. Invoke explicitly with `/skill:pi-extension-builder`.
-- **`add-ollama-cloud-model`** — loaded when you ask to add an Ollama Cloud model to pi. Fetches the model page, extracts capabilities, and writes the correct entry to `models.json`. Invoke explicitly with `/skill:add-ollama-cloud-model`.
+**Skills vs prompt templates:** if you're telling the agent *what to do*, use a prompt template. If you're telling it *how to behave*, use a skill. Example: a `/review` template kicks off a code review task; a `pi-extension-builder` skill shapes how the agent approaches extension work without you having to invoke it manually.
 
 ### MCP (Model Context Protocol)
 
-Pi has **no built-in MCP support** — this is a deliberate design choice. The `mcp` extension in this repo provides a full MCP bridge. See `agent/extensions/mcp/README.md` for configuration details.
+Pi has **no built-in MCP support** — this is a deliberate design choice. The `mcp` extension in this repo provides a full MCP bridge. See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for configuration details.
 
 The two general approaches for adding external tools to pi:
 
@@ -395,8 +382,6 @@ Review `git diff --cached`. Focus on: $@
 ```
 
 Saved to `~/.pi/agent/prompts/` (global) or `.pi/prompts/` (project). Invoked with `/review` or `/review security`.
-
-**Skills vs prompt templates:** if you're telling the agent *what to do*, use a prompt template. If you're telling it *how to behave*, use a skill. Example: a `/review` template kicks off a code review task; a `pi-extension-builder` skill shapes how the agent approaches extension work without you having to invoke it manually.
 
 ### System Prompt Customization
 
