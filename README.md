@@ -17,7 +17,8 @@ agent/
 │   └── .env                     # Secret env vars — gitignored, see env-loader/.env.example
 ├── APPEND_SYSTEM.md             # Coding guidelines appended to the system prompt every session
 ├── skills/
-│   └── pi-extension-builder/    # Guidelines for building and modifying extensions in this repo
+│   ├── pi-extension-builder/    # Guidelines for building and modifying extensions in this repo
+│   └── add-ollama-cloud-model/  # Adds an Ollama Cloud model to models.json
 ├── themes/
 │   └── slop.json     # Custom warm color theme
 └── extensions/
@@ -244,25 +245,72 @@ See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README
 
 ### 11. Add custom or local models (optional)
 
-`agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint:
+`agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint.
+
+The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/models.md) for the full reference.
+
+#### Ollama — local models
+
+Point `baseUrl` at the Ollama daemon and list whichever models you have pulled. Use `apiKey: "ollama"` — the value is required but ignored locally.
 
 ```json
-// ~/.pi/agent/models.json
 {
   "providers": {
     "ollama": {
-      "baseUrl": "http://localhost:11434/v1",
       "api": "openai-completions",
       "apiKey": "ollama",
+      "baseUrl": "http://127.0.0.1:11434/v1",
       "models": [
-        { "id": "llama3.1:8b" }
+        {
+          "id": "qwen3.5:4b",
+          "name": "Qwen3.5 4B",
+          "contextWindow": 262144,
+          "input": ["text", "image"],
+          "reasoning": true
+        }
       ]
     }
   }
 }
 ```
 
-The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/agent/docs/models.md) for the full reference including API types, auth, and OpenAI compatibility options.
+#### Ollama — cloud models
+
+Ollama Cloud requires an API key and a `compat` block — cloud models don't support the `developer` role pi uses for reasoning models.
+
+Store your key in `~/.pi/agent/configs/.env` (managed by the `env-loader` extension):
+
+```
+OLLAMA_API_KEY=your-key-here
+```
+
+Then reference it in `models.json` using the shell command form so it's read from the file at runtime rather than the shell environment:
+
+```json
+{
+  "providers": {
+    "ollama-cloud": {
+      "api": "openai-completions",
+      "apiKey": "!grep ^OLLAMA_API_KEY ~/.pi/agent/configs/.env | cut -d= -f2",
+      "baseUrl": "https://ollama.com/v1",
+      "compat": {
+        "supportsDeveloperRole": false
+      },
+      "models": [
+        {
+          "id": "qwen3.5:cloud",
+          "name": "Qwen 3.5",
+          "contextWindow": 262144,
+          "input": ["text", "image"],
+          "reasoning": true
+        }
+      ]
+    }
+  }
+}
+```
+
+Browse available models and their context windows at [ollama.com/search](https://ollama.com/search). Cloud variants use the `:cloud` tag suffix. To add a cloud model interactively, use the [`add-ollama-cloud-model`](agent/skills/add-ollama-cloud-model/SKILL.md) skill — or just ask pi naturally: *"Add the qwen3.5 model to my Ollama cloud config"* or *"Add https://ollama.com/library/qwen3.5 to my Ollama cloud config"*.
 
 ---
 
@@ -314,22 +362,16 @@ Extension examples from the pi repo: permission gates, git checkpointing, path p
 
 ### Skills
 
-Self-contained capability packages loaded on-demand from the filesystem. Each skill is a directory with a `SKILL.md` file:
+Self-contained instruction packages the agent loads on demand. Each skill is a directory containing a `SKILL.md` file with YAML frontmatter (`name`, `description`) followed by markdown instructions. Supporting scripts, reference docs, or assets can live alongside it — but most skills are just the single `SKILL.md`.
 
-```
-my-skill/
-├── SKILL.md       # frontmatter (name, description) + instructions
-├── scripts/
-│   └── run.sh
-└── references/
-    └── api.md
-```
-
-Pi implements the [Agent Skills standard](https://agentskills.io/specification). At startup, pi reads all skill names and descriptions into the system prompt. When a task matches, the agent reads the full `SKILL.md` on-demand (progressive disclosure). Skills can also be invoked explicitly with `/skill:name`.
+At startup pi reads every skill's `name` and `description` into the system prompt. When a task matches, the agent loads the full `SKILL.md` content (progressive disclosure). Skills can also be invoked explicitly with `/skill:name`.
 
 Skill locations: `~/.pi/agent/skills/`, `.pi/skills/`, `.agents/skills/`, or listed in `settings.json`.
 
-This repo ships with one skill: **`pi-extension-builder`** — auto-loaded when you ask to build or modify an extension. Covers file structure, code conventions, modularity patterns, and documentation requirements. Invoke explicitly with `/skill:pi-extension-builder`.
+This repo ships with two skills:
+
+- **`pi-extension-builder`** — loaded when you ask to build or modify an extension in this repo. Covers file structure, code conventions, modularity, and documentation requirements. Invoke explicitly with `/skill:pi-extension-builder`.
+- **`add-ollama-cloud-model`** — loaded when you ask to add an Ollama Cloud model to pi. Fetches the model page, extracts capabilities, and writes the correct entry to `models.json`. Invoke explicitly with `/skill:add-ollama-cloud-model`.
 
 ### MCP (Model Context Protocol)
 
