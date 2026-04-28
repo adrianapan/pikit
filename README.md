@@ -300,7 +300,19 @@ Then reference it in `models.json` using the shell command form so it's read fro
 }
 ```
 
-Browse available models and their context windows at [ollama.com/search](https://ollama.com/search). Cloud variants use the `:cloud` tag suffix. To add a cloud model interactively, use the [`add-ollama-cloud-model`](agent/skills/add-ollama-cloud-model/SKILL.md) skill — or just ask pi naturally: *"Add the qwen3.5 model to my Ollama cloud config"* or *"Add https://ollama.com/library/qwen3.5 to my Ollama cloud config"*.
+Browse available models at [ollama.com/search](https://ollama.com/search). Cloud variants use the `:cloud` tag suffix.
+
+You can also simply ask pi to handle it for you. Use prompts such as:
+```
+Add the qwen3.5 model to my Ollama cloud config
+```
+
+or
+
+```
+Add https://ollama.com/library/qwen3.5 to my Ollama cloud config
+```
+... and the [`add-ollama-cloud-model`](agent/skills/add-ollama-cloud-model/SKILL.md) skill handles the rest.
 
 ---
 
