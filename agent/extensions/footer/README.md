@@ -78,10 +78,11 @@ Create `~/.pi/agent/configs/footer.json` to customize the footer:
     "gitClean": "success",
     "thinkingOff": "dim",
     "thinkingMinimal": "muted",
-    "thinkingLow": "muted",
-    "thinkingMedium": "warning",
-    "thinkingHigh": "error",
-    "thinkingXhigh": "error",
+    "thinkingLow": "warning",
+    "thinkingMedium": "success",
+    "thinkingHigh": "#afb9fe",
+    "thinkingXhigh": "#9575cd",
+    "thinkingMax": "error",
     "context": "dim",
     "contextWarn": "warning",
     "contextError": "error",
@@ -112,7 +113,7 @@ Create `~/.pi/agent/configs/footer.json` to customize the footer:
 |---------|-------------|-----------------|
 | `pi` | Pi logo/icon | — |
 | `model` | Current model name | `showThinkingLevel` (bool, default `false`) — appends thinking level inline with a `·` separator |
-| `thinking` | Standalone thinking/reasoning level indicator | `prefix` (string) — prepended to the level label, e.g. `"Thinking: "`<br><br>Each level can be colored independently via `thinkingOff`, `thinkingMinimal`, `thinkingLow`, `thinkingMedium`, `thinkingHigh`, `thinkingXhigh` in the `colors` config. Omitted entries fall back to the built-in defaults. |
+| `thinking` | Standalone thinking/reasoning level indicator | `prefix` (string) — prepended to the level label, e.g. `"Thinking: "`<br><br>Each level can be colored independently via `thinkingOff`, `thinkingMinimal`, `thinkingLow`, `thinkingMedium`, `thinkingHigh`, `thinkingXhigh`, `thinkingMax` in the `colors` config. Omitted entries fall back to the built-in defaults. |
 | `path` | Current working directory | `mode`: `"basename"` (default) · `"abbreviated"` (with `~`, capped at `maxLength`) · `"full"` |
 | `git` | Git branch and status | `showBranch`, `showStaged`, `showUnstaged`, `showUntracked` (all bool, all default `true`) |
 | `token_in` | Input tokens this session | `mode`: `"icons"` (default) · `"text"` (renders as `In: 12k`) |

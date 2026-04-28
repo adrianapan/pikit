@@ -8,6 +8,7 @@ const LEVEL_TEXT: Record<string, string> = {
   medium: "Med",
   high: "High",
   xhigh: "Extra High",
+  max: "Max",
 };
 
 // Per-level semantic color keys in the color scheme
@@ -18,16 +19,18 @@ const LEVEL_COLOR_KEY: Record<string, SemanticColor> = {
   medium: "thinkingMedium",
   high: "thinkingHigh",
   xhigh: "thinkingXhigh",
+  max: "thinkingMax",
 };
 
 // Fallback defaults — used when the user hasn't configured a per-level color
 const LEVEL_COLOR_FALLBACK: Record<string, string> = {
   off: "dim",
   minimal: "muted",
-  low: "muted",
-  medium: "warning",
-  high: "error",
-  xhigh: "error",
+  low: "warning",
+  medium: "success",
+  high: "#afb9fe",
+  xhigh: "#9575cd",
+  max: "error",
 };
 
 export const thinkingSegment = {
