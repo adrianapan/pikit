@@ -55,16 +55,6 @@ Example config file (`~/.pi/agent/configs/caveman.json`):
 
 Valid values for `defaultLevel`: `"off"` (default, don't auto-enable), `"lite"`, `"full"`, `"ultra"`. You can edit this file directly — changes take effect on the next session start.
 
-## Footer
-
-When active, a hammer icon and mode label appear in the footer status bar right after the thinking block:
-
-```
-π › model › thinking › 🪨 Caveman (FULL) › ~/project main*    [context › tokens › cost]
-```
-
-The segment is hidden when caveman is off.
-
 ## How it works
 
 Hooks into `before_agent_start` and appends mode-specific instructions to the system prompt each turn. No post-processing — the LLM adjusts its output directly. Disabling caveman removes the instruction immediately on the next turn. Auto-clarity rules tell the model to drop caveman for security warnings or irreversible action confirmations, then resume after.
