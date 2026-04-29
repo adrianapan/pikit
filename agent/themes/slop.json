@@ -19,6 +19,7 @@
 
     "muted": "muted",
     "dim": "faint",
+    "separator": "#4e4c49",
 
     "text": "text",
     "thinkingText": "faint",

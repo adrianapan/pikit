@@ -60,6 +60,7 @@ export function renderBox(
   const tipsCol = Math.max(1, boxWidth - leftCol - configCol - 2);
   const hChar = "─";
   const nerd = hasNerdFonts();
+  const separator = (s: string) => { try { return theme.fg("separator", s); } catch { return theme.fg("dim", s); } };
   const dim = (s: string) => theme.fg("dim", s);
 
   const leftLines = buildLeftColumn(theme, leftCol);
@@ -74,10 +75,10 @@ export function renderBox(
   const titleVisLen = 2 + visibleWidth(icon) + visibleWidth(titleContent);
   const afterTitle = (boxWidth - 2) - titleVisLen;
   lines.push(
-    dim("╭") +
-    dim(hChar.repeat(2)) + theme.fg("accent", icon) + dim(titleContent) +
-    dim(hChar.repeat(Math.max(1, afterTitle))) +
-    dim("╮")
+    separator("╭") +
+    separator(hChar.repeat(2)) + theme.fg("accent", icon) + dim(titleContent) +
+    separator(hChar.repeat(Math.max(1, afterTitle))) +
+    separator("╮")
   );
 
   const maxRows = Math.max(leftLines.length, configLines.length, tipsLines.length);
@@ -85,10 +86,10 @@ export function renderBox(
     const left   = fitToWidth(leftLines[i]   ?? "", leftCol);
     const config = fitToWidth(configLines[i] ?? "", configCol);
     const tips   = fitToWidth(tipsLines[i]   ?? "", tipsCol);
-    lines.push(dim("│") + left + config + tips + dim("│"));
+    lines.push(separator("│") + left + config + tips + separator("│"));
   }
 
-  lines.push(dim("╰") + dim(hChar.repeat(boxWidth - 2)) + dim("╯"));
+  lines.push(separator("╰") + separator(hChar.repeat(boxWidth - 2)) + separator("╯"));
   lines.push("");
 
   return lines;
