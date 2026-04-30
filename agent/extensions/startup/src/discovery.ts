@@ -10,6 +10,11 @@ export interface LoadedCounts {
   mcpServers: number;
 }
 
+export interface Keybindings {
+  modelCycle: string;
+  thinkingCycle: string;
+}
+
 function countContextFiles(homeDir: string, cwd: string): number {
   const paths = [
     join(homeDir, ".pi", "agent", "AGENTS.md"),
@@ -134,6 +139,27 @@ function countMcpServers(homeDir: string): number {
     }
   } catch {}
   return 0;
+}
+
+export function getUserKeybindings(): Keybindings {
+  const homeDir = osHomedir();
+  const keybindingsPath = join(homeDir, ".pi", "agent", "keybindings.json");
+  const defaults: Keybindings = {
+    modelCycle: "ctrl+p",
+    thinkingCycle: "shift+tab",
+  };
+
+  if (!existsSync(keybindingsPath)) return defaults;
+
+  try {
+    const userBindings = JSON.parse(readFileSync(keybindingsPath, "utf-8"));
+    return {
+      modelCycle: (userBindings["app.model.cycleForward"] as string) ?? defaults.modelCycle,
+      thinkingCycle: (userBindings["app.thinking.cycle"] as string) ?? defaults.thinkingCycle,
+    };
+  } catch {
+    return defaults;
+  }
 }
 
 export function discoverLoadedCounts(): LoadedCounts {

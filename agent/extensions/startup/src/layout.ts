@@ -2,7 +2,8 @@ import type { Theme } from "@mariozechner/pi-coding-agent";
 import { VERSION } from "@mariozechner/pi-coding-agent";
 import { bold, centerText, fitToWidth, hasNerdFonts } from "./helpers.js";
 import { visibleWidth } from "@mariozechner/pi-tui";
-import type { LoadedCounts } from "./discovery.js";
+import type { LoadedCounts, Keybindings } from "./discovery.js";
+import { getUserKeybindings } from "./discovery.js";
 
 const PI_ART = [
   "██████╗ ██╗",
@@ -19,14 +20,27 @@ function buildLeftColumn(theme: Theme, colWidth: number): string[] {
   ];
 }
 
-function buildTipsColumn(theme: Theme): string[] {
+function capitalizeKeybinding(key: string): string {
+  return key
+    .split('+')
+    .map(part => {
+      if (part.toLowerCase() === 'ctrl') return 'Ctrl';
+      if (part.toLowerCase() === 'shift') return 'Shift';
+      if (part.toLowerCase() === 'alt') return 'Alt';
+      if (part.length === 1) return part.toUpperCase();
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join('+');
+}
+
+function buildTipsColumn(theme: Theme, keybindings: Keybindings): string[] {
   const dim = (s: string) => theme.fg("dim", s);
   return [
     "",
     ` ${dim("/")} for commands`,
     ` ${dim("!")} to run bash`,
-    ` ${dim("Ctrl+P")} cycle model`,
-    ` ${dim("Shift+Tab")} cycle thinking`,
+    ` ${dim(capitalizeKeybinding(keybindings.modelCycle))} cycle model`,
+    ` ${dim(capitalizeKeybinding(keybindings.thinkingCycle))} cycle thinking`,
   ];
 }
 
@@ -51,6 +65,7 @@ export function renderBox(
   counts: LoadedCounts,
   termWidth: number,
 ): string[] {
+  const keybindings = getUserKeybindings();
   const minLayoutWidth = 44;
   if (termWidth < minLayoutWidth) return [];
 
@@ -65,7 +80,7 @@ export function renderBox(
 
   const leftLines = buildLeftColumn(theme, leftCol);
   const configLines = buildRightColumn(theme, counts);
-  const tipsLines = buildTipsColumn(theme);
+  const tipsLines = buildTipsColumn(theme, keybindings);
 
   const lines: string[] = [];
   lines.push("");
