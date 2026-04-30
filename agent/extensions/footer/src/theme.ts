@@ -33,6 +33,7 @@ function isHexColor(color: ColorValue): color is `#${string}` {
 
 function hexToAnsi(hex: string): string {
   const h = hex.replace("#", "");
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return "";
   const r = parseInt(h.slice(0, 2), 16);
   const g = parseInt(h.slice(2, 4), 16);
   const b = parseInt(h.slice(4, 6), 16);
@@ -62,6 +63,7 @@ export function fg(
 }
 
 function hslToAnsi(h: number, s: number, l: number): string {
+  if (!Number.isFinite(h) || !Number.isFinite(s) || !Number.isFinite(l)) return "";
   const a = s * Math.min(l, 1 - l);
   const f = (n: number) => {
     const k = (n + h / 30) % 12;

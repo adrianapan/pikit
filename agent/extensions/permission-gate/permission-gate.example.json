@@ -4,7 +4,7 @@
   "patterns": [
     "\\brm\\s+(-rf?|--recursive)",
     "\\bsudo\\b",
-    "\\b(chmod|chown)\\b.*777"
+    "\\b(chmod|chown)\\s+(?:-[a-z]+\\s+)*777(?:\\b|$)"
   ],
 
   "blockWithoutUI": true

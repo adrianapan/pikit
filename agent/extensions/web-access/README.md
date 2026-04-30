@@ -58,13 +58,13 @@ If pi fails to start with a `Cannot find module` error referencing this extensio
 
 If you already have `GEMINI_API_KEY` set in your environment for Gemini models, the extension picks it up automatically — no extra config needed.
 
-### Option 2 — add to `~/.pi/agent/configs/.env`
-
-Using the [env-loader](../env-loader/README.md) extension:
+### Option 2 — add to your shell profile (e.g. `~/.zshrc`)
 
 ```
-GEMINI_API_KEY=AIza...your-key-here
+export GEMINI_API_KEY="AIza...your-key-here"
 ```
+
+> **Security note:** the key will be in the shell environment, visible by the `bash` tool. Avoid running `env` or commands that print the full environment when a model is watching.
 
 Get a free key at: https://aistudio.google.com/apikey
 

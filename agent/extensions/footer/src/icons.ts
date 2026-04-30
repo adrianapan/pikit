@@ -1,63 +1,27 @@
 export interface IconSet {
   pi: string;
-  model: string;
   folder: string;
   branch: string;
   git: string;
-  tokens: string;
-  contextPct: string;
-  contextTotal: string;
-  cost: string;
-  cacheRead: string;
-  cacheWrite: string;
-  input: string;
-  output: string;
-  thinking: string;
   separator: string;
-  auto: string;
-  caveman: string;
 }
 
 // Nerd Font icons
 export const NERD_ICONS: IconSet = {
   pi: "\uE22C",         // nf-oct-pi
-  model: "\uEC19",      // nf-md-chip
   folder: "\uF115",     // nf-fa-folder_open
   branch: "\uF126",     // nf-fa-code_fork
   git: "\uF1D3",        // nf-fa-git
-  tokens: "\uede8",     // nf-fa-coins
-  contextPct: "\ueea8", // nf-fa-layer_group
-  contextTotal: "\uE70F", // nf-dev-database
-  cost: "\uF155",       // nf-fa-dollar
-  cacheRead: "\uF1C0",  // nf-fa-database
-  cacheWrite: "\uF1C0", // nf-fa-database
-  input: "\uf062",      // nf-fa-arrow_up
-  output: "\uf063",     // nf-fa-arrow_down
-  thinking: "\uf400",   // nf-oct-light_bulb
   separator: "|",
-  auto: "\uF0068",      // nf-md-lightning_bolt
-  caveman: "🪨",    // or use "\ueeff" (nf-fa-hammer)
 };
 
 // ASCII/Unicode fallback icons
 export const ASCII_ICONS: IconSet = {
   pi: "π",
-  model: "🧠",
   folder: "📂",
   branch: "⎇",
   git: "⎇",
-  tokens: "🧮",
-  contextPct: "📚",
-  contextTotal: "📚",
-  cost: "$",
-  cacheRead: "↙",
-  cacheWrite: "↗",
-  input: "⬆",
-  output: "⬇",
-  thinking: "💡",
   separator: "|",
-  auto: "⚡",
-  caveman: "🪨",
 };
 
 // Detect Nerd Font support
@@ -67,9 +31,13 @@ export function hasNerdFonts(): boolean {
 
   if (process.env.GHOSTTY_RESOURCES_DIR) return true;
 
-  const term = (process.env.TERM_PROGRAM || "").toLowerCase();
-  const nerdTerms = ["iterm", "wezterm", "kitty", "ghostty", "alacritty"];
-  return nerdTerms.some(t => term.includes(t));
+  const termProg = (process.env.TERM_PROGRAM || "").toLowerCase();
+  const nerdTerms = ["iterm", "wezterm", "kitty", "ghostty", "alacritty", "foot", "rio", "contour"];
+  if (nerdTerms.some(t => termProg.includes(t))) return true;
+
+  const term = (process.env.TERM || "").toLowerCase();
+  const nerdTermVars = ["xterm-kitty", "xterm-ghostty", "alacritty", "foot", "rio", "contour"];
+  return nerdTermVars.some(t => term.includes(t));
 }
 
 export function getIcons(customIcons?: Partial<IconSet>): IconSet {

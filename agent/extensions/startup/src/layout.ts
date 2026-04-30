@@ -19,7 +19,7 @@ function buildLeftColumn(theme: Theme, colWidth: number): string[] {
   ];
 }
 
-function buildTipsColumn(theme: Theme, colWidth: number): string[] {
+function buildTipsColumn(theme: Theme): string[] {
   const dim = (s: string) => theme.fg("dim", s);
   return [
     "",
@@ -30,7 +30,7 @@ function buildTipsColumn(theme: Theme, colWidth: number): string[] {
   ];
 }
 
-function buildRightColumn(theme: Theme, counts: LoadedCounts, colWidth: number): string[] {
+function buildRightColumn(theme: Theme, counts: LoadedCounts): string[] {
   const dim = (s: string) => theme.fg("dim", s);
   const { contextFiles, extensions, skills, promptTemplates, mcpServers } = counts;
   const itemPrefix = dim("• ");
@@ -64,8 +64,8 @@ export function renderBox(
   const dim = (s: string) => theme.fg("dim", s);
 
   const leftLines = buildLeftColumn(theme, leftCol);
-  const configLines = buildRightColumn(theme, counts, configCol);
-  const tipsLines = buildTipsColumn(theme, tipsCol);
+  const configLines = buildRightColumn(theme, counts);
+  const tipsLines = buildTipsColumn(theme);
 
   const lines: string[] = [];
   lines.push("");

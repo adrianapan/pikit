@@ -21,8 +21,8 @@
  */
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { homedir } from "os";
-import { resolve } from "path";
+import { homedir } from "node:os";
+import { resolve } from "node:path";
 import { loadConfig, type Op, type PathEntry } from "./config.js";
 
 function matchesEntry(toolPath: string, entry: PathEntry): boolean {

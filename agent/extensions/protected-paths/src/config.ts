@@ -17,9 +17,9 @@
  * deny is a denylist — the listed operations are blocked for that path.
  */
 
-import { readFileSync } from "fs";
-import { homedir } from "os";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
 export type Op = "read" | "write" | "edit";
 

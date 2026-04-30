@@ -38,14 +38,28 @@ async function loadConfig(): Promise<CavemanConfig> {
   }
 }
 
-let saveQueue: Promise<void> = Promise.resolve();
+let saveInProgress = false;
+let pendingSave: CavemanConfig | null = null;
 
 function saveConfig(config: CavemanConfig): void {
+  if (saveInProgress) {
+    pendingSave = config;
+    return;
+  }
+  pendingSave = null;
+  saveInProgress = true;
+
   const snapshot = JSON.stringify(config, null, 2) + "\n";
-  saveQueue = saveQueue.then(async () => {
-    await mkdir(join(homedir(), ".pi", "agent", "configs"), { recursive: true });
-    await writeFile(CONFIG_PATH, snapshot, "utf8");
-  });
+
+  (async () => {
+    try {
+      await mkdir(join(homedir(), ".pi", "agent", "configs"), { recursive: true });
+      await writeFile(CONFIG_PATH, snapshot, "utf8");
+    } finally {
+      saveInProgress = false;
+      if (pendingSave) saveConfig(pendingSave);
+    }
+  })();
 }
 
 // ─── Prompts ─────────────────────────────────────────────────────────────────
@@ -129,9 +143,12 @@ export default function caveman(pi: ExtensionAPI) {
   // Restore state on session start — session entry wins over config default
   pi.on("session_start", async (_event, ctx) => {
     let sessionLevel: CavemanLevel | null = null;
-    for (const entry of ctx.sessionManager?.getEntries?.() ?? []) {
+    const entries = ctx.sessionManager?.getEntries?.() ?? [];
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const entry = entries[i];
       if (entry.type === "custom" && entry.customType === "caveman-level") {
         sessionLevel = (entry.data as { level: CavemanLevel })?.level ?? null;
+        break;
       }
     }
 

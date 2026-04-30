@@ -15,7 +15,16 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { loadConfig } from "./config.js";
 
 export default function permissionGateExtension(pi: ExtensionAPI) {
-  const { patterns, blockWithoutUI } = loadConfig();
+  const { patterns, blockWithoutUI, errors } = loadConfig();
+
+  if (errors?.length) {
+    pi.on("session_start", async (_event, ctx) => {
+      ctx.ui?.notify(
+        `[permission-gate] Bad pattern(s) in config:\n${(errors ?? []).join("\n")}\n\nFalling back to built-in defaults. Edit ~/.pi/agent/configs/permission-gate.json to fix.`,
+        "warning",
+      );
+    });
+  }
 
   pi.on("tool_call", async (event, ctx) => {
     if (event.toolName !== "bash") return undefined;

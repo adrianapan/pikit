@@ -98,17 +98,16 @@ export default function footer(pi: ExtensionAPI) {
   let sessionStartTime = Date.now();
   let currentCtx: ExtensionContext | null = null;
   let footerDataRef: ReadonlyFooterDataProvider | null = null;
-  let getThinkingLevelFn: (() => string) | null = null;
+  let lastBranchLength = 0;
+  let cachedUsageStats: UsageStats | null = null;
   let tuiRef: TUI | null = null;
 
   // Track session start
   pi.on("session_start", async (_event: unknown, ctx: ExtensionContext) => {
     sessionStartTime = Date.now();
     currentCtx = ctx;
-
-    if (typeof ctx.getThinkingLevel === 'function') {
-      getThinkingLevelFn = () => ctx.getThinkingLevel();
-    }
+    lastBranchLength = 0;
+    cachedUsageStats = null;
 
     if (ctx.hasUI) {
       setupFooter(ctx);
@@ -135,9 +134,7 @@ export default function footer(pi: ExtensionAPI) {
     if (GIT_BRANCH_PATTERNS.some(p => p.test(event.command))) {
       invalidateGitStatus();
       invalidateGitBranch();
-      setTimeout(() => tuiRef?.requestRender(), 100);
-      setTimeout(() => tuiRef?.requestRender(), 300);
-      setTimeout(() => tuiRef?.requestRender(), 500);
+      tuiRef?.requestRender();
     }
   });
 
@@ -145,33 +142,40 @@ export default function footer(pi: ExtensionAPI) {
     const effectiveConfig = getEffectiveConfig();
     const colors = effectiveConfig.colors ?? getDefaultColors();
 
-    const sessionEvents = (ctx.sessionManager?.getBranch?.() ?? []) as SessionEvent[];
-
-    const isThinkingEvent = (e: SessionEvent): e is ThinkingLevelEvent =>
-      e.type === "thinking_level_change";
+    const branch = (ctx.sessionManager?.getBranch?.() ?? []) as SessionEvent[];
+    const branchLen = branch.length;
 
     const isAssistantMessageEvent = (e: SessionEvent): e is AssistantMessageEvent =>
       e.type === "message" && (e as AssistantMessageEvent).message.role === "assistant";
-
-    const thinkingLevelFromSession = sessionEvents
-      .filter(isThinkingEvent)
-      .reduce((_, e) => e.thinkingLevel ?? "off", "off");
-
-    const completedMessages = sessionEvents
+    const completedMessages = branch
       .filter(isAssistantMessageEvent)
       .map(e => e.message as AssistantMessage)
       .filter(m => m.stopReason !== "error" && m.stopReason !== "aborted");
 
-    const usageStats = completedMessages.reduce<UsageStats>(
-      (acc, m) => ({
-        input: acc.input + m.usage.input,
-        output: acc.output + m.usage.output,
-        cacheRead: acc.cacheRead + m.usage.cacheRead,
-        cacheWrite: acc.cacheWrite + m.usage.cacheWrite,
-        cost: acc.cost + m.usage.cost.total,
-      }),
-      { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 },
-    );
+    // Cache usageStats — only recompute when branch grows
+    let usageStats: UsageStats;
+    if (cachedUsageStats && branchLen === lastBranchLength) {
+      usageStats = cachedUsageStats;
+    } else {
+      usageStats = completedMessages.reduce<UsageStats>(
+        (acc, m) => ({
+          input: acc.input + m.usage.input,
+          output: acc.output + m.usage.output,
+          cacheRead: acc.cacheRead + m.usage.cacheRead,
+          cacheWrite: acc.cacheWrite + m.usage.cacheWrite,
+          cost: acc.cost + m.usage.cost.total,
+        }),
+        { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 },
+      );
+      cachedUsageStats = usageStats;
+      lastBranchLength = branchLen;
+    }
+
+    const isThinkingEvent = (e: SessionEvent): e is ThinkingLevelEvent =>
+      e.type === "thinking_level_change";
+    const thinkingLevelFromSession = branch
+      .filter(isThinkingEvent)
+      .reduce((_, e) => e.thinkingLevel ?? "off", "off");
 
     const lastAssistant = completedMessages.at(-1);
 
@@ -197,7 +201,7 @@ export default function footer(pi: ExtensionAPI) {
     return {
       model: ctx.model,
       isLocalModel,
-      thinkingLevel: thinkingLevelFromSession || getThinkingLevelFn?.() || "off",
+      thinkingLevel: thinkingLevelFromSession || (typeof ctx.getThinkingLevel === "function" ? ctx.getThinkingLevel() : "off"),
       sessionId: ctx.sessionManager?.getSessionId?.(),
       usageStats,
       contextPercent,

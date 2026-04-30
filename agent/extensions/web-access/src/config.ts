@@ -1,13 +1,13 @@
 const MISSING_KEY_MESSAGE = `GEMINI_API_KEY is not set.
 
-Add it to ~/.pi/agent/configs/.env:
+Add it to your shell profile (e.g. ~/.zshrc):
 
-  GEMINI_API_KEY=AIza...your-key-here
+  export GEMINI_API_KEY="AIza...your-key-here"
 
 Get a free key at: https://aistudio.google.com/apikey
 
-Note: if you already have Gemini configured as a model in pi, the key is
-picked up automatically from your environment — no extra config needed.`;
+Note: avoid running commands that print the full environment (like env, set, printenv)
+when a model is watching — keys in the shell environment are visible to the bash tool.`;
 
 export function getGeminiApiKey(): string {
   const key = process.env.GEMINI_API_KEY?.trim();

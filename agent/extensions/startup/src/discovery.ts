@@ -97,15 +97,13 @@ function collectTemplateNames(dir: string): Set<string> {
   const names = new Set<string>();
   if (!existsSync(dir)) return names;
   try {
-    for (const entry of readdirSync(dir)) {
-      const entryPath = join(dir, entry);
-      try {
-        if (statSync(entryPath).isDirectory()) {
-          for (const name of collectTemplateNames(entryPath)) names.add(name);
-        } else if (entry.endsWith(".md")) {
-          names.add(basename(entry, ".md"));
-        }
-      } catch {}
+    const entries = readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        for (const name of collectTemplateNames(join(dir, entry.name))) names.add(name);
+      } else if (entry.isFile() && entry.name.endsWith(".md")) {
+        names.add(basename(entry.name, ".md"));
+      }
     }
   } catch {}
   return names;

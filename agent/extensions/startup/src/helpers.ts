@@ -3,9 +3,16 @@ import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
 export function hasNerdFonts(): boolean {
   if (process.env.FOOTER_NERD_FONTS === "1") return true;
   if (process.env.FOOTER_NERD_FONTS === "0") return false;
+
   if (process.env.GHOSTTY_RESOURCES_DIR) return true;
-  const term = (process.env.TERM_PROGRAM || "").toLowerCase();
-  return ["iterm", "wezterm", "kitty", "ghostty", "alacritty"].some(t => term.includes(t));
+
+  const termProg = (process.env.TERM_PROGRAM || "").toLowerCase();
+  const nerdTerms = ["iterm", "wezterm", "kitty", "ghostty", "alacritty", "foot", "rio", "contour"];
+  if (nerdTerms.some(t => termProg.includes(t))) return true;
+
+  const term = (process.env.TERM || "").toLowerCase();
+  const nerdTermVars = ["xterm-kitty", "xterm-ghostty", "alacritty", "foot", "rio", "contour"];
+  return nerdTermVars.some(t => term.includes(t));
 }
 
 export function bold(text: string): string {

@@ -8,12 +8,21 @@ export const MAX_CONTENT_CHARS = 30_000;
 
 const store = new Map<string, StoredData>();
 
+/** Evict expired entries to prevent unbounded growth. */
+function evictExpired(): void {
+  const cutoff = Date.now() - CACHE_TTL_MS;
+  for (const [id, data] of store) {
+    if (data.timestamp < cutoff) store.delete(id);
+  }
+}
+
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 export function storeResult(id: string, data: StoredData): void {
   store.set(id, data);
+  evictExpired();
 }
 
 export function getResult(id: string): StoredData | null {

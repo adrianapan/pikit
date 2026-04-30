@@ -24,7 +24,6 @@ export const VERBS: readonly string[] = [
   'Catapulting',
   'Cerebrating',
   'Channeling',
-  'Channelling',
   'Choreographing',
   'Churning',
   'Clauding',

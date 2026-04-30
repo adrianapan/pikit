@@ -26,7 +26,7 @@ These three patterns apply when no config file is present:
 |---------|----------------|
 | `\brm\s+(-rf?\|--recursive)` | Recursive deletes |
 | `\bsudo\b` | Any command run as root |
-| `\b(chmod\|chown)\b.*777` | World-writable permission changes |
+| `\b(chmod\|chown)\s+(?:-[a-z]+\s+)*777(?:\b|$)` | World-writable permission changes |
 
 ## Configuration
 
@@ -42,7 +42,7 @@ cp ~/.pi/agent/extensions/permission-gate/permission-gate.example.json \
   "patterns": [
     "\\brm\\s+(-rf?|--recursive)",
     "\\bsudo\\b",
-    "\\b(chmod|chown)\\b.*777"
+    "\\b(chmod|chown)\\s+(?:-[a-z]+\\s+)*777(?:\\b|$)"
   ],
   "blockWithoutUI": true
 }
