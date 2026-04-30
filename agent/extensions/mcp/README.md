@@ -113,8 +113,11 @@ By default all MCP tools are accessed through the `mcp` proxy. Set `directTools`
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
+      "args": [
+        "-y", "mcp-remote",
+        "https://api.githubcopilot.com/mcp/",
+        "--header", "Authorization:Bearer ${GITHUB_TOKEN}"
+      ],
       "directTools": ["search_repositories", "get_file_contents"]
     },
     "browser": {
@@ -244,15 +247,18 @@ The OAuth flow is the same as Pattern 1 — browser opens automatically, you app
 
 ### Pattern 3 — static API token (GitHub)
 
-Some servers don't use OAuth at all — they just need a token passed as an environment variable. Generate the token once, store it in `.env`, reference it in the config.
+Some servers don't use OAuth at all — they need a token passed as a header or environment variable. Generate the token once, store it in `.env`, reference it in the config.
 
 ```json
 {
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
+      "args": [
+        "-y", "mcp-remote",
+        "https://api.githubcopilot.com/mcp/",
+        "--header", "Authorization:Bearer ${GITHUB_TOKEN}"
+      ]
     }
   }
 }
@@ -271,7 +277,7 @@ MY_API_TOKEN=sk-...
 ```
 
 ```json
-{ "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" } }
+{ "args": ["...", "--header", "Authorization:Bearer ${GITHUB_TOKEN}"] }
 ```
 
 The `${VAR}` references are resolved at runtime from environment variables before the subprocess starts. The `.env` file is protected from agent reads by default (via the protected-paths extension).
@@ -355,15 +361,19 @@ To clear cached credentials and re-authenticate: `rm -rf ~/.mcp-auth`
 
 ### GitHub
 
-**Auth pattern:** static PAT — no OAuth (Pattern 3)
+**Auth pattern:** PAT via Bearer header to GitHub's official remote MCP server
 **What you need:** a GitHub Personal Access Token
+
+This uses GitHub's official hosted MCP server (`api.githubcopilot.com/mcp/`) — covering Actions, Dependabot, Discussions, Notifications, Projects, Organizations, Security scanning, and more.
+
+> **Note:** GitHub's remote server does not support dynamic client registration so OAuth via `mcp-remote` is not possible. The PAT is passed as a CLI argument, meaning it is visible in `ps aux`. This is a known limitation with no clean fix at the pi level.
 
 #### 1. Generate a token
 
 Go to [github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)**.
 
 Select scopes based on what you need:
-- `repo` - (the parent checkbox — this covers all sub-scopes including private repo access)
+- `repo` — full private repo access (the parent checkbox, covers all sub-scopes)
 - `read:org` under `admin:org`
 - `read:user` under `user`
 
@@ -384,8 +394,11 @@ Then reference it in `mcp.json`:
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
+      "args": [
+        "-y", "mcp-remote",
+        "https://api.githubcopilot.com/mcp/",
+        "--header", "Authorization:Bearer ${GITHUB_TOKEN}"
+      ]
     }
   }
 }
