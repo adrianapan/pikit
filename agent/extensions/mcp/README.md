@@ -114,7 +114,7 @@ By default all MCP tools are accessed through the `mcp` proxy. Set `directTools`
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" },
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
       "directTools": ["search_repositories", "get_file_contents"]
     },
     "browser": {
@@ -252,7 +252,7 @@ Some servers don't use OAuth at all — they just need a token passed as an envi
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
     }
   }
 }
@@ -271,7 +271,7 @@ MY_API_TOKEN=sk-...
 ```
 
 ```json
-{ "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" } }
+{ "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" } }
 ```
 
 The `${VAR}` references are resolved at runtime from environment variables before the subprocess starts. The `.env` file is protected from agent reads by default (via the protected-paths extension).
@@ -385,7 +385,7 @@ Then reference it in `mcp.json`:
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
     }
   }
 }
