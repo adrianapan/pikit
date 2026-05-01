@@ -29,7 +29,7 @@
       "showUntracked": true
     },
     "contextBar": {
-      "barWidth": 25,
+      "barWidth": 18,
       "filledChar": "▋",
       "unfilledChar": "▋",
       "unfilledColor": "#4e4c49",

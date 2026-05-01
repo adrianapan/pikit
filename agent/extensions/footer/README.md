@@ -94,7 +94,7 @@ The `context_pct` segment's bar is fully configurable via `segmentOptions.contex
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `barWidth` | number | `25` | Number of characters wide |
+| `barWidth` | number | `18` | Number of characters wide |
 | `filledChar` | string | `"▋"` | Character used for the filled portion |
 | `unfilledChar` | string | `"▋"` | Character used for the unfilled portion |
 | `unfilledColor` | color | `"#4e4c49"` | Color of the unfilled portion — hex or pi theme token |
