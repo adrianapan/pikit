@@ -195,7 +195,7 @@ Other fonts available via `brew search nerd-font`.
 **Configure iTerm2:**
 
 1. Open **Settings → Profiles → Text**
-2. Set **Font** to `JetBrainsMonoNL Nerd Font Propo`, size `12`
+2. Set **Font** to `JetBrainsMonoNL Nerd Font Propo`, size `10` (recommended)
 3. Enable **Use a different font for non-ASCII text** and set the same font there — required for icons to render correctly
 
 No config needed for Ghostty, WezTerm, Kitty, or Alacritty — icons work out of the box. If icons still look wrong, force Nerd Font mode:
