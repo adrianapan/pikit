@@ -31,6 +31,7 @@ agent/
 ├── themes/
 │   └── slop.json     # Custom warm color theme
 └── extensions/
+    ├── chat-input/   # Unicode box border around the main chat input editor
     ├── caveman/      # Compresses LLM responses: lite (professional) / full (caveman) / ultra (max compression)
     ├── env-loader/   # Injects .env tokens into process.env at startup
     ├── footer/       # Status bar with git, tokens, cost, context
@@ -46,13 +47,17 @@ agent/
 
 ## Extensions
 
-### footer
-
-Replaces pi's default status bar with a configurable strip showing model, thinking level, current path, git branch, token counts, and estimated cost. Segments are defined in `footer.json`; Nerd Font icons with plain-ASCII fallbacks. → [`README`](agent/extensions/footer/README.md)
-
 ### startup
 
 Renders a welcome box at session start with the pi logo, keyboard hints, and counts of loaded extensions, skills, MCP configs, and context files. Zero config. → [`README`](agent/extensions/startup/README.md)
+
+### chat-input
+
+Replaces the default chat input with a configurable, boxed input. All native editor features — cursor movement, history, autocomplete, paste — work normally inside the box. → [`README`](agent/extensions/chat-input/README.md)
+
+### footer
+
+Replaces pi's default status bar with a configurable strip showing model, thinking level, current path, git branch, token counts, and estimated cost. Segments are defined in `footer.json`; Nerd Font icons with plain-ASCII fallbacks. → [`README`](agent/extensions/footer/README.md)
 
 ### permission-gate
 
