@@ -105,13 +105,16 @@ class ChatInput extends CustomEditor {
 
 		// ── body lines (between first and last border/indicator) ──
 		const body: string[] = [];
+		let isFirstBodyLine = true;
 		for (let i = 0; i < stock.length; i++) {
 			if (i === firstIdx || i === lastIdx) continue;
 			if (lastIdx !== -1 && i > lastIdx) continue;
 
 			const vw = visibleWidth(stock[i]!);
 			const pad = vw < contentWidth ? " ".repeat(contentWidth - vw) : "";
-			body.push(border("│") + leftPad + accent(PREFIX) + leftPad + stock[i]! + pad + rightPad + border("│"));
+			const prefixStr = isFirstBodyLine ? accent(PREFIX) : " ";
+			body.push(border("│") + leftPad + prefixStr + leftPad + stock[i]! + pad + rightPad + border("│"));
+			isFirstBodyLine = false;
 		}
 
 		// ── menu lines (after last border/indicator) ──
