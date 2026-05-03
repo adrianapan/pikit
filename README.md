@@ -85,7 +85,7 @@ Compresses pi's responses from polished prose to prehistoric grunt. Three modes 
 
 ### spinners
 
-Replaces "Thinking..." with 186 rotating verbs, cycling every 2.5 seconds with a typewriter reveal. Zero config. Inspired by Claude Code. → [`README`](agent/extensions/spinners/README.md)
+Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal. Shows Shows elapsed time and estimated token count as the turn progresses. Icon and colors are fully customisable via `spinners.json`. → [`README`](agent/extensions/spinners/README.md)
 
 ---
 

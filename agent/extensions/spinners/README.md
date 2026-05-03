@@ -13,12 +13,8 @@ Replaces the default **Thinking** verb with random alternatives from a curated l
 
 ## Installation
 
-Auto-discovered from `~/.pi/agent/extensions/`. No setup required.
+Included in the pi-dev repo. Auto-discovered from `~/.pi/agent/extensions/`. No additional setup required.
 
-```bash
-# Clone or copy to extensions directory
-cp -r spinners ~/.pi/agent/extensions/
-```
 
 ## Configuration
 
@@ -76,5 +72,5 @@ export const VERBS: readonly string[] = [
 
 1. **Turn starts** → Picks random verb, types it out character-by-character
 2. **While working** → Cycles to new verb every 2.5 seconds
-3. **Status updates** → Shows elapsed time and estimated token count
+3. **Status updates** → Shows elapsed time and estimated token count (when tokens are being streamed)
 
