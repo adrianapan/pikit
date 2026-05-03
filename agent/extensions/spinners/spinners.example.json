@@ -1,0 +1,9 @@
+{
+  "_comment": "Place this file at ~/.pi/agent/configs/spinners.json",
+  "themeTokens": {
+    "verb": "accent",
+    "separator": "separator",
+    "status": "muted",
+    "separatorIcon": "└─"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "spinners",
   "version": "1.0.0",
-  "description": "Replaces the default 'Thinking' verb with a random one on each response",
+  "description": "Replaces the default 'Thinking' verb with random alternatives from a curated list of verbs",
   "type": "module",
   "repository": {
     "type": "git",

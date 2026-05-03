@@ -1,3 +1,8 @@
+/**
+ * Curated list of 186 alternative verbs for the thinking spinner.
+ * Ranges from practical ("Processing") to whimsical ("Flibbertigibbeting").
+ */
+
 export const VERBS: readonly string[] = [
   'Accomplishing',
   'Actioning',
@@ -186,6 +191,10 @@ export const VERBS: readonly string[] = [
   'Zigzagging',
 ];
 
+/**
+ * Picks a random verb from the VERBS list.
+ * @returns A random verb string
+ */
 export function pickVerb(): string {
   return VERBS[Math.floor(Math.random() * VERBS.length)];
 }
