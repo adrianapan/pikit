@@ -1,0 +1,13 @@
+{
+  "name": "styled-outputs",
+  "version": "1.0.0",
+  "description": "Custom styled outputs for tools, assistant messages, diff viewer, and more.",
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "author": "Adrian Apan",
+  "license": "MIT"
+}
