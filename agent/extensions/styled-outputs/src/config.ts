@@ -1,3 +1,3 @@
 export const CONFIG = {
-  DOT_PREFIX: "●",
+  ASSISTANT_PREFIX: "●",
 };
