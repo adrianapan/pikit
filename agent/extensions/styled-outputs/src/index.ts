@@ -1,11 +1,15 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { AssistantMessageComponent } from "@mariozechner/pi-coding-agent";
 import { Markdown } from "@mariozechner/pi-tui";
-import { PATCH_FLAG } from "./utils.js";
+import { PATCH_FLAG, setCurrentTheme } from "./utils.js";
 import { AssistantMessage } from "./components/assistant-message.js";
 import { ThinkingMessage } from "./components/thinking-message.js";
 
 export default function styledOutputs(pi: ExtensionAPI) {
+  pi.on("session_start", async (_event, ctx) => {
+    setCurrentTheme(ctx.ui.theme);
+  });
+
   const proto = AssistantMessageComponent.prototype as any;
   if (proto[PATCH_FLAG]) return;
 

@@ -1,11 +1,19 @@
 import { Markdown } from "@mariozechner/pi-tui";
 import { CONFIG } from "../config.js";
-import { getVisibleWidth, hasVisibleContent } from "../utils.js";
+import { getVisibleWidth, hasVisibleContent, currentTheme, applyColor } from "../utils.js";
 
-const FULL_PREFIX = ` ${CONFIG.thinkingPrefix} ${CONFIG.thinkingLabel} `;
-const FIRST_LINE_PREFIX_WIDTH = getVisibleWidth(FULL_PREFIX);
 const PREFIX_WIDTH = getVisibleWidth(CONFIG.thinkingPrefix) + 2;
 const PADDING_PREFIX = " ".repeat(PREFIX_WIDTH);
+
+function getFullPrefix(): string {
+  const prefix = currentTheme
+    ? applyColor(currentTheme, CONFIG.thinkingPrefixColor, CONFIG.thinkingPrefix)
+    : CONFIG.thinkingPrefix;
+  const label = currentTheme
+    ? applyColor(currentTheme, CONFIG.thinkingLabelColor, CONFIG.thinkingLabel)
+    : CONFIG.thinkingLabel;
+  return ` ${prefix}${CONFIG.isThinkingLabelVisible ? ` ${label} ` : ` `}`;
+}
 
 export class ThinkingMessage {
   private md: InstanceType<typeof Markdown>;
@@ -13,7 +21,13 @@ export class ThinkingMessage {
   private cachedLines?: string[];
 
   constructor(text: string, markdownTheme: any) {
-    this.md = new Markdown(text, 0, 0, markdownTheme);
+    this.md = new Markdown(text, 0, 0, markdownTheme, {
+      color: (t: string) => {
+        if (!currentTheme) return t;
+        return applyColor(currentTheme, CONFIG.thinkingMessageColor, t);
+      },
+      italic: true,
+    });
   }
 
   invalidate(): void {
@@ -25,19 +39,22 @@ export class ThinkingMessage {
   render(width: number): string[] {
     if (this.cachedLines && this.cachedWidth === width) return this.cachedLines;
 
-    if (width <= FIRST_LINE_PREFIX_WIDTH) {
+    const fullPrefix = getFullPrefix();
+    const firstLinePrefixWidth = getVisibleWidth(fullPrefix);
+
+    if (width <= firstLinePrefixWidth) {
       this.cachedWidth = width;
-      this.cachedLines = [FULL_PREFIX.trimEnd()];
+      this.cachedLines = [fullPrefix.trimEnd()];
       return this.cachedLines;
     }
 
-    const mdLines = this.md.render(width - FIRST_LINE_PREFIX_WIDTH);
+    const mdLines = this.md.render(width - firstLinePrefixWidth);
     let prefixPlaced = false;
 
     const rendered = mdLines.map((line: string) => {
       if (!prefixPlaced && hasVisibleContent(line)) {
         prefixPlaced = true;
-        return `${FULL_PREFIX}${line}`;
+        return `${fullPrefix}${line}`;
       }
       return `${PADDING_PREFIX}${line}`;
     });
