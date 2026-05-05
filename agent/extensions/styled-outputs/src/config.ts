@@ -6,6 +6,11 @@ export const DEFAULT_CONFIG = {
   // Assistant message
   ASSISTANT_PREFIX: "●",
   ASSISTANT_PREFIX_COLOR: "text",
+
+  // User message
+  USER_PREFIX: "\u276F",                  // ❯ unicode prefix character
+  USER_PREFIX_COLOR: "accent",
+  IS_THEME_BACKGROUND_VISIBLE: true,
   
   // Thinking message
   THINKING_PREFIX: "✽",
@@ -25,6 +30,9 @@ interface StyledOutputsUserConfig {
   thinkingLabelColor?: string;
   isThinkingLabelVisible?: boolean;
   thinkingMessageColor?: string;
+  userPrefix?: string;
+  userPrefixColor?: string;
+  isThemeBackgroundVisible?: boolean;
 }
 
 const CONFIG_PATH = join(homedir(), ".pi", "agent", "configs", "styled-outputs.json");
@@ -49,4 +57,7 @@ export const CONFIG = {
   thinkingLabelColor: userConfig.thinkingLabelColor ?? DEFAULT_CONFIG.THINKING_LABEL_COLOR,
   isThinkingLabelVisible: userConfig.isThinkingLabelVisible ?? DEFAULT_CONFIG.IS_THINKING_LABEL_VISIBLE,
   thinkingMessageColor: userConfig.thinkingMessageColor ?? DEFAULT_CONFIG.THINKING_MESSAGE_COLOR,
+  userPrefix: userConfig.userPrefix ?? DEFAULT_CONFIG.USER_PREFIX,
+  userPrefixColor: userConfig.userPrefixColor ?? DEFAULT_CONFIG.USER_PREFIX_COLOR,
+  isThemeBackgroundVisible: userConfig.isThemeBackgroundVisible ?? DEFAULT_CONFIG.IS_THEME_BACKGROUND_VISIBLE,
 };
