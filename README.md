@@ -269,7 +269,7 @@ Point `baseUrl` at the Ollama daemon and list whichever models you have pulled. 
         {
           "id": "qwen3.5:4b",
           "name": "Qwen3.5 4B",
-          "contextWindow": 262144,
+          "contextWindow": 265000,
           "input": ["text", "image"],
           "reasoning": true
         }
@@ -305,7 +305,7 @@ Then reference it in `models.json` using the shell command form so it's read fro
         {
           "id": "qwen3.5:cloud",
           "name": "Qwen 3.5",
-          "contextWindow": 262144,
+          "contextWindow": 265000,
           "input": ["text", "image"],
           "reasoning": true
         }
