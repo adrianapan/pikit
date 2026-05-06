@@ -20,14 +20,14 @@ export const DEFAULT_CONFIG = {
   IS_THINKING_LABEL_VISIBLE: false,
   THINKING_MESSAGE_COLOR: "dim",
 
-  // Tool messages
+  // Tools
   TOOL_DOT: "●",
   TOOL_SUCCESS_COLOR: "success",
   TOOL_ERROR_COLOR: "error",
   TOOL_BRANCH: "└─",
   TOOL_BRANCH_COLOR: "dim",
   TOOL_TITLE_COLOR: "toolTitle",
-  TOOL_SUMMARY_COLOR: "muted",
+  TOOL_SUMMARY_COLOR: "dim",
   TOOL_OUTPUT_COLOR: "dim",
   TOOL_EXPAND_HINT_COLOR: "dim",
 };

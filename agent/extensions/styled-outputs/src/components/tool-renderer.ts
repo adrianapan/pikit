@@ -59,14 +59,11 @@ function doneLabel(theme: Theme, count?: { label: string; value: number }): stri
 export function renderReadCall(args: any, theme: Theme, ctx: any): Component {
   const path = shortenPath(args.file_path ?? args.path ?? "", ctx.cwd ?? process.cwd());
   const summary = applyColor(theme, CONFIG.toolSummaryColor, path);
-  return makeText(ctx.lastComponent, toolHeader("Read", summary, theme));
+  const header = toolHeader("Read", summary, theme);
+  return makeText(ctx.lastComponent, ctx.isPartial ? header + "\n" + renderPartial(theme) : header);
 }
 
 export function renderReadResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
-  if (options.isPartial) {
-    return makeText(ctx.lastComponent, renderPartial(theme));
-  }
-
   const text = getFirstTextContent(result);
 
   if (ctx.isError) {
@@ -94,16 +91,13 @@ export function renderBashCall(args: any, theme: Theme, ctx: any): Component {
   const maxPreview = 60;
   const preview = cmd.length > maxPreview ? cmd.slice(0, maxPreview) + "…" : cmd;
   const summary = applyColor(theme, CONFIG.toolSummaryColor, preview);
-  return makeText(ctx.lastComponent, toolHeader("Bash", summary, theme));
+  const header = toolHeader("Bash", summary, theme);
+  return makeText(ctx.lastComponent, ctx.isPartial ? header + "\n" + renderPartial(theme) : header);
 }
 
 export function renderBashResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
   const output = getFirstTextContent(result);
   const nonEmptyLines = outputLines(output).filter((l: string) => l.trim().length > 0);
-
-  if (options.isPartial) {
-    return makeText(ctx.lastComponent, renderPartial(theme));
-  }
 
   if (ctx.isError) {
     const exitMatch = output.match(/Command exited with code (\d+)/);
@@ -144,14 +138,11 @@ export function renderEditCall(args: any, theme: Theme, ctx: any): Component {
   const count = operations.length;
   const opSummary = count > 0 ? ` (${count} edit${count > 1 ? "s" : ""})` : "";
   const summary = applyColor(theme, CONFIG.toolSummaryColor, `${path}${opSummary}`);
-  return makeText(ctx.lastComponent, toolHeader("Edit", summary, theme));
+  const header = toolHeader("Edit", summary, theme);
+  return makeText(ctx.lastComponent, ctx.isPartial ? header + "\n" + renderPartial(theme) : header);
 }
 
 export function renderEditResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
-  if (options.isPartial) {
-    return makeText(ctx.lastComponent, renderPartial(theme));
-  }
-
   if (ctx.isError) {
     const text = getFirstTextContent(result);
     return makeText(ctx.lastComponent, branchLine(applyColor(theme, CONFIG.toolErrorColor, text), theme));
@@ -167,14 +158,11 @@ export function renderWriteCall(args: any, theme: Theme, ctx: any): Component {
   const content = args.content ?? "";
   const lineCount = content.split("\n").length;
   const summary = applyColor(theme, CONFIG.toolSummaryColor, `${path} (${lineCount} lines)`);
-  return makeText(ctx.lastComponent, toolHeader("Write", summary, theme));
+  const header = toolHeader("Write", summary, theme);
+  return makeText(ctx.lastComponent, ctx.isPartial ? header + "\n" + renderPartial(theme) : header);
 }
 
 export function renderWriteResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
-  if (options.isPartial) {
-    return makeText(ctx.lastComponent, renderPartial(theme));
-  }
-
   if (ctx.isError) {
     const text = getFirstTextContent(result);
     return makeText(ctx.lastComponent, branchLine(applyColor(theme, CONFIG.toolErrorColor, text), theme));
@@ -188,14 +176,11 @@ export function renderWriteResult(result: any, options: { expanded: boolean; isP
 export function renderLsCall(args: any, theme: Theme, ctx: any): Component {
   const path = shortenPath(args.path ?? ".", ctx.cwd ?? process.cwd());
   const summary = applyColor(theme, CONFIG.toolSummaryColor, path);
-  return makeText(ctx.lastComponent, toolHeader("Ls", summary, theme));
+  const header = toolHeader("Ls", summary, theme);
+  return makeText(ctx.lastComponent, ctx.isPartial ? header + "\n" + renderPartial(theme) : header);
 }
 
 export function renderLsResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
-  if (options.isPartial) {
-    return makeText(ctx.lastComponent, renderPartial(theme));
-  }
-
   const text = getFirstTextContent(result);
   const items = outputLines(text).filter((l: string) => l.trim().length > 0);
 

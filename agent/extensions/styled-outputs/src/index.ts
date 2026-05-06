@@ -89,11 +89,15 @@ export default function styledOutputs(pi: ExtensionAPI) {
   if (!toolProto[PATCH_FLAG]) {
     const originalUpdateDisplay = toolProto.updateDisplay;
     toolProto.updateDisplay = function patchedUpdateDisplay() {
+      const savedResult = this.result;
+      if (this.isPartial) this.result = undefined;
       originalUpdateDisplay.call(this);
+      this.result = savedResult;
       if (this.contentBox) {
         this.contentBox.setBgFn(undefined);
       }
     };
+
     toolProto[PATCH_FLAG] = true;
   }
 
