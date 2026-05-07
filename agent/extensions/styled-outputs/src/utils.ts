@@ -1,5 +1,7 @@
 import type { Theme, ThemeColor } from "@mariozechner/pi-coding-agent";
-import { relative } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join, relative } from "node:path";
 import { CONFIG } from "./config.js";
 
 export const PATCH_FLAG = Symbol.for("styled-outputs:patched");
@@ -54,6 +56,17 @@ export function toolPrefix(theme: Theme): string {
 
 export function errorPrefix(theme: Theme): string {
   return `${applyColor(theme, CONFIG.tools.toolError.prefixColor, CONFIG.tools.toolError.prefix)} `;
+}
+
+export function getExpandToggleKey(): string {
+  const path = join(homedir(), ".pi", "agent", "keybindings.json");
+  if (!existsSync(path)) return "ctrl+o";
+  try {
+    const bindings = JSON.parse(readFileSync(path, "utf-8"));
+    return (bindings["app.tools.expand"] as string) ?? "ctrl+o";
+  } catch {
+    return "ctrl+o";
+  }
 }
 
 export function shortenPath(filePath: string, cwd: string): string {

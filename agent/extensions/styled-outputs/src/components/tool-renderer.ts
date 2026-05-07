@@ -1,7 +1,7 @@
 import { Text, type Component } from "@mariozechner/pi-tui";
 import type { Theme } from "@mariozechner/pi-coding-agent";
 import { CONFIG } from "../config.js";
-import { applyColor, toolPrefix, errorPrefix, shortenPath, getVisibleWidth } from "../utils.js";
+import { applyColor, toolPrefix, errorPrefix, shortenPath, getVisibleWidth, getExpandToggleKey } from "../utils.js";
 
 // --- Shared helpers ---
 
@@ -52,7 +52,7 @@ function indentLine(text: string): string {
 }
 
 function expandHint(theme: Theme): string {
-  return applyColor(theme, CONFIG.tools.general.expandHintColor, " • ctrl+o to expand");
+  return applyColor(theme, CONFIG.tools.general.expandHintColor, ` • ${getExpandToggleKey()} to expand`);
 }
 
 const NO_OUTPUT_PLACEHOLDER = "(no output)";
