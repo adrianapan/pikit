@@ -1,5 +1,5 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool } from "@mariozechner/pi-coding-agent";
+import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool } from "@mariozechner/pi-coding-agent";
 import { Markdown } from "@mariozechner/pi-tui";
 import { PATCH_FLAG, setCurrentTheme } from "./utils.js";
 import { CONFIG } from "./config.js";
@@ -12,6 +12,8 @@ import {
   renderEditCall, renderEditResult,
   renderWriteCall, renderWriteResult,
   renderLsCall, renderLsResult,
+  renderGrepCall, renderGrepResult,
+  renderFindCall, renderFindResult,
 } from "./components/tool-renderer.js";
 
 export default function styledOutputs(pi: ExtensionAPI) {
@@ -177,6 +179,44 @@ export default function styledOutputs(pi: ExtensionAPI) {
     },
     renderResult(result, options, theme, ctx) {
       return renderWriteResult(result, options, theme, ctx);
+    },
+  });
+
+  const grepTool = createGrepTool(cwd);
+  pi.registerTool({
+    name: "grep",
+    label: "grep",
+    description: grepTool.description,
+    promptSnippet: "Search file contents for patterns (respects .gitignore)",
+    promptGuidelines: ["Prefer grep/find over bash for file exploration (faster, respects .gitignore)"],
+    parameters: grepTool.parameters,
+    async execute(toolCallId, params, signal, onUpdate, ctx) {
+      return grepTool.execute(toolCallId, params, signal, onUpdate);
+    },
+    renderCall(args, theme, ctx) {
+      return renderGrepCall(args, theme, ctx);
+    },
+    renderResult(result, options, theme, ctx) {
+      return renderGrepResult(result, options, theme, ctx);
+    },
+  });
+
+  const findTool = createFindTool(cwd);
+  pi.registerTool({
+    name: "find",
+    label: "find",
+    description: findTool.description,
+    promptSnippet: "Find files by glob pattern (respects .gitignore)",
+    promptGuidelines: ["Prefer grep/find over bash for file exploration (faster, respects .gitignore)"],
+    parameters: findTool.parameters,
+    async execute(toolCallId, params, signal, onUpdate, ctx) {
+      return findTool.execute(toolCallId, params, signal, onUpdate);
+    },
+    renderCall(args, theme, ctx) {
+      return renderFindCall(args, theme, ctx);
+    },
+    renderResult(result, options, theme, ctx) {
+      return renderFindResult(result, options, theme, ctx);
     },
   });
 

@@ -128,6 +128,95 @@ export function renderReadResult(result: any, options: { expanded: boolean; isPa
   return makeText(ctx.lastComponent, display);
 }
 
+// --- Grep tool ---
+
+export function renderGrepCall(args: any, theme: Theme, ctx: any): Component {
+  const pattern = args.pattern ?? "";
+  const searchPath = shortenPath(args.path ?? ".", ctx.cwd ?? process.cwd());
+  let summary = applyColor(theme, CONFIG.tools.general.summaryColor, `/${pattern}/`) + " in " + applyColor(theme, CONFIG.tools.general.summaryColor, searchPath);
+  if (args.glob) summary += applyColor(theme, CONFIG.tools.general.outputColor, ` (${args.glob})`);
+  if (ctx.isPartial) {
+    const frame = ensureSpinner(ctx);
+    return makeText(ctx.lastComponent, toolHeader("Grep", summary, theme, spinnerDot(theme, frame)) + "\n" + renderPartial(theme));
+  }
+  clearSpinner(ctx);
+  return makeText(ctx.lastComponent, toolHeader("Grep", summary, theme, undefined, ctx.isError));
+}
+
+export function renderGrepResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
+  const text = getFirstTextContent(result);
+  const lines = outputLines(text).filter((l: string) => l.trim().length > 0);
+
+  if (ctx.isError) {
+    if (!options.expanded) {
+      return makeText(ctx.lastComponent, errorLabel(theme) + expandHint(theme));
+    }
+    let display = errorLabel(theme);
+    for (const line of lines) {
+      display += "\n" + indentLine(applyColor(theme, CONFIG.tools.general.outputColor, line));
+    }
+    return makeText(ctx.lastComponent, display);
+  }
+
+  const count = lines.length > 0 ? { label: "matches", value: lines.length } : undefined;
+
+  if (!options.expanded) {
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + (lines.length > 0 ? expandHint(theme) : ""));
+  }
+
+  let display = doneLabel(theme, count);
+  for (const line of lines) {
+    display += "\n" + indentLine(applyColor(theme, CONFIG.tools.general.outputColor, line));
+  }
+  return makeText(ctx.lastComponent, display);
+}
+
+// --- Find tool ---
+
+export function renderFindCall(args: any, theme: Theme, ctx: any): Component {
+  const pattern = args.pattern ?? "";
+  const searchPath = shortenPath(args.path ?? ".", ctx.cwd ?? process.cwd());
+  let summary = applyColor(theme, CONFIG.tools.general.summaryColor, pattern) + " in " + applyColor(theme, CONFIG.tools.general.summaryColor, searchPath);
+  if (ctx.isPartial) {
+    const frame = ensureSpinner(ctx);
+    return makeText(ctx.lastComponent, toolHeader("Find", summary, theme, spinnerDot(theme, frame)) + "\n" + renderPartial(theme));
+  }
+  clearSpinner(ctx);
+  return makeText(ctx.lastComponent, toolHeader("Find", summary, theme, undefined, ctx.isError));
+}
+
+export function renderFindResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
+  const text = getFirstTextContent(result);
+  const items = outputLines(text).filter((l: string) => l.trim().length > 0);
+
+  if (ctx.isError) {
+    if (!options.expanded) {
+      return makeText(ctx.lastComponent, errorLabel(theme) + expandHint(theme));
+    }
+    let display = errorLabel(theme);
+    for (const line of items) {
+      display += "\n" + indentLine(applyColor(theme, CONFIG.tools.general.outputColor, line));
+    }
+    return makeText(ctx.lastComponent, display);
+  }
+
+  const count = items.length > 0 ? { label: "files", value: items.length } : undefined;
+
+  if (!options.expanded) {
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + (items.length > 0 ? expandHint(theme) : ""));
+  }
+
+  let display = doneLabel(theme, count);
+  for (const item of items) {
+    const isDir = item.endsWith("/");
+    const styled = isDir
+      ? applyColor(theme, "accent", theme.bold(item))
+      : applyColor(theme, CONFIG.tools.general.outputColor, item);
+    display += "\n" + indentLine(styled);
+  }
+  return makeText(ctx.lastComponent, display);
+}
+
 // --- Bash tool ---
 
 export function renderBashCall(args: any, theme: Theme, ctx: any): Component {
@@ -246,7 +335,7 @@ export function renderWriteResult(result: any, options: { expanded: boolean; isP
   return makeText(ctx.lastComponent, doneLabel(theme, count));
 }
 
-// --- Ls tool ---
+// --- Ls tool (also used by Find for dir styling) ---
 
 export function renderLsCall(args: any, theme: Theme, ctx: any): Component {
   const path = shortenPath(args.path ?? ".", ctx.cwd ?? process.cwd());
