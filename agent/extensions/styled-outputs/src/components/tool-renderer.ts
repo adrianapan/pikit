@@ -219,10 +219,10 @@ export function renderLsCall(args: any, theme: Theme, ctx: any): Component {
   const summary = applyColor(theme, CONFIG.tools.general.summaryColor, path);
   if (ctx.isPartial) {
     const frame = ensureSpinner(ctx);
-    return makeText(ctx.lastComponent, toolHeader("Ls", summary, theme, spinnerDot(theme, frame)) + "\n" + renderPartial(theme));
+    return makeText(ctx.lastComponent, toolHeader("ls", summary, theme, spinnerDot(theme, frame)) + "\n" + renderPartial(theme));
   }
   clearSpinner(ctx);
-  return makeText(ctx.lastComponent, toolHeader("Ls", summary, theme));
+  return makeText(ctx.lastComponent, toolHeader("ls", summary, theme));
 }
 
 export function renderLsResult(result: any, options: { expanded: boolean; isPartial: boolean }, theme: Theme, ctx: any): Component {
