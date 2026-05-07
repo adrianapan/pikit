@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool } from "@mariozechner/pi-coding-agent";
 import { Markdown } from "@mariozechner/pi-tui";
-import { PATCH_FLAG, setCurrentTheme } from "./utils.js";
+import { PATCH_FLAG, setCurrentTheme, currentTheme } from "./utils.js";
 import { CONFIG } from "./config.js";
 import { createAssistantMessage } from "./components/assistant-message.js";
 import { createThinkingMessage } from "./components/thinking-message.js";
@@ -86,7 +86,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     userProto[PATCH_FLAG] = true;
   }
 
-  // --- Patch ToolExecutionComponent (remove default bg) ---
+  // --- Patch ToolExecutionComponent (conditionally apply bg) ---
   const toolProto = ToolExecutionComponent.prototype as any;
   if (!toolProto[PATCH_FLAG]) {
     const originalUpdateDisplay = toolProto.updateDisplay;
@@ -96,7 +96,17 @@ export default function styledOutputs(pi: ExtensionAPI) {
       originalUpdateDisplay.call(this);
       this.result = savedResult;
       if (this.contentBox) {
-        this.contentBox.setBgFn(undefined);
+        if (CONFIG.tools.general.isThemeBackgroundVisible) {
+          const t = currentTheme!;
+          const bgFn = this.isPartial
+            ? (text: string) => t.bg("toolPendingBg", text)
+            : this.result?.isError
+              ? (text: string) => t.bg("toolErrorBg", text)
+              : (text: string) => t.bg("toolSuccessBg", text);
+          this.contentBox.setBgFn(bgFn);
+        } else {
+          this.contentBox.setBgFn(undefined);
+        }
       }
     };
 

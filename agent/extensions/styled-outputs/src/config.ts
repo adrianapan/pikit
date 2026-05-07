@@ -51,6 +51,7 @@ export const DEFAULT_CONFIG = {
       COUNT_COLOR: "muted",                          // color for tool counts (e.g., "Tool 1 of 3")
       EXPAND_HINT_COLOR: "dim",                      // color for hints about expanding tool outputs
       OUTPUT_COLOR: "dim",                           // color for tool outputs
+      IS_THEME_BACKGROUND_VISIBLE: false,           // whether to apply theme background color to tool outputs
     },
   },
 };
@@ -100,6 +101,7 @@ interface StyledOutputsUserConfig {
       countColor?: string;
       expandHintColor?: string;
       outputColor?: string;
+      isThemeBackgroundVisible?: boolean;
     };
   };
 }
@@ -160,6 +162,7 @@ export const CONFIG = {
       countColor: userConfig.tools?.general?.countColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.COUNT_COLOR,
       expandHintColor: userConfig.tools?.general?.expandHintColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.EXPAND_HINT_COLOR,
       outputColor: userConfig.tools?.general?.outputColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.OUTPUT_COLOR,
+      isThemeBackgroundVisible: userConfig.tools?.general?.isThemeBackgroundVisible ?? DEFAULT_CONFIG.TOOLS.GENERAL.IS_THEME_BACKGROUND_VISIBLE,
     },
   },
 };

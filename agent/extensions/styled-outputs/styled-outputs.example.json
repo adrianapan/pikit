@@ -41,7 +41,8 @@
       "summaryColor": "dim",
       "countColor": "muted",
       "expandHintColor": "dim",
-      "outputColor": "dim"
+      "outputColor": "dim",
+      "isThemeBackgroundVisible": false
     }
   }
 }
