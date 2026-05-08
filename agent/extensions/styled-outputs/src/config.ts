@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import type { StyledOutputsUserConfig, ToolGeneralUserConfig } from "./types.js";
 
 export const DEFAULT_CONFIG = {
   // Assistant message
@@ -16,6 +17,16 @@ export const DEFAULT_CONFIG = {
     IS_THEME_BACKGROUND_VISIBLE: true,
   },
   
+  // Skill invocation
+  SKILLS: {
+    PREFIX: "●",
+    PREFIX_COLOR: "accent",
+    TITLE_COLOR: "toolTitle",
+    NAME_COLOR: "text",
+    LABEL_COLOR: "success",
+    EXPAND_HINT_COLOR: "dim",
+  },
+
   // Thinking message
   THINKING_MESSAGE: {
     PREFIX: "✽",
@@ -62,65 +73,9 @@ export const DEFAULT_CONFIG = {
   },
 };
 
-// --- User config types (camelCase, partial) ---
 
-interface GeneralUserConfig {
-  titleColor?: string;
-  summaryColor?: string;
-  countColor?: string;
-  expandHintColor?: string;
-  outputColor?: string;
-  isThemeBackgroundVisible?: boolean;
-}
 
-interface StyledOutputsUserConfig {
-  assistantMessage?: {
-    prefix?: string;
-    color?: string;
-  };
-  userMessage?: {
-    prefix?: string;
-    color?: string;
-    isThemeBackgroundVisible?: boolean;
-  };
-  thinkingMessage?: {
-    prefix?: string;
-    prefixColor?: string;
-    label?: string;
-    labelColor?: string;
-    isLabelVisible?: boolean;
-    messageColor?: string;
-  };
-  tools?: {
-    toolSpinnerPrefix?: {
-      prefixChars?: string[];
-      color?: string;
-    };
-    toolSuccess?: {
-      prefix?: string;
-      prefixColor?: string;
-      labelColor?: string;
-    };
-    toolError?: {
-      prefix?: string;
-      prefixColor?: string;
-      labelColor?: string;
-    };
-    toolBranch?: {
-      prefix?: string;
-      color?: string;
-    };
-    general?: GeneralUserConfig;
-    groups?: {
-      base?: GeneralUserConfig;
-      mcp?: GeneralUserConfig;
-      web?: GeneralUserConfig;
-      custom?: GeneralUserConfig;
-    };
-  };
-}
-
-function mapGroupConfig(user?: GeneralUserConfig, defaults: Record<string, any> = {}): GeneralUserConfig {
+function mapGroupConfig(user?: ToolGeneralUserConfig, defaults: Record<string, any> = {}): ToolGeneralUserConfig {
   return {
     titleColor: user?.titleColor ?? defaults.TITLE_COLOR,
     summaryColor: user?.summaryColor ?? defaults.SUMMARY_COLOR,
@@ -148,6 +103,14 @@ export const CONFIG = {
   assistantMessage: {
     prefix: userConfig.assistantMessage?.prefix ?? DEFAULT_CONFIG.ASSISTANT_MESSAGE.PREFIX,
     color: userConfig.assistantMessage?.color ?? DEFAULT_CONFIG.ASSISTANT_MESSAGE.COLOR,
+  },
+  skills: {
+    prefix: userConfig.skills?.prefix ?? DEFAULT_CONFIG.SKILLS.PREFIX,
+    prefixColor: userConfig.skills?.prefixColor ?? DEFAULT_CONFIG.SKILLS.PREFIX_COLOR,
+    titleColor: userConfig.skills?.titleColor ?? DEFAULT_CONFIG.SKILLS.TITLE_COLOR,
+    nameColor: userConfig.skills?.nameColor ?? DEFAULT_CONFIG.SKILLS.NAME_COLOR,
+    labelColor: userConfig.skills?.labelColor ?? DEFAULT_CONFIG.SKILLS.LABEL_COLOR,
+    expandHintColor: userConfig.skills?.expandHintColor ?? DEFAULT_CONFIG.SKILLS.EXPAND_HINT_COLOR,
   },
   userMessage: {
     prefix: userConfig.userMessage?.prefix ?? DEFAULT_CONFIG.USER_MESSAGE.PREFIX,

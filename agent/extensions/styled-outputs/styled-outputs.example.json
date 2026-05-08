@@ -17,6 +17,14 @@
     "isLabelVisible": false,
     "messageColor": "dim"
   },
+  "skills": {
+    "prefix": "●",
+    "prefixColor": "accent",
+    "titleColor": "toolTitle",
+    "nameColor": "text",
+    "labelColor": "success",
+    "expandHintColor": "dim"
+  },
   "tools": {
     "toolSpinnerPrefix": {
       "prefixChars": ["·", "✢", "✳", "✶", "✻", "✽"],
@@ -34,7 +42,7 @@
     },
     "toolBranch": {
       "prefix": "└─",
-      "color": "dim"
+      "color": "separator"
     },
     "general": {
       "titleColor": "toolTitle",

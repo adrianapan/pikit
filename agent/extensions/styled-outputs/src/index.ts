@@ -1,5 +1,5 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool } from "@mariozechner/pi-coding-agent";
+import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, SkillInvocationMessageComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool } from "@mariozechner/pi-coding-agent";
 import { Markdown } from "@mariozechner/pi-tui";
 import { PATCH_FLAG, setCurrentTheme, currentTheme } from "./utils.js";
 import { CONFIG } from "./config.js";
@@ -21,6 +21,7 @@ import {
   renderFetchContentCall, renderFetchContentResult,
   renderGetSearchContentCall, renderGetSearchContentResult,
 } from "./components/web-renderer.js";
+import { createSkillInvocationMessage } from "./components/skill-message.js";
 
 const WEB_TOOLS = new Set(["web_search", "fetch_content", "get_search_content"]);
 
@@ -146,6 +147,32 @@ export default function styledOutputs(pi: ExtensionAPI) {
     };
 
     toolProto[PATCH_FLAG] = true;
+  }
+
+  // --- Patch SkillInvocationMessageComponent ---
+  const skillProto = SkillInvocationMessageComponent.prototype as any;
+  if (!skillProto[PATCH_FLAG]) {
+    skillProto.updateDisplay = function patchedSkillUpdateDisplay() {
+      if (!this.skillBlock) return;
+
+      if (!this._styledSkillComponent) {
+        this._styledSkillComponent = createSkillInvocationMessage(
+          this.skillBlock.name,
+          this.skillBlock.content,
+          this.markdownTheme,
+        );
+        // Strip Box padding + background — our component handles its own layout
+        this.paddingX = 0;
+        this.paddingY = 0;
+        this.bgFn = undefined;
+      }
+
+      this._styledSkillComponent.setExpanded(this.expanded);
+      this.clear();
+      this.addChild(this._styledSkillComponent);
+    };
+
+    skillProto[PATCH_FLAG] = true;
   }
 
   // --- Register styled tool renderers ---
