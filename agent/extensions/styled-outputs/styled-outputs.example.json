@@ -50,10 +50,14 @@
       "countColor": "muted",
       "expandHintColor": "dim",
       "outputColor": "dim",
-      "maxExpandedLines": 20,
+      "maxExpandedLines": 40,
       "moreColor": "muted",
       "moreBgColor": "separator",
-      "isThemeBackgroundVisible": false
+      "isThemeBackgroundVisible": false,
+      "diffAddedColor": "toolDiffAdded",
+      "diffRemovedColor": "toolDiffRemoved",
+      "diffContextColor": "toolDiffContext",
+      "maxDiffFileSize": "1MB"
     },
     "groups": {
       "base": {},

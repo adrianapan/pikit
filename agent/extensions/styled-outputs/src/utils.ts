@@ -4,6 +4,17 @@ import { homedir } from "node:os";
 import { join, relative } from "node:path";
 import { CONFIG } from "./config.js";
 
+/** Parse human-readable file size strings ("1MB", "512KB") or raw byte numbers into bytes. */
+export function parseFileSize(value: string | number): number {
+  if (typeof value === "number") return value;
+  const match = value.match(/^(\d+(?:\.\d+)?)\s*(KB|MB|GB)?$/i);
+  if (!match) throw new Error(`Invalid file size: ${value}`);
+  const num = parseFloat(match[1]);
+  const unit = (match[2] ?? "").toUpperCase();
+  const multipliers: Record<string, number> = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 };
+  return Math.round(num * (multipliers[unit] ?? 1));
+}
+
 export const PATCH_FLAG = Symbol.for("styled-outputs:patched");
 
 export let currentTheme: Theme | undefined;

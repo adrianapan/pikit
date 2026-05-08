@@ -62,6 +62,7 @@ export interface ToolGeneralUserConfig {
   diffAddedColor?: string;
   diffRemovedColor?: string;
   diffContextColor?: string;
+  maxDiffFileSize?: string | number;
 }
 
 export interface ToolGroupsUserConfig {

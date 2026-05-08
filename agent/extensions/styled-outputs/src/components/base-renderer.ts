@@ -5,7 +5,7 @@ import { statSync, readFileSync } from "node:fs";
 import { resolve as resolvePath } from "node:path";
 import { homedir } from "node:os";
 import { CONFIG } from "../config.js";
-import { applyColor, shortenPath } from "../utils.js";
+import { applyColor, shortenPath, parseFileSize } from "../utils.js";
 import {
   makeText, toolHeader, branchLine, expandHint,
   outputLines, getFirstTextContent, errorLabel, renderPartial, doneLabel,
@@ -13,8 +13,6 @@ import {
   formatExpandedLines,
 } from "./tool-shared.js";
 import { createMarkdownResult } from "./markdown-result.js";
-
-const MAX_DIFF_FILE_SIZE = 1_048_576; // 1MB — skip diff for files exceeding this size
 
 const BASE_TITLE_COLOR = groupTitleColor("base");
 
@@ -234,7 +232,7 @@ export function renderWriteCall(args: any, theme: Theme, ctx: any): Component {
         : resolvePath(ctx.cwd ?? process.cwd(), args.path ?? "");
       const stat = statSync(absPath, { throwIfNoEntry: false });
       ctx.state.fileExistedBefore = stat !== undefined;
-      ctx.state.previousContent = (stat !== undefined && stat.size <= MAX_DIFF_FILE_SIZE)
+      ctx.state.previousContent = (stat !== undefined && stat.size <= parseFileSize(CONFIG.tools.general.maxDiffFileSize))
         ? readFileSync(absPath, "utf8")
         : undefined;
     } catch {
