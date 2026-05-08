@@ -59,6 +59,9 @@ export interface ToolGeneralUserConfig {
   maxExpandedLines?: number;
   moreColor?: string;
   moreBgColor?: string;
+  diffAddedColor?: string;
+  diffRemovedColor?: string;
+  diffContextColor?: string;
 }
 
 export interface ToolGroupsUserConfig {

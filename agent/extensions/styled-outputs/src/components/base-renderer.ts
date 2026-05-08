@@ -1,5 +1,9 @@
 import type { Component } from "@mariozechner/pi-tui";
 import type { Theme } from "@mariozechner/pi-coding-agent";
+import { renderDiff } from "@mariozechner/pi-coding-agent";
+import { statSync, readFileSync } from "node:fs";
+import { resolve as resolvePath } from "node:path";
+import { homedir } from "node:os";
 import { CONFIG } from "../config.js";
 import { applyColor, shortenPath } from "../utils.js";
 import {
@@ -8,6 +12,8 @@ import {
   ensureSpinner, clearSpinner, spinnerDot, groupTitleColor,
   formatExpandedLines,
 } from "./tool-shared.js";
+
+const MAX_DIFF_FILE_SIZE = 1_048_576; // 1MB — skip diff for files exceeding this size
 
 const BASE_TITLE_COLOR = groupTitleColor("base");
 
@@ -197,6 +203,12 @@ export function renderEditResult(result: any, options: { expanded: boolean; isPa
 
   const editCount = (ctx.state.editCount as number | undefined) ?? 0;
   const count = editCount > 0 ? { label: `edit${editCount > 1 ? "s" : ""}`, value: editCount } : undefined;
+
+  if (options.expanded && result.details?.diff) {
+    const diffLines = renderDiff(result.details.diff).split("\n");
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + formatExpandedLines(diffLines, "head-tail", theme));
+  }
+
   return makeText(ctx.lastComponent, doneLabel(theme, count));
 }
 
@@ -206,6 +218,24 @@ export function renderWriteCall(args: any, theme: Theme, ctx: any): Component {
   const path = shortenPath(args.path ?? "", ctx.cwd ?? process.cwd());
   const content = args.content ?? "";
   ctx.state.lineCount = content.split("\n").length;
+
+  // Size guard for future diff support: stash previous content only for small files
+  if (!ctx.isPartial) {
+    try {
+      const absPath = args.path?.startsWith("~/")
+        ? resolvePath(homedir(), args.path.slice(2))
+        : resolvePath(ctx.cwd ?? process.cwd(), args.path ?? "");
+      const stat = statSync(absPath, { throwIfNoEntry: false });
+      ctx.state.fileExistedBefore = stat !== undefined;
+      ctx.state.previousContent = (stat !== undefined && stat.size <= MAX_DIFF_FILE_SIZE)
+        ? readFileSync(absPath, "utf8")
+        : undefined;
+    } catch {
+      ctx.state.fileExistedBefore = false;
+      ctx.state.previousContent = undefined;
+    }
+  }
+
   const summary = applyColor(theme, CONFIG.tools.general.summaryColor, path);
   if (ctx.isPartial) {
     const frame = ensureSpinner(ctx);
