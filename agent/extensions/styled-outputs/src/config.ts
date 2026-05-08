@@ -55,7 +55,9 @@ export const DEFAULT_CONFIG = {
     },
     GROUPS: {
       BASE: {},                                      // base tools (read, bash, edit, write, ls, grep, find) — falls through to GENERAL
-      MCP: {},                                       // MCP server tools — falls through to GENERAL
+      MCP: {
+        TITLE_COLOR: "mcpToolTitle",                 // color for MCP tool titles (e.g., mcp_call, mcp_tool_response, etc.)
+      },                                             // MCP server tools — falls through to GENERAL
       WEB: {},                                       // web tools (web_search, fetch_content) — falls through to GENERAL
       CUSTOM: {},                                    // custom user tools — falls through to GENERAL
     },
@@ -120,6 +122,17 @@ interface StyledOutputsUserConfig {
   };
 }
 
+function mapGroupConfig(user?: GeneralUserConfig, defaults: Record<string, any> = {}): GeneralUserConfig {
+  return {
+    titleColor: user?.titleColor ?? defaults.TITLE_COLOR,
+    summaryColor: user?.summaryColor ?? defaults.SUMMARY_COLOR,
+    countColor: user?.countColor ?? defaults.COUNT_COLOR,
+    expandHintColor: user?.expandHintColor ?? defaults.EXPAND_HINT_COLOR,
+    outputColor: user?.outputColor ?? defaults.OUTPUT_COLOR,
+    isThemeBackgroundVisible: user?.isThemeBackgroundVisible ?? defaults.IS_THEME_BACKGROUND_VISIBLE,
+  };
+}
+
 const CONFIG_PATH = join(homedir(), ".pi", "agent", "configs", "styled-outputs.json");
 
 function loadUserConfig(): StyledOutputsUserConfig {
@@ -179,10 +192,10 @@ export const CONFIG = {
       isThemeBackgroundVisible: userConfig.tools?.general?.isThemeBackgroundVisible ?? DEFAULT_CONFIG.TOOLS.GENERAL.IS_THEME_BACKGROUND_VISIBLE,
     },
     groups: {
-      base: userConfig.tools?.groups?.base ?? DEFAULT_CONFIG.TOOLS.GROUPS.BASE,
-      mcp: userConfig.tools?.groups?.mcp ?? DEFAULT_CONFIG.TOOLS.GROUPS.MCP,
-      web: userConfig.tools?.groups?.web ?? DEFAULT_CONFIG.TOOLS.GROUPS.WEB,
-      custom: userConfig.tools?.groups?.custom ?? DEFAULT_CONFIG.TOOLS.GROUPS.CUSTOM,
+      base: mapGroupConfig(userConfig.tools?.groups?.base, DEFAULT_CONFIG.TOOLS.GROUPS.BASE),
+      mcp: mapGroupConfig(userConfig.tools?.groups?.mcp, DEFAULT_CONFIG.TOOLS.GROUPS.MCP),
+      web: mapGroupConfig(userConfig.tools?.groups?.web, DEFAULT_CONFIG.TOOLS.GROUPS.WEB),
+      custom: mapGroupConfig(userConfig.tools?.groups?.custom, DEFAULT_CONFIG.TOOLS.GROUPS.CUSTOM),
     },
   },
 };

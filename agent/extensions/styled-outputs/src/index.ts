@@ -15,6 +15,7 @@ import {
   renderGrepCall, renderGrepResult,
   renderFindCall, renderFindResult,
 } from "./components/base-renderer.js";
+import { renderMcpCall, renderMcpResult } from "./components/mcp-renderer.js";
 
 export default function styledOutputs(pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
@@ -108,6 +109,23 @@ export default function styledOutputs(pi: ExtensionAPI) {
           this.contentBox.setBgFn(undefined);
         }
       }
+    };
+
+    // --- Inject MCP renderer for tools without custom renderers ---
+    const originalGetCallRenderer = toolProto.getCallRenderer;
+    toolProto.getCallRenderer = function patchedGetCallRenderer() {
+      const renderer = originalGetCallRenderer.call(this);
+      if (renderer !== undefined) return renderer;
+      const name = this.toolName;
+      return (args: any, theme: any, ctx: any) => renderMcpCall(name, args, theme, ctx);
+    };
+
+    const originalGetResultRenderer = toolProto.getResultRenderer;
+    toolProto.getResultRenderer = function patchedGetResultRenderer() {
+      const renderer = originalGetResultRenderer.call(this);
+      if (renderer !== undefined) return renderer;
+      const name = this.toolName;
+      return (result: any, options: any, theme: any, ctx: any) => renderMcpResult(name, result, options, theme, ctx);
     };
 
     toolProto[PATCH_FLAG] = true;
