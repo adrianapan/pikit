@@ -45,7 +45,7 @@ export const DEFAULT_CONFIG = {
     TOOL_SUCCESS: {
       PREFIX: "●",                                    // icon for successful tool execution
       PREFIX_COLOR: "success",                        // color for the success prefix
-      LABEL_COLOR: "success",                        // color for the success label (DONE on the 2nd line, the status line)
+      LABEL_COLOR: "success",                         // color for the success label (DONE on the 2nd line, the status line)
     },
     TOOL_ERROR: {
       PREFIX: "●",                                    // icon for error tool execution
@@ -57,20 +57,20 @@ export const DEFAULT_CONFIG = {
       COLOR: "separator",                             // color for the branch icon
     },
     GENERAL: {
-      TITLE_COLOR: "toolTitle",                      // color for tool titles (bash, ls, read, write, etc.)
-      SUMMARY_COLOR: "dim",                          // color for tool summary (1st line, right after the title)
-      COUNT_COLOR: "muted",                          // color for tool counts (e.g., "Tool 1 of 3")
-      EXPAND_HINT_COLOR: "dim",                      // color for hints about expanding tool outputs
-      OUTPUT_COLOR: "dim",                           // color for tool outputs
-      MAX_EXPANDED_LINES: 40,                        // max lines shown when a tool result is expanded
-      MORE_COLOR: "muted",                             // color for the separator text
-      IS_THEME_BACKGROUND_VISIBLE: false,            // whether to apply theme background color to tool outputs
+      TITLE_COLOR: "toolTitle",                       // color for tool titles (bash, ls, read, write, etc.)
+      SUMMARY_COLOR: "dim",                           // color for tool summary (1st line, right after the title)
+      COUNT_COLOR: "muted",                           // color for tool counts (e.g., "Tool 1 of 3")
+      EXPAND_HINT_COLOR: "dim",                       // color for hints about expanding tool outputs
+      OUTPUT_COLOR: "dim",                            // color for tool outputs
+      MAX_EXPANDED_LINES: 40,                         // max lines shown when a tool result is expanded
+      MORE_COLOR: "muted",                            // color for the separator text
+      IS_THEME_BACKGROUND_VISIBLE: false,             // whether to apply theme background color to tool outputs
     },
     GROUPS: {
-      BASE: {},                                      // base tools (read, bash, edit, write, ls, grep, find) — falls through to GENERAL
-      MCP: {},                                       // MCP server tools — falls through to GENERAL
-      WEB: {},                                       // web tools (web_search, fetch_content) — falls through to GENERAL
-      CUSTOM: {},                                    // custom user tools — falls through to GENERAL
+      BASE: {},                                       // base tools (read, bash, edit, write, ls, grep, find) — falls through to GENERAL
+      MCP: {},                                        // MCP server tools — falls through to GENERAL
+      WEB: {},                                        // web tools (web_search, fetch_content) — falls through to GENERAL
+      CUSTOM: {},                                     // custom user tools — falls through to GENERAL
     },
   },
 };
