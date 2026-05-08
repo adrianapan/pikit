@@ -463,3 +463,23 @@ These patterns are defaults. Deviate when:
 - User explicitly requests different architecture
 
 **Rule of thumb:** Start with this structure. Refactor if complexity demands it.
+
+---
+
+## Design Decisions
+
+### Thinking Message: Continuation Lines Align to Prefix, Not Label
+
+When `isLabelVisible: true`, the thinking message renders like:
+
+```
+ ✽ Thinking: first line of content
+   continuation line
+   another line
+```
+
+The `PADDING_PREFIX` aligns continuation lines with the prefix icon width (` ✽ `), **not** with the full first-line prefix (` ✽ Thinking: `). This is intentional — the label acts as a one-time header, and continuation lines flow under the standard prefix indent. Aligning to the full prefix would create excessive indentation for long labels.
+
+### Config Groups: Sparse Overrides Fall Through to General
+
+Group configs (`base`, `mcp`, `web`, `custom`) are sparse — users only set the properties they want to override. Everything else falls through to `CONFIG.tools.general` via `groupProp()`. This avoids duplicating defaults and keeps group configs minimal.
