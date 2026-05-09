@@ -304,7 +304,7 @@ export default function planMode(pi: ExtensionAPI) {
 
   /** Prompt user for optional plan name, then enter plan mode. Uses timestamp if no name given. Returns false if cancelled or invalid. */
   async function promptNameAndEnterPlanMode(ctx: ExtensionContext): Promise<boolean> {
-    const nameInput = await ctx.ui.input("Plan name (optional — leave empty for timestamp):");
+    const nameInput = await ctx.ui.input("Plan name (optional, leave empty for timestamp):");
     if (nameInput === undefined) return false; // cancelled
     const trimmed = nameInput.trim();
     if (trimmed) {
