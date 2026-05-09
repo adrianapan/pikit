@@ -1,0 +1,28 @@
+{
+  "name": "plan-mode",
+  "version": "1.0.0",
+  "description": "Toggle plan mode: read-only exploration with numbered plans, then execute with progress tracking",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pi-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrianapan/pi-dev/issues"
+  },
+  "homepage": "https://github.com/adrianapan/pi-dev#readme",
+  "keywords": [
+    "pi",
+    "extension",
+    "plan-mode",
+    "pi-package",
+    "pi-coding-agent"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "author": "Adrian Apan",
+  "license": "MIT"
+}

@@ -83,6 +83,10 @@ Gives the agent web search and page fetching. `web_search` uses Gemini AI for a 
 
 Compresses pi's responses from polished prose to prehistoric grunt. Three modes — `lite` (professional, no filler), `full` (classic caveman), `ultra` (maximum compression) — injected into the system prompt. Toggled via `/caveman`; active mode shows in the footer. → [`README`](agent/extensions/caveman/README.md)
 
+### plan-mode
+
+Toggle plan mode via `/plan` or `Ctrl+Alt+P`. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and tracks step completion with `[DONE:n]` markers. Status bar and widget show current mode and progress. → [`README`](agent/extensions/plan-mode/README.md)
+
 ### spinners
 
 Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal. Shows Shows elapsed time and estimated token count as the turn progresses. Icon and colors are fully customisable via `spinners.json`. → [`README`](agent/extensions/spinners/README.md)
