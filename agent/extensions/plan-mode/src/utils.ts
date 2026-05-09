@@ -59,9 +59,22 @@ export function stripDoneMarkers(text: string): string {
   return text.replace(/\[done:\d+\]/gi, "");
 }
 
-/** Strip markdown bold/italic from step text for display. */
+/** Strip markdown bold/italic/code for plan file storage (keeps markers readable). */
 export function stripMarkdownFormatting(text: string): string {
-  return text.replace(/\*\*/g, "").replace(/\*/g, "");
+  return text
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1");
+}
+
+/** Render markdown bold/italic/code using theme styling for widget display. */
+export function renderMarkdownStep(text: string, theme: { bold: (s: string) => string; italic: (s: string) => string; fg: (c: string, s: string) => string }): string {
+  // Process code first (backticks), then bold (**), then italic (*)
+  let result = text;
+  result = result.replace(/`([^`]+)`/g, (_, content) => theme.fg("dim", content));
+  result = result.replace(/\*\*([^*]+)\*\*/g, (_, content) => theme.bold(content));
+  result = result.replace(/\*([^*]+)\*/g, (_, content) => theme.italic(content));
+  return result;
 }
 
 /** Mark steps complete where [DONE:n] appears in text. Returns count of newly completed. */

@@ -9,6 +9,7 @@ import type {
   ToolCallEventResult,
   AgentEndEvent,
   TurnEndEvent,
+  MessageEndEvent,
 } from "@mariozechner/pi-coding-agent";
 import { PLAN_MODE_TOOLS, PLAN_MODE_PROMPT, PLAN_FILE_PREFIX, PLAN_DIR, buildExecutePrompt, buildRefinePrompt } from "./config.js";
 import {
@@ -24,7 +25,9 @@ import {
   sanitizePlanName,
   stripDoneMarkers,
   stripMarkdownFormatting,
+  renderMarkdownStep,
 } from "./utils.js";
+import { Text } from "@earendil-works/pi-tui";
 import type { TodoItem } from "./utils.js";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
 import { join } from "node:path";
@@ -88,7 +91,9 @@ export default function planMode(pi: ExtensionAPI) {
       const done = todosCache.filter((t) => t.completed).length;
       const total = todosCache.length;
       ctx.ui.setStatus("plan-mode", `📋 ${done}/${total}`);
-      ctx.ui.setWidget("plan-mode", renderTodoList(todosCache));
+      ctx.ui.setWidget("plan-mode", (_tui, theme) => {
+        return new Text(renderTodoListThemed(todosCache, theme), 0, 0);
+      });
     } else {
       ctx.ui.setStatus("plan-mode", undefined);
       ctx.ui.setWidget("plan-mode", undefined);
@@ -99,6 +104,14 @@ export default function planMode(pi: ExtensionAPI) {
 
   function renderTodoList(todos: TodoItem[]): string[] {
     return todos.map((t) => `${t.completed ? "☑" : "☐"} ${t.step}. ${stripMarkdownFormatting(t.text)}`);
+  }
+
+  function renderTodoListThemed(todos: TodoItem[], theme: { bold: (s: string) => string; italic: (s: string) => string; fg: (c: string, s: string) => string }): string {
+    return todos.map((t) => {
+      const marker = t.completed ? "☑" : "☐";
+      const stepText = renderMarkdownStep(t.text, theme);
+      return `${marker} ${t.step}. ${stepText}`;
+    }).join("\n");
   }
 
   // ─── State transitions ─────────────────────────────────────────────────────
@@ -211,27 +224,52 @@ export default function planMode(pi: ExtensionAPI) {
     };
   });
 
-  // ─── Event: turn_end (scan for [DONE:n] in EXECUTE mode) ─────────────────
+  // ─── Event: message_end (strip [DONE:n] from assistant messages before display) ──
+
+  pi.on("message_end", (event: MessageEndEvent): { message: Record<string, unknown> } | void => {
+    if (getMode() !== "execute") return;
+    if (event.message.role !== "assistant") return;
+
+    const text = extractTextFromMessage(event.message as Record<string, unknown>);
+    if (!text || !/\[done:\d+\]/i.test(text)) return;
+
+    // Track completed steps before stripping
+    markCompletedSteps(text, todosCache);
+
+    // Return stripped message so [DONE:n] never appears in chat
+    const content = event.message.content;
+    if (typeof content === "string") {
+      return { message: { ...event.message, content: stripDoneMarkers(content) } };
+    } else if (Array.isArray(content)) {
+      const newContent = content.map((block: { type: string; text?: string }) => {
+        if (block.type === "text" && typeof block.text === "string") {
+          return { ...block, text: stripDoneMarkers(block.text) };
+        }
+        return block;
+      });
+      return { message: { ...event.message, content: newContent } };
+    }
+    return;
+  });
+
+  // ─── Event: turn_end (write completed steps to file + update UI) ────────────
 
   pi.on("turn_end", async (event, ctx) => {
     if (getMode() !== "execute") return;
 
-    const text = extractTextFromMessage(event.message);
-    if (!text) return;
-
     const previouslyCompleted = new Set(todosCache.filter((t) => t.completed).map((t) => t.step));
-    const newlyCompleted = markCompletedSteps(text, todosCache);
 
-    // Strip [DONE:n] markers from message so they don't appear in chat
-    stripDoneFromMessage(event.message);
+    // Fallback: scan text in case message_end didn't catch markers
+    const text = extractTextFromMessage(event.message);
+    if (text) markCompletedSteps(text, todosCache);
 
-    if (newlyCompleted > 0) {
+    const newlyDone = todosCache.filter((t) => t.completed && !previouslyCompleted.has(t.step));
+
+    if (newlyDone.length > 0) {
       const filePath = getPlanFilePath();
       if (filePath) {
-        for (const item of todosCache) {
-          if (item.completed && !previouslyCompleted.has(item.step)) {
-            markStepInFile(filePath, item.step);
-          }
+        for (const item of newlyDone) {
+          markStepInFile(filePath, item.step);
         }
       }
       updateStatus(ctx);
@@ -463,20 +501,6 @@ export default function planMode(pi: ExtensionAPI) {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Mutate event.message to remove [DONE:n] markers from displayed content. */
-function stripDoneFromMessage(message: Record<string, unknown>): void {
-  const content = message.content;
-  if (typeof content === "string") {
-    (message as { content: string }).content = stripDoneMarkers(content);
-  } else if (Array.isArray(content)) {
-    for (const block of content as Array<{ type: string; text?: string }>) {
-      if (block.type === "text" && typeof block.text === "string") {
-        block.text = stripDoneMarkers(block.text);
-      }
-    }
-  }
-}
 
 function extractTextFromMessage(message: Record<string, unknown>): string | null {
   const content = message.content;
