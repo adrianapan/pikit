@@ -1,6 +1,7 @@
 /** Pure utilities: isSafeCommand, extractPlanText, plan file I/O */
 
 import { SAFE_COMMAND_PATTERNS, DESTRUCTIVE_PATTERNS, PLAN_DIR, PLAN_FILE_PREFIX } from "./config.js";
+import type { PlanFileSummary } from "./types.js";
 import { existsSync, readFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -12,7 +13,7 @@ export function isSafeCommand(command: string): boolean {
 
 /** Extract the raw text under the "Plan:" header from a message. Returns null if no plan found. */
 export function extractPlanText(message: string): string | null {
-  const planMatch = message.match(/^\s*Plan:\s*$/im);
+  const planMatch = message.match(/^\s*(?:#{1,6}\s*)?(?:\*{1,2})?Plan:(?:\*{1,2})?\s*$/im);
   if (!planMatch) return null;
   const afterPlan = message.slice(planMatch.index! + planMatch[0].length);
   return afterPlan.trim();
@@ -46,11 +47,6 @@ export function titleFromFilename(filename: string): string {
   return stem.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-interface PlanFileSummary {
-  name: string;
-  title: string;
-}
-
 /** Sanitize a plan name — reject path traversal and invalid characters. Returns null if invalid. */
 export function sanitizePlanName(name: string): string | null {
   const trimmed = name.trim();
@@ -75,4 +71,19 @@ export function listPlanFiles(): PlanFileSummary[] {
     const title = titleMatch ? titleMatch[1].trim() : titleFromFilename(filename);
     return { name: filename, title };
   });
+}
+
+/** Extract text content from an LLM message (string or array of content blocks). */
+export function extractTextFromMessage(message: Record<string, unknown>): string | null {
+  const content = message.content;
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .filter((block: unknown): block is { type: string; text?: string } =>
+        typeof block === "object" && block !== null && "type" in block && (block as { type: string }).type === "text",
+      )
+      .map((block) => block.text ?? "")
+      .join("\n");
+  }
+  return null;
 }

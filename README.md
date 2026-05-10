@@ -36,6 +36,7 @@ agent/
     ├── env-loader/   # Injects .env tokens into process.env at startup
     ├── footer/       # Status bar with git, tokens, cost, context
     ├── mcp/          # MCP server bridge with lazy connections and proxy tool
+    ├── plan-mode/     # Plan-then-execute workflow: read-only planning, then execute with plan_complete
     ├── permission-gate/ # Confirms dangerous bash commands before running
     ├── protected-paths/ # Blocks read/write access to sensitive files and directories
     ├── spinners/     # Rotating spinner verbs while the agent thinks
@@ -85,7 +86,7 @@ Compresses pi's responses from polished prose to prehistoric grunt. Three modes 
 
 ### plan-mode
 
-Toggle plan mode via `/plan` or `Ctrl+Alt+P`. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and tracks step completion with `[DONE:n]` markers. Status bar and widget show current mode and progress. → [`README`](agent/extensions/plan-mode/README.md)
+Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and injects the full plan into the system prompt each turn; the LLM calls `plan_complete()` when done. → [`README`](agent/extensions/plan-mode/README.md)
 
 ### spinners
 

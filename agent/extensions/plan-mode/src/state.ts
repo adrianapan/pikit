@@ -1,14 +1,7 @@
 /** OFF/PLAN/EXECUTE state machine with session persistence via appendEntry blob. */
 
 import { ENTRY_TYPE } from "./config.js";
-
-export type PlanMode = "off" | "plan" | "execute";
-
-/** Persisted blob — plan file is the source of truth for steps. */
-interface PlanModeBlob {
-  mode: PlanMode;
-  activePlanFile: string | null;
-}
+import type { PlanMode, PlanModeBlob } from "./types.js";
 
 /** Mutable state — shared within the extension module. */
 const state: {

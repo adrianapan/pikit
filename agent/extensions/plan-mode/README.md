@@ -5,7 +5,7 @@ Toggle plan mode via `/plan` command or `Ctrl+Alt+P`.
 ## Modes
 
 - **OFF** — Normal operation, all tools available
-- **PLAN** — Read-only exploration. LLM produces an action plan under a `Plan:` header
+- **PLAN** — Read-only exploration. LLM produces an action plan under a `Plan:` header. PLAN mode also blocks non-read-only bash commands — only whitelisted commands like `cat`, `ls`, `grep`, `git status`, etc. pass through.
 - **EXECUTE** — Full tools restored. LLM executes steps and calls `plan_complete()` when done
 
 ## Commands
@@ -15,8 +15,6 @@ Toggle plan mode via `/plan` command or `Ctrl+Alt+P`.
 | `/plan` | OFF → show picker (if plans exist) or enter plan mode · PLAN/EXECUTE → turn off |
 | `/plan <name>` | If plan exists: load & execute · if not: enter plan mode (create new) |
 | `/plan off` | Force off, restores all tools |
-| `/plan status` | Show current mode |
-| `/plan list` | List all plan files with titles |
 
 ## Keyboard Shortcuts
 
@@ -54,7 +52,11 @@ Plans are stored as markdown files in `.pi/plans/` with a thin heading wrapper:
 1. `/plan` (from OFF) → shows picker with existing plans + "Create new plan" option
 2. "Create new plan" → optional name input (leave empty for timestamp) → enter PLAN mode
 3. LLM explores and produces a plan under a `Plan:` header
-4. After LLM response, a menu offers: Execute / Refine
+4. After LLM response, a menu offers: Execute / Refine / Save & Exit / Discard & Exit
+   - Execute → switch to execute mode, LLM carries out the plan
+   - Refine → revise the plan, stay in plan mode
+   - Save & Exit → save plan file, return to normal mode
+   - Discard & Exit → delete plan file, return to normal mode (with confirmation)
 5. Execute mode → all tools restored, full plan file injected into system prompt each turn
 6. LLM calls `plan_complete()` after finishing all steps → automatically returns to OFF mode
 - `/plan <name>` with existing plan → load directly into execute mode

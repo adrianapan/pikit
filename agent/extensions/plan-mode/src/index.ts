@@ -20,6 +20,7 @@ import {
   titleFromFilename,
   listPlanFiles,
   sanitizePlanName,
+  extractTextFromMessage,
 } from "./utils.js";
 import { Container, Input, Text, Spacer, matchesKey, Key, type Component } from "@earendil-works/pi-tui";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
@@ -234,30 +235,30 @@ export default function planMode(pi: ExtensionAPI) {
     if (!text) return;
 
     const planText = extractPlanText(text);
-    if (!planText) return; // No plan found — skip ui.select
 
     setRefining(false);
 
-    // Write plan file with thin wrapper heading
-    const planDir = ensurePlanDir();
-    const activeFile = getActivePlanFile();
-    let filename = activeFile;
-    if (!filename) {
-      // Generate timestamp filename
-      const ts = new Date().toISOString().replace(/[T:]/g, "-").slice(0, 16);
-      filename = `${PLAN_FILE_PREFIX}${ts}.md`;
-      setActivePlanFile(filename, pi);
+    // Write plan file if plan text was found
+    if (planText) {
+      const planDir = ensurePlanDir();
+      const activeFile = getActivePlanFile();
+      let filename = activeFile;
+      if (!filename) {
+        // Generate timestamp filename
+        const ts = new Date().toISOString().replace(/[T:]/g, "-").slice(0, 16);
+        filename = `${PLAN_FILE_PREFIX}${ts}.md`;
+        setActivePlanFile(filename, pi);
+      }
+      const filePath = join(planDir, filename);
+      const title = titleFromFilename(filename);
+      const content = `# Plan: ${title}\n\n${planText}\n`;
+      writeFileSync(filePath, content, "utf-8");
+      updateStatus(ctx);
     }
-    const filePath = join(planDir, filename);
-    const title = titleFromFilename(filename);
-    const content = `# Plan: ${title}\n\n${planText}\n`;
-    writeFileSync(filePath, content, "utf-8");
-
-    updateStatus(ctx);
 
     const choice = await ctx.ui.select(
       "Plan is ready. How'd you like to proceed?",
-      ["Execute plan", "Refine", "Save and exit plan mode", "Discard and exit plan mode"],
+      ["Execute", "Refine", "Save & Exit", "Discard & Exit"],
     );
 
     if (choice === "Execute") {
@@ -332,7 +333,7 @@ export default function planMode(pi: ExtensionAPI) {
     if (trimmed) {
       const sanitized = sanitizePlanName(trimmed);
       if (!sanitized) {
-        ctx.ui.notify("Invalid plan name. Use letters, numbers, hyphens, spaces, and dots only.", "warning");
+        ctx.ui.notify("Invalid plan name. Use letters, numbers, hyphens, underscores, spaces, and dots only.", "warning");
         return false;
       }
       const filename = `${PLAN_FILE_PREFIX}${sanitized}.md`;
@@ -340,7 +341,7 @@ export default function planMode(pi: ExtensionAPI) {
       saveAndSetActiveTools(PLAN_MODE_TOOLS);
       updateStatus(ctx);
       const createTitle = titleFromFilename(filename);
-      if (ctx.hasUI) ctx.ui.notify(`Plan mode ON — creating ${createTitle}`, "info");
+      if (ctx.hasUI) ctx.ui.notify(`Plan mode ON — creating plan "${createTitle}"`, "info");
     } else {
       enterPlanMode(ctx);
     }
@@ -358,7 +359,7 @@ export default function planMode(pi: ExtensionAPI) {
     return true;
   }
 
-  // ─── Command: /plan [off|status|list|<name>] ──────────────────────────────────
+  // ─── Command: /plan [off|<name>] ──────────────────────────────────────────
 
   pi.registerCommand("plan", {
     description: "Plan mode: /plan (toggle) · /plan <name> (load existing or create new) · /plan off",
@@ -399,7 +400,7 @@ export default function planMode(pi: ExtensionAPI) {
         // Treat input as plan name: load existing → execute, or create new → plan mode
         const sanitized = sanitizePlanName(input);
         if (!sanitized) {
-          ctx.ui.notify("Invalid plan name. Use letters, numbers, hyphens, spaces, and dots only.", "warning");
+          ctx.ui.notify("Invalid plan name. Use letters, numbers, hyphens, underscores, spaces, and dots only.", "warning");
           return;
         }
         const filename = `${PLAN_FILE_PREFIX}${sanitized}.md`;
@@ -417,7 +418,7 @@ export default function planMode(pi: ExtensionAPI) {
           enterPlanWithFile(filename, pi);
           saveAndSetActiveTools(PLAN_MODE_TOOLS);
           updateStatus(ctx);
-          if (ctx.hasUI) ctx.ui.notify(`Plan mode ON — creating ${titleFromFilename(filename)}`, "info");
+          if (ctx.hasUI) ctx.ui.notify(`Plan mode ON — creating plan "${titleFromFilename(filename)}"`, "info");
         }
       }
     },
@@ -445,18 +446,3 @@ export default function planMode(pi: ExtensionAPI) {
   });
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function extractTextFromMessage(message: Record<string, unknown>): string | null {
-  const content = message.content;
-  if (typeof content === "string") return content;
-  if (Array.isArray(content)) {
-    return content
-      .filter((block: unknown): block is { type: string; text?: string } =>
-        typeof block === "object" && block !== null && "type" in block && (block as { type: string }).type === "text",
-      )
-      .map((block) => block.text ?? "")
-      .join("\n");
-  }
-  return null;
-}
