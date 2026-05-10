@@ -76,6 +76,7 @@ All fields are optional — omit any field to keep its default.
 | `skills.nameColor` | `string` | `"text"` | Colour for the skill name in the title |
 | `skills.labelColor` | `string` | `"success"` | Colour for status labels (e.g. "DONE") |
 | `skills.expandHintColor` | `string` | `"dim"` | Colour for the expand/collapse hint |
+| `skills.outputColor` | `string` | `"dim"` | Colour for expanded content |
 
 ### Custom message
 

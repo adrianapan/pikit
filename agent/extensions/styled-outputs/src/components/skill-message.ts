@@ -64,7 +64,7 @@ export function createSkillInvocationMessage(
     if (width > SKILL_PREFIX_WIDTH) {
       const mdLines = md.render(width - SKILL_PREFIX_WIDTH);
       for (const line of mdLines) {
-        lines.push(indentLine(applyColor(t, CONFIG.tools.general.outputColor, line)));
+        lines.push(indentLine(applyColor(t, CONFIG.skills.outputColor, line)));
       }
     }
 

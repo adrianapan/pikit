@@ -24,7 +24,8 @@
     "titleColor": "toolTitle",
     "nameColor": "text",
     "labelColor": "success",
-    "expandHintColor": "dim"
+    "expandHintColor": "dim",
+    "outputColor": "dim"
   },
   "customMessages": {
     "prefix": "●",

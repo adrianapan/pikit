@@ -17,6 +17,7 @@ export interface SkillsUserConfig {
   nameColor?: string;
   labelColor?: string;
   expandHintColor?: string;
+  outputColor?: string;
 }
 
 export interface ThinkingMessageUserConfig {

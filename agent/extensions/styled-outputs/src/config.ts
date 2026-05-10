@@ -27,6 +27,7 @@ export const DEFAULT_CONFIG = {
     NAME_COLOR: "text",
     LABEL_COLOR: "success",
     EXPAND_HINT_COLOR: "dim",
+    OUTPUT_COLOR: "dim",
   },
 
   // Custom message
@@ -114,6 +115,7 @@ export const CONFIG = {
     nameColor: userConfig.skills?.nameColor ?? DEFAULT_CONFIG.SKILLS.NAME_COLOR,
     labelColor: userConfig.skills?.labelColor ?? DEFAULT_CONFIG.SKILLS.LABEL_COLOR,
     expandHintColor: userConfig.skills?.expandHintColor ?? DEFAULT_CONFIG.SKILLS.EXPAND_HINT_COLOR,
+    outputColor: userConfig.skills?.outputColor ?? DEFAULT_CONFIG.SKILLS.OUTPUT_COLOR,
   },
   userMessage: {
     prefix: userConfig.userMessage?.prefix ?? DEFAULT_CONFIG.USER_MESSAGE.PREFIX,
