@@ -24,7 +24,7 @@ import {
 import { Container, Input, Text, Spacer, matchesKey, Key, type Component } from "@earendil-works/pi-tui";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
 import { join } from "node:path";
-import { existsSync, writeFileSync, readFileSync } from "node:fs";
+import { existsSync, writeFileSync, readFileSync, unlinkSync } from "node:fs";
 
 export default function planMode(pi: ExtensionAPI) {
   // ─── Saved tool list for restoring ────────────────────────────────────────
@@ -257,17 +257,30 @@ export default function planMode(pi: ExtensionAPI) {
 
     const choice = await ctx.ui.select(
       "Plan is ready. How'd you like to proceed?",
-      ["Execute plan", "Refine"],
+      ["Execute plan", "Refine", "Save and exit plan mode", "Discard and exit plan mode"],
     );
 
-    if (choice === "Execute plan") {
+    if (choice === "Execute") {
       enterExecuteMode(ctx);
       pi.sendUserMessage("Execute the plan steps now.");
     } else if (choice === "Refine") {
       setRefining(true);
       updateStatus(ctx);
+    } else if (choice === "Save & Exit") {
+      enterOffMode(ctx, "Plan saved. Plan mode OFF.");
+    } else if (choice === "Discard & Exit") {
+      const confirmed = await ctx.ui.select(
+        "Are you sure?",
+        ["Yes, discard", "Cancel"],
+      );
+      if (confirmed === "Yes, discard") {
+        const filePath = getPlanFilePath();
+        if (filePath && existsSync(filePath)) unlinkSync(filePath);
+        setActivePlanFile(null, pi);
+        enterOffMode(ctx, "Plan discarded. Plan mode OFF.");
+      }
+      // Cancel — stay in plan mode, menu dismissed
     }
-    // "Stay in plan mode" or undefined (cancelled) — do nothing
   });
 
   // ─── Event: session_tree ──────────────────────────────────────────────────
