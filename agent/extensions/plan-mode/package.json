@@ -1,7 +1,7 @@
 {
   "name": "plan-mode",
   "version": "1.0.0",
-  "description": "Toggle plan mode: read-only exploration with numbered plans, then execute with progress tracking",
+  "description": "Toggle plan mode: read-only exploration with self-contained plans, then execute with plan_complete signal",
   "type": "module",
   "repository": {
     "type": "git",

@@ -61,21 +61,28 @@ export const DESTRUCTIVE_PATTERNS: RegExp[] = [
 export const PLAN_MODE_PROMPT = `\
 You are in PLAN MODE. You have read-only access — you may explore and analyze, but you MUST NOT make any changes.
 
-Your task: produce a numbered action plan under a "Plan:" header.
+Your task: produce an action plan under a "Plan:" header.
 
 Format:
 \`\`\`
 Plan:
-1. [First step]
-2. [Second step]
-3. [Third step]
+1. [Step title — short verb-object phrase]
+   [2-4 sentences of context: which file(s), where, what to change, and why.]
+2. [Step title]
+   [Context...]
 ...
 \`\`\`
 
-Each step must be a short verb-object phrase — specific enough to act on without this conversation's context, but concise (aim for 4-8 words). Write each step as if the executor has no memory of this conversation: include enough context that it can be carried out with only the plan file and the codebase. Assume the executor will read the relevant files fresh — do not rely on findings you discovered during planning.
+Each step MUST be self-contained — write it as if the executor has no memory of this conversation. Include enough context that it can be carried out with only the plan file and the codebase. Assume the executor will read the relevant files fresh — do not rely on findings you discovered during planning.
 
-Good: "Add auth middleware to routes/index.ts"
+Good: "Add auth middleware to routes/index.ts
+     Apply it as \`app.use(authMiddleware)\` before the route definitions (~line 45). Currently routes/index.ts has no middleware."
+
 Bad: "Add it to the file we looked at"
+
+Bad (over-prescribed): "Insert \`const authMiddleware = require('./middleware/auth');\` at line 3, then add \`app.use(authMiddleware);\` at line 46"
+
+Specify what to do and where — not the exact implementation. The executor reads the relevant files and decides how.
 
 After listing all steps, stop and wait for the user to choose:
 - "Execute plan" — switches to execute mode where you carry out each step
@@ -85,40 +92,27 @@ After listing all steps, stop and wait for the user to choose:
 Do NOT attempt to make any file changes, run destructive commands, or modify anything.`;
 
 /** System prompt injected when in EXECUTE mode. */
-export function buildExecutePrompt(incompleteSteps: Array<{ step: number; text: string }>): string {
-  const steps = incompleteSteps.map((s) => `${s.step}. ${s.text}`).join("\n");
+export function buildExecutePrompt(planContent: string): string {
   return `\
-You are in EXECUTE MODE. You MUST follow this strict sequence for EACH step:
-1. Do the work for step N
-2. Call step_done({ step: N }) immediately after completing that step
-3. Only then proceed to step N+1
+You are in EXECUTE MODE. Execute the plan below step by step.
 
-Do NOT batch multiple steps' work and then call step_done for all of them. Do NOT call step_done for a step you already marked complete.
+After completing ALL steps, call plan_complete() to signal that execution is finished. Do NOT call plan_complete before all steps are done.
 
-Remaining steps:
-${steps}
-
-After completing each step, call step_done with { step: <step_number> }.
-When all steps are complete, report "All steps complete." and you will exit execute mode.`;
+Plan:
+${planContent}`;
 }
 
 /** System prompt injected when refining a plan in PLAN mode. */
-export function buildRefinePrompt(todos: Array<{ step: number; text: string }>): string {
-  const steps = todos.map((s) => `${s.step}. ${s.text}`).join("\n");
+export function buildRefinePrompt(planContent: string): string {
   return `\
 You are in PLAN MODE (refining). The user wants to revise the current plan based on their feedback.
 
 Current plan:
-${steps}
+${planContent}
 
-Each step must be a short verb-object phrase — specific enough to act on without this conversation's context, but concise (aim for 4-8 words). Write as if the executor has no memory of this conversation: include enough context to carry out the step with only the plan file and the codebase.
+Each step MUST be self-contained — write it as if the executor has no memory of this conversation. Include enough context that it can be carried out with only the plan file and the codebase. Assume the executor will read the relevant files fresh — do not rely on findings you discovered during planning.
 
-Revise the plan and output the full updated plan under a "Plan:" header:
-
-Plan:
-1. [Revised step]
-2. [Revised step]
-...
+Revise the plan and output the full updated plan under a "Plan:" header.
 
 Do NOT make any changes. Only produce a revised plan.`;
 }

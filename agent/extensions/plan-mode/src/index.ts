@@ -1,4 +1,4 @@
-/** Plan Mode — toggle via /plan or Ctrl+Alt+P. PLAN: read-only. EXECUTE: tools restored + step_done tracking. Plan files stored in .pi/plans/. */
+/** Plan Mode — toggle via /plan or Ctrl+Alt+P. PLAN: read-only. EXECUTE: tools restored + plan_complete signal. Plan files stored in .pi/plans/. */
 
 import type {
   ExtensionAPI,
@@ -15,19 +15,13 @@ import { DynamicBorder } from "@mariozechner/pi-coding-agent";
 import { PLAN_MODE_TOOLS, PLAN_MODE_PROMPT, PLAN_FILE_PREFIX, PLAN_DIR, buildExecutePrompt, buildRefinePrompt } from "./config.js";
 import {
   isSafeCommand,
-  extractPlanSteps,
+  extractPlanText,
   ensurePlanDir,
-  parsePlanFile,
-  serializePlanFile,
-  markStepInFile,
   titleFromFilename,
   listPlanFiles,
   sanitizePlanName,
-  stripMarkdownFormatting,
-  renderMarkdownStep,
 } from "./utils.js";
 import { Container, Input, Text, Spacer, matchesKey, Key, type Component } from "@earendil-works/pi-tui";
-import type { TodoItem } from "./utils.js";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
 import { join } from "node:path";
 import { existsSync, writeFileSync, readFileSync } from "node:fs";
@@ -35,9 +29,6 @@ import { existsSync, writeFileSync, readFileSync } from "node:fs";
 export default function planMode(pi: ExtensionAPI) {
   // ─── Saved tool list for restoring ────────────────────────────────────────
   let savedToolNames: string[] | null = null;
-
-  // In-memory todos cache (populated from plan file on disk)
-  let todosCache: TodoItem[] = [];
 
   function saveAndSetActiveTools(toolNames: string[]): void {
     if (savedToolNames === null) {
@@ -62,21 +53,6 @@ export default function planMode(pi: ExtensionAPI) {
     return join(process.cwd(), PLAN_DIR, file);
   }
 
-  /** Load todos from plan file into cache. Returns empty array if no file. */
-  function loadTodosFromPlanFile(): TodoItem[] {
-    const filePath = getPlanFilePath();
-    if (!filePath || !existsSync(filePath)) return [];
-    const content = readFileSync(filePath, "utf-8");
-    todosCache = parsePlanFile(content);
-    return todosCache;
-  }
-
-  /** Check if the active plan file exists on disk. Returns true if no file is active. */
-  function activePlanFileExists(): boolean {
-    const filePath = getPlanFilePath();
-    return !filePath || existsSync(filePath);
-  }
-
   // ─── UI helpers ────────────────────────────────────────────────────────────
 
   function updateStatus(ctx: ExtensionContext): void {
@@ -85,32 +61,13 @@ export default function planMode(pi: ExtensionAPI) {
 
     if (mode === "plan") {
       ctx.ui.setStatus("plan-mode", "⏸ PLAN");
-      ctx.ui.setWidget("plan-mode", ["⏸ Plan Mode — read-only"]);
     } else if (mode === "execute") {
-      const done = todosCache.filter((t) => t.completed).length;
-      const total = todosCache.length;
-      ctx.ui.setStatus("plan-mode", `📋 ${done}/${total}`);
-      ctx.ui.setWidget("plan-mode", (_tui, theme) => {
-        return new Text(renderTodoListThemed(todosCache, theme), 0, 0);
-      });
+      ctx.ui.setStatus("plan-mode", "📋 EXECUTING");
     } else {
       ctx.ui.setStatus("plan-mode", undefined);
-      ctx.ui.setWidget("plan-mode", undefined);
     }
 
     pi.events.emit("plan-mode:state", { mode });
-  }
-
-  function renderTodoList(todos: TodoItem[]): string[] {
-    return todos.map((t) => `${t.completed ? "☑" : "☐"} ${t.step}. ${stripMarkdownFormatting(t.text)}`);
-  }
-
-  function renderTodoListThemed(todos: TodoItem[], theme: { bold: (s: string) => string; italic: (s: string) => string; fg: (c: string, s: string) => string }): string {
-    return todos.map((t) => {
-      const marker = t.completed ? "☑" : "☐";
-      const stepText = renderMarkdownStep(t.text, theme);
-      return `${marker} ${t.step}. ${stepText}`;
-    }).join("\n");
   }
 
   // ─── State transitions ─────────────────────────────────────────────────────
@@ -149,14 +106,12 @@ export default function planMode(pi: ExtensionAPI) {
     }
 
     // Check if active plan file was deleted externally
-    if (getActivePlanFile() && !activePlanFileExists()) {
+    const filePath = getPlanFilePath();
+    if (getActivePlanFile() && filePath && !existsSync(filePath)) {
       if (ctx.hasUI) ctx.ui.notify(`Plan file "${getActivePlanFile()}" not found — disabling plan mode.`, "warning");
       enterOffMode(ctx);
       return;
     }
-
-    // Load todos from file if activePlanFile is set
-    loadTodosFromPlanFile();
 
     if (getMode() === "plan") {
       saveAndSetActiveTools(PLAN_MODE_TOOLS);
@@ -184,17 +139,20 @@ export default function planMode(pi: ExtensionAPI) {
 
     if (mode === "plan") {
       if (getRefining()) {
-        if (todosCache.length > 0) {
-          return { systemPrompt: event.systemPrompt + "\n\n" + buildRefinePrompt(todosCache) };
+        const filePath = getPlanFilePath();
+        if (filePath && existsSync(filePath)) {
+          const planContent = readFileSync(filePath, "utf-8");
+          return { systemPrompt: event.systemPrompt + "\n\n" + buildRefinePrompt(planContent) };
         }
       }
       return { systemPrompt: event.systemPrompt + "\n\n" + PLAN_MODE_PROMPT };
     }
 
     if (mode === "execute") {
-      const incomplete = todosCache.filter((t) => !t.completed);
-      if (incomplete.length === 0) return {};
-      return { systemPrompt: event.systemPrompt + "\n\n" + buildExecutePrompt(incomplete) };
+      const filePath = getPlanFilePath();
+      if (!filePath || !existsSync(filePath)) return {};
+      const planContent = readFileSync(filePath, "utf-8");
+      return { systemPrompt: event.systemPrompt + "\n\n" + buildExecutePrompt(planContent) };
     }
 
     return {};
@@ -215,57 +173,35 @@ export default function planMode(pi: ExtensionAPI) {
     };
   });
 
-  // ─── Tool: step_done ────────────────────────────────────────────────────────
+  // ─── Tool: plan_complete ────────────────────────────────────────────────────
 
   pi.registerTool({
-    name: "step_done",
-    label: "Step Done",
-    description: "Mark a plan step as complete. Call this with the step number after finishing a step.",
+    name: "plan_complete",
+    label: "Plan Complete",
+    description: "Signal that all plan steps have been executed. Call this once after finishing the final step. This exits execute mode.",
     parameters: {
       type: "object",
-      properties: {
-        step: { type: "number", description: "The step number that was completed" },
-      },
-      required: ["step"],
+      properties: {},
+      required: [],
     },
-    async execute(_toolCallId, params) {
-      const allDone = todosCache.length > 0 && todosCache.every((t) => t.completed);
-      if (allDone) {
-        return { content: [{ type: "text", text: "All plan steps are already complete. No further step_done calls needed." }] };
-      }
-      const alreadyDone = todosCache.find((t) => t.step === params.step);
-      if (alreadyDone?.completed) {
-        return { content: [{ type: "text", text: `Step ${params.step} is already marked complete. Do not call step_done for this step again. Move on to the next incomplete step.` }] };
-      }
-      return { content: [{ type: "text", text: JSON.stringify({ status: "ok", step: params.step }) }], details: { step: params.step } };
+    async execute() {
+      return {
+        content: [{ type: "text", text: "Plan complete. Exiting execute mode." }],
+        details: { planComplete: true },
+      };
     },
   });
 
-  // ─── Event: tool_result (process step_done results) ────────────────────────
+  // ─── Event: tool_result (process plan_complete results) ────────────────────
 
   pi.on("tool_result", (event: ToolResultEvent, ctx: ExtensionContext): void => {
-    if (event.toolName !== "step_done") return;
+    if (event.toolName !== "plan_complete") return;
     if (getMode() !== "execute") return;
-
-    const step = event.input?.step;
-    if (typeof step !== "number") return;
-
-    const item = todosCache.find((t) => t.step === step);
-    if (!item || item.completed) return;
-
-    item.completed = true;
-    const filePath = getPlanFilePath();
-    if (filePath) markStepInFile(filePath, step);
-    updateStatus(ctx);
-
-    // Check if all done
-    if (todosCache.length > 0 && todosCache.every((t) => t.completed)) {
-      if (ctx.hasUI) ctx.ui.notify("All plan steps complete!", "success");
-      enterOffMode(ctx);
-    }
+    if (ctx.hasUI) ctx.ui.notify("All plan steps complete!", "success");
+    enterOffMode(ctx);
   });
 
-  // ─── Event: agent_end (extract plan steps in PLAN mode) ────────────────────
+  // ─── Event: agent_end (extract plan text in PLAN mode) ────────────────────
 
   pi.on("agent_end", async (event: AgentEndEvent, ctx: ExtensionContext) => {
     if (getMode() !== "plan") return;
@@ -278,12 +214,12 @@ export default function planMode(pi: ExtensionAPI) {
     const text = extractTextFromMessage(lastAssistant);
     if (!text) return;
 
-    const steps = extractPlanSteps(text);
-    if (steps.length === 0) return; // No plan extracted yet — skip ui.select
+    const planText = extractPlanText(text);
+    if (!planText) return; // No plan found — skip ui.select
 
     setRefining(false);
 
-    // Write plan file
+    // Write plan file with thin wrapper heading
     const planDir = ensurePlanDir();
     const activeFile = getActivePlanFile();
     let filename = activeFile;
@@ -295,10 +231,8 @@ export default function planMode(pi: ExtensionAPI) {
     }
     const filePath = join(planDir, filename);
     const title = titleFromFilename(filename);
-    writeFileSync(filePath, serializePlanFile(title, steps), "utf-8");
-
-    // Update in-memory cache
-    todosCache = steps;
+    const content = `# Plan: ${title}\n\n${planText}\n`;
+    writeFileSync(filePath, content, "utf-8");
 
     updateStatus(ctx);
 
@@ -316,8 +250,6 @@ export default function planMode(pi: ExtensionAPI) {
     }
     // "Stay in plan mode" or undefined (cancelled) — do nothing
   });
-
-
 
   // ─── Event: session_tree ──────────────────────────────────────────────────
 
@@ -382,27 +314,13 @@ export default function planMode(pi: ExtensionAPI) {
     return true;
   }
 
-  /** Load an existing plan file and enter execute mode. Returns false if load failed. */
+  /** Load an existing plan file and enter execute mode. */
   function loadPlanAndExecute(ctx: ExtensionContext, filename: string, displayName: string): boolean {
-    const filePath = join(process.cwd(), PLAN_DIR, filename);
-    const content = readFileSync(filePath, "utf-8");
-    const items = parsePlanFile(content);
-    if (items.length === 0) {
-      ctx.ui.notify(`Plan file is empty: ${filename}`, "warning");
-      return false;
-    }
-    const allDone = items.every((i) => i.completed);
-    if (allDone) {
-      ctx.ui.notify("All steps already complete.", "info");
-      return false;
-    }
     setActivePlanFile(filename, pi);
-    todosCache = items;
     transition("execute", pi);
     restoreAllTools();
     updateStatus(ctx);
-    const done = items.filter((i) => i.completed).length;
-    ctx.ui.notify(`Loaded plan "${displayName}" — ${done}/${items.length} steps done`, "info");
+    ctx.ui.notify(`Loaded plan "${displayName}"`, "info");
     pi.sendUserMessage("Execute the plan steps now.");
     return true;
   }
@@ -422,7 +340,7 @@ export default function planMode(pi: ExtensionAPI) {
           if (files.length === 0) {
             await promptNameAndEnterPlanMode(ctx);
           } else {
-            const options = ["Create new plan", ...files.map((f) => `${f.display} (${f.done}/${f.total} done)`)];
+            const options = ["Create new plan", ...files.map((f) => f.title)];
             const choice = await ctx.ui.select("Select a plan or create new:", options);
             if (choice === undefined) return; // cancelled
             if (choice === "Create new plan") {
@@ -431,7 +349,7 @@ export default function planMode(pi: ExtensionAPI) {
               const idx = options.indexOf(choice) - 1; // offset for "Create new" option
               if (idx >= 0 && idx < files.length) {
                 const file = files[idx];
-                loadPlanAndExecute(ctx, file.name, file.display);
+                loadPlanAndExecute(ctx, file.name, file.title);
               }
             }
           }
@@ -450,17 +368,9 @@ export default function planMode(pi: ExtensionAPI) {
           ctx.ui.notify("Plan mode is OFF", "info");
         } else if (mode === "plan") {
           const file = getActivePlanFile();
-          const fileMissing = file && !activePlanFileExists();
-          ctx.ui.notify(todosCache.length > 0
-            ? `Plan mode ON — ${todosCache.length} step(s) planned`
-            : fileMissing
-              ? `Plan mode ON — plan file "${file}" missing`
-              : file
-                ? `Plan mode ON — awaiting plan (${file})`
-                : "Plan mode ON — no plan yet", "info");
+          ctx.ui.notify(file ? `Plan mode ON — ${file}` : "Plan mode ON — no plan yet", "info");
         } else {
-          const done = todosCache.filter((t) => t.completed).length;
-          ctx.ui.notify(`Execute mode — ${done}/${todosCache.length} steps done`, "info");
+          ctx.ui.notify("Execute mode — running plan", "info");
         }
       } else if (input.toLowerCase() === "list") {
         const files = listPlanFiles();
@@ -468,7 +378,7 @@ export default function planMode(pi: ExtensionAPI) {
           ctx.ui.notify("No plan files found in .pi/plans/", "info");
           return;
         }
-        const lines = files.map((f) => `  ${f.display} (${f.done}/${f.total} done)`);
+        const lines = files.map((f) => `  ${f.title}`);
         ctx.ui.notify(`Plan files:\n${lines.join("\n")}`, "info");
       } else {
         // Treat input as plan name: load existing → execute, or create new → plan mode

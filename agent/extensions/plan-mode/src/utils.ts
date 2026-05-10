@@ -1,14 +1,8 @@
-/** Pure utilities: isSafeCommand, extractPlanSteps, plan file I/O */
+/** Pure utilities: isSafeCommand, extractPlanText, plan file I/O */
 
 import { SAFE_COMMAND_PATTERNS, DESTRUCTIVE_PATTERNS, PLAN_DIR, PLAN_FILE_PREFIX } from "./config.js";
-import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-
-export interface TodoItem {
-  step: number;
-  text: string;
-  completed: boolean;
-}
 
 /** Check if command matches safe patterns and not destructive patterns. */
 export function isSafeCommand(command: string): boolean {
@@ -16,60 +10,12 @@ export function isSafeCommand(command: string): boolean {
     && !DESTRUCTIVE_PATTERNS.some((p) => p.test(command));
 }
 
-/** Extract numbered plan steps from a "Plan:" header.
- *  Requires contiguous numbering from 1. Skips sub-bullets, code fences, and other non-step lines. */
-export function extractPlanSteps(message: string): TodoItem[] {
+/** Extract the raw text under the "Plan:" header from a message. Returns null if no plan found. */
+export function extractPlanText(message: string): string | null {
   const planMatch = message.match(/^\s*Plan:\s*$/im);
-  if (!planMatch) return [];
-
+  if (!planMatch) return null;
   const afterPlan = message.slice(planMatch.index! + planMatch[0].length);
-  const lines = afterPlan.split("\n");
-  const steps: TodoItem[] = [];
-  let nextStep = 1;
-  let inCodeFence = false;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // Track code fences — skip content inside them
-    if (trimmed.startsWith("```")) {
-      inCodeFence = !inCodeFence;
-      continue;
-    }
-    if (inCodeFence) continue;
-
-    // Only match lines where step number appears at the start (with optional indentation)
-    const stepMatch = line.match(/^\s*(\d+)\s*[.)]\s+(.+)/);
-    if (stepMatch) {
-      const num = parseInt(stepMatch[1], 10);
-      const text = stepMatch[2].trim();
-      if (num === nextStep && text.length > 0) {
-        steps.push({ step: num, text, completed: false });
-        nextStep = num + 1;
-      }
-    }
-    // Non-matching lines (blank, bullets, prose) are just sub-content — skip
-  }
-
-  return steps;
-}
-
-/** Strip markdown bold/italic/code for plan file storage (keeps markers readable). */
-export function stripMarkdownFormatting(text: string): string {
-  return text
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/\*\*([^*]+)\*\*/g, "$1")
-    .replace(/\*([^*]+)\*/g, "$1");
-}
-
-/** Render markdown bold/italic/code using theme styling for widget display. */
-export function renderMarkdownStep(text: string, theme: { bold: (s: string) => string; italic: (s: string) => string; fg: (c: string, s: string) => string }): string {
-  // Process code first (backticks), then bold (**), then italic (*)
-  let result = text;
-  result = result.replace(/`([^`]+)`/g, (_, content) => theme.fg("dim", content));
-  result = result.replace(/\*\*([^*]+)\*\*/g, (_, content) => theme.bold(content));
-  result = result.replace(/\*([^*]+)\*/g, (_, content) => theme.italic(content));
-  return result;
+  return afterPlan.trim();
 }
 
 // ─── Plan File I/O ────────────────────────────────────────────────────────────
@@ -79,42 +25,6 @@ export function ensurePlanDir(): string {
   const dir = join(process.cwd(), PLAN_DIR);
   mkdirSync(dir, { recursive: true });
   return dir;
-}
-
-/** Parse plan file markdown content → TodoItem[].
- *  Reads lines matching `- [x] N. Text` or `- [ ] N. Text`. */
-export function parsePlanFile(content: string): TodoItem[] {
-  const items: TodoItem[] = [];
-  const regex = /^- \[([ x])\] (\d+)\. (.+)$/gm;
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(content)) !== null) {
-    items.push({
-      completed: match[1] === "x",
-      step: parseInt(match[2], 10),
-      text: match[3],
-    });
-  }
-  return items;
-}
-
-/** Serialize TodoItem[] → plan file markdown content. */
-export function serializePlanFile(title: string, items: TodoItem[]): string {
-  const lines = [`# Plan: ${title}`];
-  for (const item of items) {
-    const check = item.completed ? "x" : " ";
-    lines.push(`- [${check}] ${item.step}. ${item.text}`);
-  }
-  return lines.join("\n") + "\n";
-}
-
-/** Write [x] checkbox for a step in the plan file on disk. No-op if already checked or not found. */
-export function markStepInFile(filePath: string, step: number): void {
-  if (!existsSync(filePath)) return;
-  const content = readFileSync(filePath, "utf-8");
-  const regex = new RegExp(`^- \\[ \\] ${step}\\. `, "m");
-  if (!regex.test(content)) return;
-  const updated = content.replace(regex, `- [x] ${step}. `);
-  writeFileSync(filePath, updated, "utf-8");
 }
 
 /** Derive display title from filename: strip prefix & extension, hyphens → spaces, title-case. */
@@ -128,9 +38,7 @@ export function titleFromFilename(filename: string): string {
 
 interface PlanFileSummary {
   name: string;
-  display: string;
-  done: number;
-  total: number;
+  title: string;
 }
 
 /** Sanitize a plan name — reject path traversal and invalid characters. Returns null if invalid. */
@@ -142,7 +50,7 @@ export function sanitizePlanName(name: string): string | null {
   return trimmed.replace(/\s+/g, "-");
 }
 
-/** List available plan files in .pi/plans/ with completion counts. */
+/** List available plan files in .pi/plans/ with titles from # Plan: heading. */
 export function listPlanFiles(): PlanFileSummary[] {
   const dir = join(process.cwd(), PLAN_DIR);
   if (!existsSync(dir)) return [];
@@ -153,12 +61,8 @@ export function listPlanFiles(): PlanFileSummary[] {
 
   return files.map((filename) => {
     const content = readFileSync(join(dir, filename), "utf-8");
-    const items = parsePlanFile(content);
-    return {
-      name: filename,
-      display: titleFromFilename(filename),
-      done: items.filter((i) => i.completed).length,
-      total: items.length,
-    };
+    const titleMatch = content.match(/^# Plan:\s*(.+)$/m);
+    const title = titleMatch ? titleMatch[1].trim() : titleFromFilename(filename);
+    return { name: filename, title };
   });
 }
