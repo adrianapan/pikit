@@ -325,31 +325,39 @@ export default function planMode(pi: ExtensionAPI) {
 
   /** Show the plan action menu: Execute, Refine, Save & Exit, Discard & Exit. */
   async function showPlanMenu(ctx: ExtensionContext): Promise<void> {
-    const choice = await ctx.ui.select(
-      "Plan is ready. How'd you like to proceed?",
-      ["Execute", "Refine", "Save & Exit", "Discard & Exit"],
-    );
-
-    if (choice === "Execute") {
-      enterExecuteMode(ctx);
-      pi.sendUserMessage("Execute the plan steps now.");
-    } else if (choice === "Refine") {
-      setRefining(true);
-      updateStatus(ctx);
-    } else if (choice === "Save & Exit") {
-      enterOffMode(ctx, "Plan saved. Plan mode OFF.");
-    } else if (choice === "Discard & Exit") {
-      const confirmed = await ctx.ui.select(
-        "Are you sure?",
-        ["Yes, discard", "Cancel"],
+    while (true) {
+      const choice = await ctx.ui.select(
+        "Plan is ready. How'd you like to proceed?",
+        ["Execute", "Refine", "Save & Exit", "Discard & Exit"],
       );
-      if (confirmed === "Yes, discard") {
-        const filePath = getPlanFilePath();
-        if (filePath && existsSync(filePath)) unlinkSync(filePath);
-        setActivePlanFile(null, pi);
-        enterOffMode(ctx, "Plan discarded. Plan mode OFF.");
+
+      if (choice === "Execute") {
+        enterExecuteMode(ctx);
+        pi.sendUserMessage("Execute the plan steps now.");
+        return;
+      } else if (choice === "Refine") {
+        setRefining(true);
+        updateStatus(ctx);
+        return;
+      } else if (choice === "Save & Exit") {
+        enterOffMode(ctx, "Plan saved. Plan mode OFF.");
+        return;
+      } else if (choice === "Discard & Exit") {
+        const confirmed = await ctx.ui.select(
+          "Are you sure?",
+          ["Yes, discard", "Cancel"],
+        );
+        if (confirmed === "Yes, discard") {
+          const filePath = getPlanFilePath();
+          if (filePath && existsSync(filePath)) unlinkSync(filePath);
+          setActivePlanFile(null, pi);
+          enterOffMode(ctx, "Plan discarded. Plan mode OFF.");
+          return;
+        }
+        // Cancel — re-show plan menu
+      } else {
+        // Escaped menu — re-show plan menu
       }
-      // Cancel — stay in plan mode, menu dismissed
     }
   }
 
