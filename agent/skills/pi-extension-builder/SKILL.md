@@ -47,7 +47,7 @@ agent/extensions/<name>/
 ### Code conventions
 
 - Export single default function receiving `ExtensionAPI` — no classes, no extra exports
-- Reference existing extensions: `web-access` (tool registration), `startup` (lifecycle), `permission-gate` (interception)
+- Reference existing extensions: `web-access/src/index.ts` (tool registration), `startup/src/index.ts` (lifecycle), `permission-gate/src/index.ts` (interception)
 - Match TypeScript style of file being edited — no new patterns
 - One concern per extension
 
@@ -69,6 +69,7 @@ const PADDING = " ".repeat(WIDTH);  // Auto-matched
 - `index.ts` — Wiring (patches, events, registrations)
 - `config.ts` — Dumb values only (no logic)
 - `utils.ts` — Pure helpers (parsers, validators, formatters)
+- `types.ts` — Type definitions (always extract when config exists). User config types mirror the config shape with all-optional fields. See `styled-outputs/src/types.ts` for pattern
 - `components/` — TUI rendering (implement `render(width)` interface)
 
 **3. Clean porting** — From reference implementations:
@@ -76,7 +77,28 @@ const PADDING = " ".repeat(WIDTH);  // Auto-matched
 - Don't replicate convoluted code — reinterpret cleanly
 - Extract in order: config → utils → components → wire in index.ts
 
-**4. Patching pattern** — Modifying pi components:
+**4. User config** — When extension supports user configuration:
+   - Config file: `~/.pi/agent/configs/<extension-name>.json`
+   - `config.ts` defines `DEFAULT_CONFIG` with all defaults (color fields use theme tokens like `"text"`, `"accent"`, `"success"`, `"muted"`, `"dim"`, `"separator"`)
+   - `loadUserConfig()` reads user config (`readFileSync` + `JSON.parse`, catch → `{}`)
+   - Merge via `??`: `userConfig.field ?? DEFAULT_CONFIG.FIELD` — user overrides win, defaults fill gaps
+   - See `styled-outputs/src/config.ts` for full pattern
+
+**5. Color support** — All color config fields must accept both theme tokens and hex:
+   - Theme tokens: `"text"`, `"accent"`, `"success"`, `"error"`, `"muted"`, `"dim"`, `"separator"`, `"toolTitle"`, etc.
+   - Hex values: `"#ff6600"`, `"#00ff88"`, etc.
+   - Implementation in `utils.ts`:
+     - `isHexColor(color)` — checks `color.startsWith("#")`
+     - `applyColor(theme, color, text)` — hex → ANSI truecolor (`\x1b[38;2;r;g;bm`), otherwise `theme.fg(color, text)`
+     - `applyBgColor(theme, color, text)` — hex → ANSI truecolor bg (`\x1b[48;2;r;g;bm`), otherwise converts theme fg ANSI to bg ANSI (swap `38` → `48`)
+   - See `styled-outputs/src/utils.ts` for full implementation
+
+**6. Example config** — Include `<extension-name>.example.json` at extension root:
+   - `_comment` key with file placement instructions (e.g. `"Place this file at ~/.pi/agent/configs/<name>.json"`)
+   - Default values for every field — users copy this as starting point
+   - See `styled-outputs/styled-outputs.example.json` for pattern
+
+**7. Patching pattern** — Modifying pi components:
 ```typescript
 import { PATCH_FLAG } from "./utils.js";
 
@@ -106,7 +128,6 @@ export default function(pi) {
 - Update extension's `README.md` with new features, tools, commands
 - If no `README.md` exists, create one with description + usage
 - Document new permissions or lifecycle hooks
-- Update other READMEs if change impacts other extensions
 
 **Root README additions** — under `## Extensions`, ordered by category:
 1. **UI** — visible every session, zero/minimal config
