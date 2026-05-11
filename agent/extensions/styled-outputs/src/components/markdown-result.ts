@@ -1,6 +1,6 @@
-import { Markdown } from "@mariozechner/pi-tui";
-import type { Component, MarkdownTheme } from "@mariozechner/pi-tui";
-import type { Theme } from "@mariozechner/pi-coding-agent";
+import { Markdown } from "@earendil-works/pi-tui";
+import type { Component, MarkdownTheme } from "@earendil-works/pi-tui";
+import type { Theme } from "@earendil-works/pi-coding-agent";
 import { CONFIG } from "../config.js";
 import { getVisibleWidth } from "../utils.js";
 import { formatExpandedLines, indentLine } from "./tool-shared.js";

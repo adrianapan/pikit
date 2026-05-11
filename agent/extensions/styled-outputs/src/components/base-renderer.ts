@@ -1,6 +1,6 @@
-import type { Component } from "@mariozechner/pi-tui";
-import type { Theme } from "@mariozechner/pi-coding-agent";
-import { renderDiff, getMarkdownTheme } from "@mariozechner/pi-coding-agent";
+import type { Component } from "@earendil-works/pi-tui";
+import type { Theme } from "@earendil-works/pi-coding-agent";
+import { renderDiff, getMarkdownTheme } from "@earendil-works/pi-coding-agent";
 import { CONFIG } from "../config.js";
 import { applyColor, shortenPath } from "../utils.js";
 import {

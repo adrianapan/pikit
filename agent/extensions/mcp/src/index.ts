@@ -39,7 +39,7 @@
  *   false/absent — proxy only (default, recommended for large servers)
  */
 
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
 import { McpStdioClient } from "./client.js";
 import { McpHttpClient } from "./http-client.js";

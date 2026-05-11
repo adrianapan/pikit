@@ -1,6 +1,6 @@
-import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, AssistantMessage, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
-import type { TUI } from "@mariozechner/pi-tui";
+import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, AssistantMessage, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { visibleWidth, truncateToWidth } from "@earendil-works/pi-tui";
+import type { TUI } from "@earendil-works/pi-tui";
 
 import type { SegmentContext, StatusLineSegmentId, UsageStats, SessionEvent, ThinkingLevelEvent, AssistantMessageEvent, ToolResultEvent, UserBashEvent } from "./types.js";
 import { renderSegment } from "./segments/index.js";

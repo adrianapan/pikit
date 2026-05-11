@@ -1,4 +1,4 @@
-import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
+import { visibleWidth, truncateToWidth } from "@earendil-works/pi-tui";
 
 export function hasNerdFonts(): boolean {
   if (process.env.FOOTER_NERD_FONTS === "1") return true;

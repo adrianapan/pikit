@@ -1,7 +1,7 @@
-import { CustomEditor, type ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import type { TUI, EditorTheme } from "@mariozechner/pi-tui";
-import type { KeybindingsManager } from "@mariozechner/pi-coding-agent";
-import { visibleWidth } from "@mariozechner/pi-tui";
+import { CustomEditor, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { TUI, EditorTheme } from "@earendil-works/pi-tui";
+import type { KeybindingsManager } from "@earendil-works/pi-coding-agent";
+import { visibleWidth } from "@earendil-works/pi-tui";
 import { CONFIG } from "./config.js";
 import { applyColor } from "./utils.js";
 

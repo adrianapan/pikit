@@ -1,7 +1,7 @@
-import type { Theme } from "@mariozechner/pi-coding-agent";
-import { VERSION } from "@mariozechner/pi-coding-agent";
+import type { Theme } from "@earendil-works/pi-coding-agent";
+import { VERSION } from "@earendil-works/pi-coding-agent";
 import { bold, centerText, fitToWidth, hasNerdFonts } from "./helpers.js";
-import { visibleWidth } from "@mariozechner/pi-tui";
+import { visibleWidth } from "@earendil-works/pi-tui";
 import type { LoadedCounts } from "./discovery.js";
 
 const PI_ART = [

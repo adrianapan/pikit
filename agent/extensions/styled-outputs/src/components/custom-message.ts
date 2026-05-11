@@ -1,4 +1,4 @@
-import { Markdown } from "@mariozechner/pi-tui";
+import { Markdown } from "@earendil-works/pi-tui";
 import { CONFIG } from "../config.js";
 import { getVisibleWidth, currentTheme, applyColor, getExpandToggleKey } from "../utils.js";
 import { branchLine, indentLine } from "./tool-shared.js";

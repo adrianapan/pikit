@@ -3,5 +3,11 @@
   "private": true,
   "workspaces": [
     "agent/extensions/*"
-  ]
+  ],
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.74.0",
+    "@earendil-works/pi-tui": "^0.74.0",
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
 }

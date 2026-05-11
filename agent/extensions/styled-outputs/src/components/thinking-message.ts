@@ -1,4 +1,4 @@
-import { Markdown } from "@mariozechner/pi-tui";
+import { Markdown } from "@earendil-works/pi-tui";
 import { CONFIG } from "../config.js";
 import { getVisibleWidth, hasVisibleContent, currentTheme, applyColor } from "../utils.js";
 

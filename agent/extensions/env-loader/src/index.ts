@@ -15,7 +15,7 @@
  * Use /env to inspect loaded key names (values are never shown).
  */
 
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { loadEnvFile } from "./loader.js";
 
 export default function envLoaderExtension(pi: ExtensionAPI) {

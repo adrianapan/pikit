@@ -20,7 +20,7 @@
  *   ~/.pi/agent/configs/protected-paths.json
  */
 
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { loadConfig, type Op, type PathEntry } from "./config.js";

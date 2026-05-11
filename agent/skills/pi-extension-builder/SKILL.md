@@ -51,18 +51,18 @@ agent/extensions/<name>/
 - Match TypeScript style of file being edited — no new patterns
 - One concern per extension
 
-### Package namespace aliases
+### Package namespace
 
-Pi's extension loader resolves both `@mariozechner/*` and `@earendil-works/*` package prefixes to the same bundled modules. Both work identically at runtime — no `npm install` needed.
+Pi's npm packages live under `@earendil-works/` (the old `@mariozechner/` scope is deprecated). The extension loader resolves both prefixes to the same bundled modules at runtime — no `npm install` needed in extension code.
 
-| Both resolve identically |
-|---|
-| `@mariozechner/pi-tui` ←→ `@earendil-works/pi-tui` |
-| `@mariozechner/pi-coding-agent` ←→ `@earendil-works/pi-coding-agent` |
-| `@mariozechner/pi-agent-core` ←→ `@earendil-works/pi-agent-core` |
-| `@mariozechner/pi-ai` ←→ `@earendil-works/pi-ai` |
+| Deprecated (old) | Current |
+|---|---|
+| `@mariozechner/pi-coding-agent` | `@earendil-works/pi-coding-agent` |
+| `@mariozechner/pi-tui` | `@earendil-works/pi-tui` |
+| `@mariozechner/pi-agent-core` | `@earendil-works/pi-agent-core` |
+| `@mariozechner/pi-ai` | `@earendil-works/pi-ai` |
 
-**Convention:** Use `@mariozechner/pi-tui` and `@mariozechner/pi-coding-agent` for imports — match existing extension code. Never "fix" one namespace to the other; both are intentional aliases. Do not add these packages to `package.json` dependencies — the loader provides them.
+**Convention:** Use `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui` for imports. Match existing extension code. Do not add these packages to `package.json` dependencies — the loader provides them.
 
 ### Complex extension patterns
 
@@ -143,7 +143,7 @@ if (this.keybindings.matches(data, "app.tools.expand")) {
 
 **For displaying key labels** (headers, tips, help text):
 ```typescript
-import { KeybindingsManager } from "@mariozechler/pi-coding-agent";
+import { KeybindingsManager } from "@earendil-works/pi-coding-agent";
 const keybindings = KeybindingsManager.create(); // reads config, merges defaults
 
 // Returns lowercase KeyId: "ctrl+p", "shift+tab"

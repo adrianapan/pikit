@@ -1,4 +1,4 @@
-import type { Theme, ThemeColor } from "@mariozechner/pi-coding-agent";
+import type { Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
 import type { IconSet } from "./icons.js";
 
 // Theme color - either a pi theme color name or a custom hex color

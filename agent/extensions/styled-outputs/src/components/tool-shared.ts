@@ -1,5 +1,5 @@
-import { Text } from "@mariozechner/pi-tui";
-import type { Theme } from "@mariozechner/pi-coding-agent";
+import { Text } from "@earendil-works/pi-tui";
+import type { Theme } from "@earendil-works/pi-coding-agent";
 import { CONFIG } from "../config.js";
 import type { TrimStrategy } from "../types.js";
 import { applyColor, applyBgColor, toolPrefix, errorPrefix, getVisibleWidth, getExpandToggleKey } from "../utils.js";
