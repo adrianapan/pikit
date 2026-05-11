@@ -1,5 +1,5 @@
 {
-  "name": "pi-config",
+  "name": "pi-dev",
   "private": true,
   "workspaces": [
     "agent/extensions/*"
