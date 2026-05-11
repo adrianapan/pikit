@@ -51,6 +51,19 @@ agent/extensions/<name>/
 - Match TypeScript style of file being edited — no new patterns
 - One concern per extension
 
+### Package namespace aliases
+
+Pi's extension loader resolves both `@mariozechner/*` and `@earendil-works/*` package prefixes to the same bundled modules. Both work identically at runtime — no `npm install` needed.
+
+| Both resolve identically |
+|---|
+| `@mariozechner/pi-tui` ←→ `@earendil-works/pi-tui` |
+| `@mariozechner/pi-coding-agent` ←→ `@earendil-works/pi-coding-agent` |
+| `@mariozechner/pi-agent-core` ←→ `@earendil-works/pi-agent-core` |
+| `@mariozechner/pi-ai` ←→ `@earendil-works/pi-ai` |
+
+**Convention:** Use `@mariozechner/pi-tui` and `@mariozechner/pi-coding-agent` for imports — match existing extension code. Never "fix" one namespace to the other; both are intentional aliases. Do not add these packages to `package.json` dependencies — the loader provides them.
+
 ### Complex extension patterns
 
 Apply only when structure warrants it:
