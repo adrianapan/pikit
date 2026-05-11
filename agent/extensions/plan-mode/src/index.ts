@@ -1,4 +1,4 @@
-/** Plan Mode — toggle via /plan or Ctrl+Alt+P. PLAN: read-only. EXECUTE: tools restored + plan_complete signal. Plan files stored in .pi/plans/. */
+/** Plan Mode — toggle via /plan or Shift+Tab. PLAN: read-only. EXECUTE: tools restored + plan_complete signal. Plan files stored in .pi/plans/. */
 
 import type {
   ExtensionAPI,
@@ -574,9 +574,9 @@ export default function planMode(pi: ExtensionAPI) {
     },
   });
 
-  // ─── Shortcut: Ctrl+Alt+P ─────────────────────────────────────────────────
+  // ─── Shortcut: Shift+Tab ─────────────────────────────────────────────────
 
-  pi.registerShortcut("ctrl+alt+p", {
+  pi.registerShortcut("shift+tab", {
     description: "Toggle plan mode",
     handler: async (ctx) => {
       const current = getMode();

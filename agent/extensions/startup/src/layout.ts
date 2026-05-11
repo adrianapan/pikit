@@ -32,6 +32,7 @@ function buildTipsColumn(theme: Theme, keyMap: KeyMap): string[] {
     "",
     ` ${dim("/")} for commands`,
     ` ${dim("!")} to run bash`,
+    ` ${dim("shift+tab")} toggle plan mode`,
     ` ${dim(modelKey)} cycle model`,
     ` ${dim(thinkingKey)} cycle thinking`,
   ];
@@ -45,8 +46,7 @@ function buildRightColumn(theme: Theme, counts: LoadedCounts): string[] {
     ` ${itemPrefix}${theme.fg(extensions > 0 ? "success" : "dim", `${extensions}`)} extension${extensions !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(skills > 0 ? "success" : "dim", `${skills}`)} skill${skills !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(mcpServers > 0 ? "success" : "dim", `${mcpServers}`)} MCP config${mcpServers !== 1 ? "s" : ""}`,
-    //@TODO: to be re-added when we add a new shortcut to the right column
-    // ` ${itemPrefix}${theme.fg(promptTemplates > 0 ? "success" : "dim", `${promptTemplates}`)} prompt template${promptTemplates !== 1 ? "s" : ""}`,
+    ` ${itemPrefix}${theme.fg(promptTemplates > 0 ? "success" : "dim", `${promptTemplates}`)} prompt template${promptTemplates !== 1 ? "s" : ""}`,
     ` ${itemPrefix}${theme.fg(contextFiles > 0 ? "success" : "dim", `${contextFiles}`)} context file${contextFiles !== 1 ? "s" : ""}`,
   ];
 

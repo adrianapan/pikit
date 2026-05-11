@@ -1,6 +1,6 @@
 # Plan Mode Extension
 
-Toggle plan mode via `/plan` command or `Ctrl+Alt+P`.
+Toggle plan mode via `/plan` command or `Shift+Tab`.
 
 ## Modes
 
@@ -18,7 +18,7 @@ Toggle plan mode via `/plan` command or `Ctrl+Alt+P`.
 
 ## Keyboard Shortcuts
 
-- `Ctrl+Alt+P` — Toggle plan mode on/off
+- `Shift+Tab` — Toggle plan mode on/off
 
 ## CLI Flag
 
