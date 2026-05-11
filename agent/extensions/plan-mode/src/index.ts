@@ -11,6 +11,9 @@ import type {
   AgentEndEvent,
 } from "@earendil-works/pi-coding-agent";
 import { DynamicBorder } from "@earendil-works/pi-coding-agent";
+import { Container, Input, Text, Spacer, SelectList, matchesKey, Key, type Component, type SelectItem } from "@earendil-works/pi-tui";
+import { join } from "node:path";
+import { existsSync, writeFileSync, readFileSync, unlinkSync } from "node:fs";
 
 import { PLAN_MODE_TOOLS, PLAN_MODE_PROMPT, PLAN_FILE_PREFIX, PLAN_DIR, buildExecutePrompt, buildRefinePrompt, USER_CONFIG } from "./config.js";
 import {
@@ -23,10 +26,7 @@ import {
   extractTextFromMessage,
   applyLabelColor,
 } from "./utils.js";
-import { Container, Input, Text, Spacer, SelectList, matchesKey, Key, type Component, type SelectItem } from "@earendil-works/pi-tui";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
-import { join } from "node:path";
-import { existsSync, writeFileSync, readFileSync, unlinkSync } from "node:fs";
 
 export default function planMode(pi: ExtensionAPI) {
   // ─── Saved tool list for restoring ────────────────────────────────────────
@@ -471,7 +471,7 @@ export default function planMode(pi: ExtensionAPI) {
         customType: "plan-mode",
         content: planContent,
         display: true,
-        details: { title: displayName },
+        details: { title: `Active plan: ${displayName}` },
       });
     }
   }

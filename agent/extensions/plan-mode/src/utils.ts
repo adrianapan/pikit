@@ -1,10 +1,11 @@
 /** Pure utilities: isSafeCommand, extractPlanText, plan file I/O, color helpers */
 
 import type { Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
-import { SAFE_COMMAND_PATTERNS, DESTRUCTIVE_PATTERNS, PLAN_DIR, PLAN_FILE_PREFIX } from "./config.js";
-import type { PlanFileSummary } from "./types.js";
 import { existsSync, readFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+
+import { SAFE_COMMAND_PATTERNS, DESTRUCTIVE_PATTERNS, PLAN_DIR, PLAN_FILE_PREFIX } from "./config.js";
+import type { PlanFileSummary } from "./types.js";
 
 /** Check if command matches safe patterns and not destructive patterns. */
 export function isSafeCommand(command: string): boolean {

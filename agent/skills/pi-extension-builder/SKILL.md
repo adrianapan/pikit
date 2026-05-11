@@ -51,6 +51,29 @@ agent/extensions/<name>/
 - Match TypeScript style of file being edited — no new patterns
 - One concern per extension
 
+### Import ordering
+
+Group imports with a blank line between externals and internals:
+
+```typescript
+// External: @earendil-works/*, node:*, other packages
+import type { Theme } from "@earendil-works/pi-coding-agent";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+// Internal: ./ or ../ relative paths
+import { CONFIG } from "./config.js";
+import type { Result } from "./types.js";
+```
+
+**Rules:**
+- All external imports first (`@earendil-works/*`, `node:*`, third-party)
+- All internal imports after (`./`, `../`)
+- Blank line between the two groups
+- Within each group, match existing ordering (don't reorder beyond grouping)
+- Applies to `import type` lines too — they follow the same grouping
+- Don't add comments to the import section — it's self-explanatory with the grouping
+
 ### Package namespace
 
 Pi's npm packages live under `@earendil-works/` (the old `@mariozechner/` scope is deprecated). The extension loader resolves both prefixes to the same bundled modules at runtime — no `npm install` needed in extension code.
