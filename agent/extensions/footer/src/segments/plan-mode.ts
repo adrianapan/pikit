@@ -17,7 +17,7 @@ export const planModeSegment = {
     if (!state) return { content: "", visible: false };
 
     const label = applyColor(ctx.theme, "dim", "Plan mode:");
-    const value = state.mode === "off" ? "OFF" : state.mode === "plan" ? "ON" : state.mode.toUpperCase();
+    const value = state.mode === "off" ? "OFF" : "ON";
 
     return { content: `${label} ${color(ctx, "modeIndicator", value)}`, visible: true };
   },
