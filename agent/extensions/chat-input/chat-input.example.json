@@ -1,7 +1,11 @@
 {
-  "_comment": "Place this file at ~/.pi/agent/configs/chat-input.json. Token values (e.g. 'border') or hex colours (e.g. '#c07898') are accepted for borderToken and accentToken.",
-  "borderToken": "border",
-  "accentToken": "accent",
+  "_comment": "Place this file at ~/.pi/agent/configs/chat-input.json. Token values (e.g. 'border') or hex colours (e.g. '#c07898') are accepted for borderColor, prefixColor, planModeBorderColor, and planModePrefixColor.",
+  "borderColor": "border",
   "prefix": "❯",
+  "prefixColor": "accent",
+  "planModeBorderColor": "customMessageLabel",
+  "planModePrefix": "⏸",
+  "planModePrefixColor": "customMessageLabel",
+
   "boxedView": false
 }

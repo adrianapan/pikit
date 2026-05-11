@@ -12,12 +12,19 @@ function plainText(line: string): string {
 	return line.replace(ANSI_RE, "");
 }
 
+function isPlanModeActive(): boolean {
+	const mode = (globalThis as any).__planMode?.mode;
+	return mode === "plan" || mode === "execute";
+}
+
 // ─── Component ────────────────────────────────────────────────────────────
 class ChatInput extends CustomEditor {
 	private border: (s: string) => string;
 	private accent: (s: string) => string;
 	private bashBorder: (s: string) => string;
 	private bashAccent: (s: string) => string;
+	private planModeBorder: (s: string) => string;
+	private planModeAccent: (s: string) => string;
 
 	constructor(
 		tui: TUI,
@@ -27,12 +34,16 @@ class ChatInput extends CustomEditor {
 		accentFn: (s: string) => string,
 		bashColorFn: (s: string) => string,
 		bashAccentFn: (s: string) => string,
+		planModeColorFn: (s: string) => string,
+		planModeAccentFn: (s: string) => string,
 	) {
 		super(tui, theme, keybindings, { paddingX: 0 });
 		this.border = colorFn;
 		this.accent = accentFn;
 		this.bashBorder = bashColorFn;
 		this.bashAccent = bashAccentFn;
+		this.planModeBorder = planModeColorFn;
+		this.planModeAccent = planModeAccentFn;
 	}
 
 	private isBashMode(): boolean {
@@ -51,13 +62,15 @@ class ChatInput extends CustomEditor {
 		if (stock.length < 2) return super.render(width);
 
 		const isBash = this.isBashMode();
-		const border = isBash ? this.bashBorder : this.border;
-		const accent = isBash ? this.bashAccent : this.accent;
+		const isPlan = isPlanModeActive();
+		const border = isBash ? this.bashBorder : isPlan ? this.planModeBorder : this.border;
+		const accent = isBash ? this.bashAccent : isPlan ? this.planModeAccent : this.accent;
+		const prefix = isBash ? CONFIG.PREFIX : isPlan ? CONFIG.PLAN_MODE_PREFIX : CONFIG.PREFIX;
 
 		if (CONFIG.BOXED_VIEW) {
-			return this.renderBoxed(stock, contentWidth, width, border, accent);
+			return this.renderBoxed(stock, contentWidth, width, border, accent, prefix);
 		}
-		return this.renderUnboxed(stock, contentWidth, width, border, accent);
+		return this.renderUnboxed(stock, contentWidth, width, border, accent, prefix);
 	}
 
 	private renderBoxed(
@@ -66,6 +79,7 @@ class ChatInput extends CustomEditor {
 		width: number,
 		border: (s: string) => string,
 		accent: (s: string) => string,
+		prefix: string,
 	): string[] {
 		const innerWidth = width - 2;
 
@@ -123,7 +137,7 @@ class ChatInput extends CustomEditor {
 
 			const vw = visibleWidth(stock[i]!);
 			const pad = vw < contentWidth ? " ".repeat(contentWidth - vw) : "";
-			const prefixStr = isFirstBodyLine ? accent(CONFIG.PREFIX) : " ";
+			const prefixStr = isFirstBodyLine ? accent(prefix) : " ";
 			body.push(border("│") + leftPad + prefixStr + leftPad + stock[i]! + pad + rightPad + border("│"));
 			isFirstBodyLine = false;
 		}
@@ -149,6 +163,7 @@ class ChatInput extends CustomEditor {
 		width: number,
 		border: (s: string) => string,
 		accent: (s: string) => string,
+		prefix: string,
 	): string[] {
 		// Solid border: after stripping ANSI every char is "─"
 		const isSolidBorder = (line: string) => plainText(line).replace(/─/g, "").length === 0;
@@ -203,7 +218,7 @@ class ChatInput extends CustomEditor {
 
 			const vw = visibleWidth(stock[i]!);
 			const pad = vw < contentWidth ? " ".repeat(contentWidth - vw) : "";
-			const prefixStr = isFirstBodyLine ? accent(CONFIG.PREFIX) : " ";
+			const prefixStr = isFirstBodyLine ? accent(prefix) : " ";
 			body.push(leftPad + prefixStr + leftPad + stock[i]! + pad);
 			isFirstBodyLine = false;
 		}
@@ -228,11 +243,13 @@ class ChatInput extends CustomEditor {
 export default function (pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		ctx.ui.setEditorComponent((tui: TUI, theme: EditorTheme, kb: KeybindingsManager) => {
-			const colorFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.BORDER_TOKEN, s);
-			const accentFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.ACCENT_TOKEN, s);
+			const colorFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.BORDER_COLOR, s);
+			const accentFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.PREFIX_COLOR, s);
 			const bashColorFn = (s: string) => applyColor(ctx.ui.theme, "bashMode", s);
 			const bashAccentFn = (s: string) => applyColor(ctx.ui.theme, "bashMode", s);
-			return new ChatInput(tui, theme, kb, colorFn, accentFn, bashColorFn, bashAccentFn);
+			const planModeColorFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.PLAN_MODE_BORDER_COLOR, s);
+			const planModeAccentFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.PLAN_MODE_PREFIX_COLOR, s);
+			return new ChatInput(tui, theme, kb, colorFn, accentFn, bashColorFn, bashAccentFn, planModeColorFn, planModeAccentFn);
 		});
 	});
 }

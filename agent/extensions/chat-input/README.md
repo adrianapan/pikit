@@ -36,9 +36,12 @@ User config lives in `~/.pi/agent/configs/chat-input.json`. Create it to overrid
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `boxedView` | `boolean` | `true` | `true` = full box with side borders. `false` = top/bottom horizontal rules only, no sides. |
-| `borderToken` | `string` | `"border"` | Theme colour token **or** hex colour |
-| `accentToken` | `string` | `"accent"` | Theme colour token **or** hex colour |
+| `borderColor` | `string` | `"border"` | Theme colour token **or** hex colour |
+| `prefixColor` | `string` | `"accent"` | Theme colour token **or** hex colour |
 | `prefix` | `string` | `"❯"` | Unicode prefix character shown on the first body line. |
+| `planModeBorderColor` | `string` | `"customMessageLabel"` | Border colour in plan/execute mode (theme token or hex) |
+| `planModePrefixColor` | `string` | `"customMessageLabel"` | Prefix colour in plan/execute mode (theme token or hex) |
+| `planModePrefix` | `string` | `"⏸"` | Prefix character in plan/execute mode |
 
 ### Border colour tokens
 

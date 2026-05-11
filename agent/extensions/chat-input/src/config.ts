@@ -6,8 +6,11 @@ export const DEFAULT_CONFIG = {
 	BOX_PAD_X: 1,
 	MENU_GAP: 0,
 	EXTRA_MENU_INDENT: 1,
-	BORDER_TOKEN: "border" as const,
-	ACCENT_TOKEN: "accent" as const,
+	BORDER_COLOR: "border" as const,
+	PREFIX_COLOR: "accent" as const,
+	PLAN_MODE_BORDER_COLOR: "customMessageLabel" as const,
+	PLAN_MODE_PREFIX_COLOR: "customMessageLabel" as const,
+	PLAN_MODE_PREFIX: "\u23F8",
 	PREFIX: "\u276F",
 	BOXED_VIEW: true,
 };
@@ -17,8 +20,11 @@ interface ChatInputUserConfig {
 	boxPadX?: number;
 	menuGap?: number;
 	extraMenuIndent?: number;
-	borderToken?: string;
-	accentToken?: string;
+	borderColor?: string;
+	prefixColor?: string;
+	planModeBorderColor?: string;
+	planModePrefixColor?: string;
+	planModePrefix?: string;
 	prefix?: string;
 }
 
@@ -39,8 +45,11 @@ export const CONFIG = {
 	BOX_PAD_X: userConfig.boxPadX ?? DEFAULT_CONFIG.BOX_PAD_X,
 	MENU_GAP: userConfig.menuGap ?? DEFAULT_CONFIG.MENU_GAP,
 	EXTRA_MENU_INDENT: userConfig.extraMenuIndent ?? DEFAULT_CONFIG.EXTRA_MENU_INDENT,
-	BORDER_TOKEN: (userConfig.borderToken ?? DEFAULT_CONFIG.BORDER_TOKEN) as string,
-	ACCENT_TOKEN: (userConfig.accentToken ?? DEFAULT_CONFIG.ACCENT_TOKEN) as string,
+	BORDER_COLOR: (userConfig.borderColor ?? DEFAULT_CONFIG.BORDER_COLOR) as string,
+	PREFIX_COLOR: (userConfig.prefixColor ?? DEFAULT_CONFIG.PREFIX_COLOR) as string,
+	PLAN_MODE_BORDER_COLOR: (userConfig.planModeBorderColor ?? DEFAULT_CONFIG.PLAN_MODE_BORDER_COLOR) as string,
+	PLAN_MODE_PREFIX_COLOR: (userConfig.planModePrefixColor ?? DEFAULT_CONFIG.PLAN_MODE_PREFIX_COLOR) as string,
+	PLAN_MODE_PREFIX: userConfig.planModePrefix ?? DEFAULT_CONFIG.PLAN_MODE_PREFIX,
 	PREFIX: userConfig.prefix ?? DEFAULT_CONFIG.PREFIX,
 	BOXED_VIEW: userConfig.boxedView ?? DEFAULT_CONFIG.BOXED_VIEW,
 };
