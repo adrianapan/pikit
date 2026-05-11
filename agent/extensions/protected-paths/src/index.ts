@@ -79,7 +79,7 @@ export default function protectedPathsExtension(pi: ExtensionAPI) {
     // ── read / write / edit ──────────────────────────────────────────────────
     const toolName = event.toolName as Op;
     if (toolName === "read" || toolName === "write" || toolName === "edit") {
-      const toolPath = event.input.path as string;
+      const toolPath = (event.input as Record<string, unknown>).path as string;
       const blockedOps = getBlockedOps(toolPath, paths);
       if (!blockedOps || !blockedOps.includes(toolName)) return undefined;
       if (ctx.hasUI) {
@@ -90,7 +90,7 @@ export default function protectedPathsExtension(pi: ExtensionAPI) {
 
     // ── bash ─────────────────────────────────────────────────────────────────
     if (toolName === "bash" && bashGuarded.length > 0) {
-      const command = event.input.command as string;
+      const command = (event.input as Record<string, unknown>).command as string;
       for (const { entry, resolved, bare } of bashGuarded) {
         const hit = resolved
           ? (command.includes(resolved) || command.includes(entry.path))

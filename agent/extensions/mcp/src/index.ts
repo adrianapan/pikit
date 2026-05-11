@@ -453,7 +453,7 @@ export default function mcpExtension(pi: ExtensionAPI) {
             connecting.delete(name);
             try {
               await getOrConnect(name, ctx);
-              ctx.ui.notify(`MCP: reconnected to "${name}"`, "success");
+              ctx.ui.notify(`MCP: reconnected to "${name}"`, "info");
             } catch (err) {
               ctx.ui.notify(
                 `MCP: failed to reconnect "${name}": ${err instanceof Error ? err.message : String(err)}`,

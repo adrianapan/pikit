@@ -134,7 +134,7 @@ function notifyModeChange(ctx: ExtensionContext): void {
     full: "Classic caveman (default)",
     ultra: "Maximum compression",
   };
-  ctx.ui.notify(`Caveman on — ${label}: ${descriptions[state.mode]}`, "success");
+  ctx.ui.notify(`Caveman on — ${label}: ${descriptions[state.mode]}`, "info");
 }
 
 // ─── Extension ───────────────────────────────────────────────────────────────

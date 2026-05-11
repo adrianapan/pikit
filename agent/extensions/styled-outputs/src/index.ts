@@ -49,10 +49,11 @@ export default function styledOutputs(pi: ExtensionAPI) {
       for (let i = container.children.length - 1; i >= 0; i--) {
         const child = container.children[i];
         if (child instanceof Markdown) {
-          const text = child.text;
+          const mdChild = child as any;
+          const text = mdChild.text;
           if (!text) continue;
 
-          const isThinking = !!child.defaultTextStyle?.italic;
+          const isThinking = !!mdChild.defaultTextStyle?.italic;
           if (isThinking) {
             container.children[i] = createThinkingMessage(text, mdTheme);
           } else {
@@ -75,9 +76,10 @@ export default function styledOutputs(pi: ExtensionAPI) {
         for (let i = 0; i < contentBox.children.length; i++) {
           const child = contentBox.children[i];
           if (child instanceof Markdown) {
-            const text = child.text;
+            const mdChild = child as any;
+            const text = mdChild.text;
             if (text) {
-              contentBox.children[i] = createUserMessage(text, child.theme);
+              contentBox.children[i] = createUserMessage(text, mdChild.theme);
             }
           }
         }

@@ -1,4 +1,5 @@
-import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, AssistantMessage, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ReadonlyFooterDataProvider, Theme, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { AssistantMessage } from "@earendil-works/pi-ai";
 import { visibleWidth, truncateToWidth } from "@earendil-works/pi-tui";
 import type { TUI } from "@earendil-works/pi-tui";
 
@@ -201,7 +202,7 @@ export default function footer(pi: ExtensionAPI) {
     return {
       model: ctx.model,
       isLocalModel,
-      thinkingLevel: thinkingLevelFromSession || (typeof ctx.getThinkingLevel === "function" ? ctx.getThinkingLevel() : "off"),
+      thinkingLevel: thinkingLevelFromSession || pi.getThinkingLevel(),
       sessionId: ctx.sessionManager?.getSessionId?.(),
       usageStats,
       contextPercent,

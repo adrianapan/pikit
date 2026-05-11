@@ -11,7 +11,7 @@ import type {
   AgentEndEvent,
 } from "@earendil-works/pi-coding-agent";
 import { DynamicBorder } from "@earendil-works/pi-coding-agent";
-import { Container, Input, Text, Spacer, SelectList, matchesKey, Key, type Component, type SelectItem } from "@earendil-works/pi-tui";
+import { Container, Input, Text, Spacer, SelectList, matchesKey, Key, type KeyId, type Component, type SelectItem } from "@earendil-works/pi-tui";
 import { join } from "node:path";
 import { existsSync, writeFileSync, readFileSync, unlinkSync } from "node:fs";
 
@@ -99,7 +99,7 @@ export default function planMode(pi: ExtensionAPI) {
     transition("plan", pi);
     saveAndSetActiveTools(PLAN_MODE_TOOLS);
     updateStatus(ctx);
-    if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notify, USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error" | "success");
+    if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notify, USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error");
   }
 
   function enterExecuteMode(ctx: ExtensionContext): void {
@@ -110,7 +110,7 @@ export default function planMode(pi: ExtensionAPI) {
     const notifyText = title
       ? USER_CONFIG.labels.execute.notifyWithTitle.replace("{title}", title)
       : USER_CONFIG.labels.execute.notify;
-    if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(notifyText, USER_CONFIG.labels.execute.notifyType as "info" | "warning" | "error" | "success");
+    if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(notifyText, USER_CONFIG.labels.execute.notifyType as "info" | "warning" | "error");
   }
 
   function enterOffMode(ctx: ExtensionContext, message?: string): void {
@@ -119,7 +119,7 @@ export default function planMode(pi: ExtensionAPI) {
     updateStatus(ctx);
     if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(
       message ?? USER_CONFIG.labels.off.notify,
-      message ? "info" : (USER_CONFIG.labels.off.notifyType as "info" | "warning" | "error" | "success")
+      message ? "info" : (USER_CONFIG.labels.off.notifyType as "info" | "warning" | "error")
     );
   }
 
@@ -250,7 +250,7 @@ export default function planMode(pi: ExtensionAPI) {
     const lastAssistant = [...event.messages].reverse().find((m) => m.role === "assistant");
     if (!lastAssistant) return;
 
-    const text = extractTextFromMessage(lastAssistant);
+    const text = extractTextFromMessage(lastAssistant as unknown as Record<string, unknown>);
     if (!text) return;
 
     const planText = extractPlanText(text);
@@ -336,7 +336,7 @@ export default function planMode(pi: ExtensionAPI) {
       saveAndSetActiveTools(PLAN_MODE_TOOLS);
       updateStatus(ctx);
       const createTitle = titleFromFilename(filename);
-      if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notifyWithTitle.replace("{title}", createTitle), USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error" | "success");
+      if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notifyWithTitle.replace("{title}", createTitle), USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error");
     } else {
       enterPlanMode(ctx);
     }
@@ -479,14 +479,17 @@ export default function planMode(pi: ExtensionAPI) {
   // ─── Message renderer for plan-mode ────────────────────────────────────────
 
   pi.registerMessageRenderer("plan-mode", (message, _options, theme) => {
-    const box = new DynamicBorder((s: string) => theme.fg("border", s));
-    box.addChild(new Text(theme.fg("text", "📄 " + (message.content as string).split("\n")[0])));
+    const border = new DynamicBorder((s: string) => theme.fg("border", s));
+    const container = new Container();
+    container.addChild(border);
+    container.addChild(new Text(theme.fg("text", "📄 " + (message.content as string).split("\n")[0])));
     const body = (message.content as string).split("\n").slice(1).join("\n");
     if (body) {
-      box.addChild(new Spacer());
-      box.addChild(new Text(body));
+      container.addChild(new Spacer());
+      container.addChild(new Text(body));
     }
-    return box;
+    container.addChild(border);
+    return container;
   });
 
   // ─── Command: /plan [off|<name>] ──────────────────────────────────────────
@@ -587,7 +590,7 @@ export default function planMode(pi: ExtensionAPI) {
           enterPlanWithFile(filename, pi);
           saveAndSetActiveTools(PLAN_MODE_TOOLS);
           updateStatus(ctx);
-          if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notifyWithTitle.replace("{title}", titleFromFilename(filename)), USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error" | "success");
+          if (ctx.hasUI && !USER_CONFIG.ui.hideNotify) ctx.ui.notify(USER_CONFIG.labels.plan.notifyWithTitle.replace("{title}", titleFromFilename(filename)), USER_CONFIG.labels.plan.notifyType as "info" | "warning" | "error");
         }
       }
     },
@@ -595,7 +598,7 @@ export default function planMode(pi: ExtensionAPI) {
 
   // ─── Shortcut: toggle plan mode ─────────────────────────────────────────────
 
-  pi.registerShortcut(USER_CONFIG.shortcuts.toggleMode, {
+  pi.registerShortcut(USER_CONFIG.shortcuts.toggleMode as KeyId, {
     description: "Toggle plan mode",
     handler: async (ctx) => {
       const current = getMode();

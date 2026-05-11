@@ -8,7 +8,6 @@
 import type {
   ExtensionAPI,
   ExtensionContext,
-  MessageUpdateEvent,
   SessionStartEvent,
   TurnEndEvent,
   TurnStartEvent,
@@ -309,7 +308,7 @@ export default function spinners(pi: ExtensionAPI) {
     startRefreshLoop(ctx);
   });
 
-  pi.on("message_update", async (event: MessageUpdateEvent, _ctx: ExtensionContext) => {
+  pi.on("message_update", async (event, _ctx: ExtensionContext) => {
     const evt: any = (event as any).assistantMessageEvent ?? (event as any).delta ?? {};
 
     if (evt.type === "start") {

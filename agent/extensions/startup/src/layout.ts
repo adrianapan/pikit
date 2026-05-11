@@ -69,7 +69,7 @@ export function renderBox(
   const tipsCol = Math.max(1, boxWidth - leftCol - configCol - 2);
   const hChar = "─";
   const nerd = hasNerdFonts();
-  const separator = (s: string) => { try { return theme.fg("separator", s); } catch { return theme.fg("dim", s); } };
+  const separator = (s: string) => { try { return theme.fg("separator" as any, s); } catch { return theme.fg("dim", s); } };
   const dim = (s: string) => theme.fg("dim", s);
 
   const leftLines = buildLeftColumn(theme, leftCol);

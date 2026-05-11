@@ -37,6 +37,7 @@ export default function (pi: ExtensionAPI) {
         return {
           content: [{ type: "text", text: "Error: provide either query or queries." }],
           isError: true,
+          details: {} as Record<string, unknown>,
         };
       }
 
@@ -47,6 +48,7 @@ export default function (pi: ExtensionAPI) {
         return {
           content: [{ type: "text", text: `Error: ${errorMessage(err)}` }],
           isError: true,
+          details: {} as Record<string, unknown>,
         };
       }
 
@@ -92,6 +94,7 @@ export default function (pi: ExtensionAPI) {
         return {
           content: [{ type: "text", text: "Error: provide either url or urls." }],
           isError: true,
+          details: {} as Record<string, unknown>,
         };
       }
 
@@ -102,6 +105,7 @@ export default function (pi: ExtensionAPI) {
         return {
           content: [{ type: "text", text: `Error: ${errorMessage(err)}` }],
           isError: true,
+          details: {} as Record<string, unknown>,
         };
       }
 
@@ -156,6 +160,7 @@ export default function (pi: ExtensionAPI) {
             },
           ],
           isError: true,
+          details: {} as Record<string, unknown>,
         };
       }
 
@@ -171,6 +176,7 @@ export default function (pi: ExtensionAPI) {
               },
             ],
             isError: true,
+            details: {} as Record<string, unknown>,
           };
         }
         const sources =
@@ -180,6 +186,7 @@ export default function (pi: ExtensionAPI) {
             : "";
         return {
           content: [{ type: "text", text: `## Query: "${result.query}"\n\n${result.answer}${sources}` }],
+          details: { responseId: params.responseId },
         };
       }
 
@@ -198,23 +205,27 @@ export default function (pi: ExtensionAPI) {
               },
             ],
             isError: true,
+            details: {} as Record<string, unknown>,
           };
         }
         if (result.error) {
           return {
             content: [{ type: "text", text: `Error fetching ${result.url}: ${result.error}` }],
             isError: true,
+            details: {} as Record<string, unknown>,
           };
         }
         const title = result.title ? `**${result.title}**\n\n` : "";
         return {
           content: [{ type: "text", text: `## ${result.url}\n\n${title}${result.content}` }],
+          details: { responseId: params.responseId },
         };
       }
 
       return {
         content: [{ type: "text", text: "Unknown result type." }],
         isError: true,
+        details: {},
       };
     },
   });
