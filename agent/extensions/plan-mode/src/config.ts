@@ -41,6 +41,7 @@ export const SAFE_COMMAND_PATTERNS: RegExp[] = [
   /^\s*rg\b/, /^\s*fd\b/, /^\s*bat\b/, /^\s*jq\b/,
   /^\s*git\s+(status|log|diff|show|branch|remote)/i,
   /^\s*node\s+--version/i, /^\s*python\s+--version/i,
+  /^\s*(npx\s+)?tsc\b.*--noEmit/i,
   /^\s*npm\s+(list|ls|view|info|outdated|audit)/i,
   /^\s*yarn\s+(list|info|why|audit)/i,
 ];
