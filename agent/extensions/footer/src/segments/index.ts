@@ -9,6 +9,7 @@ import { costSegment } from "./cost.js";
 import { contextPctSegment, contextTotalSegment } from "./context.js";
 import { separatorSegment } from "./separator.js";
 import { cavemanSegment } from "./caveman.js";
+import { planModeSegment } from "./plan-mode.js";
 
 const SEGMENTS = {
   pi: piSegment,
@@ -26,6 +27,7 @@ const SEGMENTS = {
   cache_write: cacheWriteSegment,
   separator: separatorSegment,
   caveman: cavemanSegment,
+  plan_mode: planModeSegment,
 };
 
 export function renderSegment(id: StatusLineSegmentId, ctx: SegmentContext): RenderedSegment {

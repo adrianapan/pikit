@@ -48,6 +48,7 @@ export type StatusLineSegmentId =
   | "cache_write"
   | "thinking"
   | "caveman"
+  | "plan_mode"
   | "separator"
   | `text:${string}`;
 

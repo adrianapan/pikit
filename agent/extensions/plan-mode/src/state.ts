@@ -14,6 +14,16 @@ const state: {
   refining: false,
 };
 
+// Expose read-only view for footer segment
+(globalThis as Record<string, unknown>).__planMode = { mode: state.mode };
+
+/** Sync globalThis snapshot after state changes. */
+function syncGlobalThis(): void {
+  (globalThis as Record<string, unknown>).__planMode = { mode: state.mode };
+  const requestRender = (globalThis as Record<string, unknown>).__footerRequestRender;
+  if (typeof requestRender === "function") requestRender();
+}
+
 /** Get current mode. */
 export function getMode(): PlanMode {
   return state.mode;
@@ -27,6 +37,7 @@ export function getActivePlanFile(): string | null {
 /** Set active plan file and persist. */
 export function setActivePlanFile(file: string | null, pi: { appendEntry: (type: string, data?: unknown) => void }): void {
   state.activePlanFile = file;
+  syncGlobalThis();
   persist(pi);
 }
 
@@ -45,6 +56,7 @@ export function enterPlanWithFile(file: string | null, pi: { appendEntry: (type:
   state.mode = "plan";
   state.activePlanFile = file;
   state.refining = false;
+  syncGlobalThis();
   persist(pi);
 }
 
@@ -58,6 +70,7 @@ export function transition(
   }
   state.mode = newMode;
   state.refining = false;
+  syncGlobalThis();
   persist(pi);
 }
 
@@ -79,6 +92,7 @@ export function restore(entries: Array<{ type: string; customType?: string; data
         state.mode = data.mode;
         state.activePlanFile = data.activePlanFile ?? null;
         state.refining = false;
+        syncGlobalThis();
         return true;
       }
     }
@@ -91,4 +105,5 @@ export function resetState(): void {
   state.mode = "off";
   state.activePlanFile = null;
   state.refining = false;
+  syncGlobalThis();
 }

@@ -8,7 +8,7 @@ A customizable two-row footer for the pi coding agent. Provides a rich status ba
 Row 1 left:  π | <model name> (<provider>) | <folder> <path> <branch> <dirty>
 Row 1 right: <context bar> <pct%> / <max tokens>
 
-Row 2 left:  Thinking: <LEVEL> | Caveman mode: <VALUE>
+Row 2 left:  Thinking: <LEVEL> | Caveman mode: <VALUE> | Plan mode: <VALUE>
 Row 2 right: T: <total> (<cached> cached) ↑ <in> ↓ <out> | $<cost>
 ```
 
@@ -44,7 +44,7 @@ left and right segments are configured independently:
 {
   "row1LeftSegments":  ["pi", "separator", "model", "separator", "path", "git"],
   "row1RightSegments": ["context_pct"],
-  "row2LeftSegments":  ["thinking", "separator", "caveman"],
+  "row2LeftSegments":  ["thinking", "separator", "caveman", "separator", "plan_mode"],
   "row2RightSegments": ["token_total", "separator", "cost"],
 
   "colors": {
@@ -79,6 +79,7 @@ See `footer.example.json` in this directory for a full annotated example.
 | `cost` | `$<amount>` | `$` dim, amount in `cost` colour (`muted` by default) |
 | `thinking` | `Thinking: <LEVEL>` | Dim label, CAPS level with per-level colour; always visible |
 | `caveman` | `Caveman mode: <MODE>` | Hidden when caveman extension not loaded |
+| `plan_mode` | `Plan mode: <MODE>` | Hidden when plan-mode extension not loaded |
 | `token_total` | `T: <total> (<cached> cached) ↑ <in> ↓ <out>` | Labels dim, numbers in `tokens` colour (`muted` by default) |
 | `token_in` | Input tokens | Available for custom layouts |
 | `token_out` | Output tokens | Available for custom layouts |

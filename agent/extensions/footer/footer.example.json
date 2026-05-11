@@ -2,7 +2,7 @@
   "_comment": "Place this file at ~/.pi/agent/configs/footer.json",
   "row1LeftSegments": ["pi", "separator", "model", "separator", "path", "git"],
   "row1RightSegments": ["context_pct"],
-  "row2LeftSegments": ["thinking", "separator", "caveman"],
+  "row2LeftSegments": ["thinking", "separator", "caveman", "separator", "plan_mode"],
   "row2RightSegments": ["token_total", "separator", "cost"],
   "icons": {
     "pi": "\ue22c",
