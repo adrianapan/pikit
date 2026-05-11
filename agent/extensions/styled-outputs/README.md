@@ -123,6 +123,7 @@ These apply to all tool types unless overridden by a group.
 | `tools.general.moreBgColor` | `string` | `"separator"` | Background colour for the "more" separator |
 | `tools.general.isThemeBackgroundVisible` | `boolean` | `false` | Apply theme background behind tool blocks |
 | `tools.general.verticalPadding` | `number` | `0` | Vertical padding inside tool content boxes (0 = compact, core default = 1) |
+| `tools.general.horizontalPadding` | `number` | `3` | Horizontal padding inside tool content boxes (left+right indent; core default = 1) |
 | `tools.general.diffAddedColor` | `string` | `"toolDiffAdded"` | Colour for diff added lines |
 | `tools.general.diffRemovedColor` | `string` | `"toolDiffRemoved"` | Colour for diff removed lines |
 | `tools.general.diffContextColor` | `string` | `"toolDiffContext"` | Colour for diff context lines |

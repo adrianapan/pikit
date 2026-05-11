@@ -81,6 +81,7 @@ export const DEFAULT_CONFIG = {
       MORE_BG_COLOR: "separator",                     // background color for the separator line (empty = no bg)
       IS_THEME_BACKGROUND_VISIBLE: false,             // whether to apply theme background color to tool outputs
       VERTICAL_PADDING: 0,                            // paddingY for tool content box (0 = compact, core default = 1)
+      HORIZONTAL_PADDING: 3,                          // paddingX for tool content box (1 = default, controls left+right indent)
       DIFF_ADDED_COLOR: "toolDiffAdded",              // color for diff added lines
       DIFF_REMOVED_COLOR: "toolDiffRemoved",          // color for diff removed lines
       DIFF_CONTEXT_COLOR: "toolDiffContext",          // color for diff context lines
@@ -171,6 +172,7 @@ export const CONFIG = {
       moreBgColor: userConfig.tools?.general?.moreBgColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.MORE_BG_COLOR,
       isThemeBackgroundVisible: userConfig.tools?.general?.isThemeBackgroundVisible ?? DEFAULT_CONFIG.TOOLS.GENERAL.IS_THEME_BACKGROUND_VISIBLE,
       verticalPadding: userConfig.tools?.general?.verticalPadding ?? DEFAULT_CONFIG.TOOLS.GENERAL.VERTICAL_PADDING,
+      horizontalPadding: userConfig.tools?.general?.horizontalPadding ?? DEFAULT_CONFIG.TOOLS.GENERAL.HORIZONTAL_PADDING,
       diffAddedColor: userConfig.tools?.general?.diffAddedColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.DIFF_ADDED_COLOR,
       diffRemovedColor: userConfig.tools?.general?.diffRemovedColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.DIFF_REMOVED_COLOR,
       diffContextColor: userConfig.tools?.general?.diffContextColor ?? DEFAULT_CONFIG.TOOLS.GENERAL.DIFF_CONTEXT_COLOR,

@@ -109,6 +109,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
       this.result = savedResult;
       if (this.contentBox) {
         this.contentBox.paddingY = CONFIG.tools.general.verticalPadding;
+        this.contentBox.paddingX = CONFIG.tools.general.horizontalPadding;
         if (CONFIG.tools.general.isThemeBackgroundVisible) {
           const t = currentTheme!;
           const bgFn = this.isPartial

@@ -61,6 +61,7 @@ export interface ToolGeneralUserConfig {
   outputColor?: string;
   isThemeBackgroundVisible?: boolean;
   verticalPadding?: number;
+  horizontalPadding?: number;
   maxExpandedLines?: number;
   moreColor?: string;
   moreBgColor?: string;
