@@ -31,15 +31,17 @@ agent/extensions/<name>/
 ├── README.md
 ├── package.json
 └── src/
-    ├── index.ts           # Wiring only
-    ├── config.ts          # Dumb values (single source of truth)
-    ├── utils.ts           # Pure helpers
-    └── components/        # TUI components if needed
+    ├── index.ts            # Wiring only
+    ├── config.ts           # Dumb values (single source of truth)
+    ├── <name>.example.json # Example user config (with relevant _comment)
+    ├── utils.ts            # Pure helpers
+    └── components/         # TUI components if needed
         └── <name>.ts
 ```
 
 **Rules:**
 - Start simple — split only when needed
+- If user config is needed, `config.ts` and `<name>.example.json` are mandatory
 - `index.ts` always the entry point, always exports default function receiving `ExtensionAPI`
 - `package.json` must include `"pi": { "extensions": ["./src/index.ts"] }` — see `web-access/package.json`
 - New extensions go in root npm workspace
