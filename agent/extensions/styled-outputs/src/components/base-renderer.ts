@@ -82,10 +82,11 @@ export function renderGrepResult(result: any, options: { expanded: boolean; isPa
     return makeText(ctx.lastComponent, errorLabel(theme) + formatExpandedLines(styled, "tail", theme));
   }
 
-  const count = lines.length > 0 ? { label: "matches", value: lines.length } : undefined;
+  const lineCount = text === "No matches found" ? 0 : lines.length;
+  const count = lineCount > 0 ? { label: "matches", value: lineCount } : undefined;
 
   if (!options.expanded) {
-    return makeText(ctx.lastComponent, doneLabel(theme, count) + (lines.length > 0 ? expandHint(theme) : ""));
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + (lineCount > 0 ? expandHint(theme) : ""));
   }
 
   const styled = lines.map((l: string) => applyColor(theme, CONFIG.tools.general.outputColor, l));
@@ -118,10 +119,11 @@ export function renderFindResult(result: any, options: { expanded: boolean; isPa
     return makeText(ctx.lastComponent, errorLabel(theme) + formatExpandedLines(styled, "tail", theme));
   }
 
-  const count = items.length > 0 ? { label: "files", value: items.length } : undefined;
+  const itemCount = text === "No files found matching pattern" ? 0 : items.length;
+  const count = itemCount > 0 ? { label: "files", value: itemCount } : undefined;
 
   if (!options.expanded) {
-    return makeText(ctx.lastComponent, doneLabel(theme, count) + (items.length > 0 ? expandHint(theme) : ""));
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + (itemCount > 0 ? expandHint(theme) : ""));
   }
 
   const styled = items.map((item: string) => {
@@ -271,10 +273,11 @@ export function renderLsResult(result: any, options: { expanded: boolean; isPart
     return makeText(ctx.lastComponent, errorLabel(theme) + formatExpandedLines(styled, "tail", theme));
   }
 
-  const count = items.length > 0 ? { label: "entries", value: items.length } : undefined;
+  const itemCount = text === "(empty directory)" ? 0 : items.length;
+  const count = itemCount > 0 ? { label: "entries", value: itemCount } : undefined;
 
   if (!options.expanded) {
-    return makeText(ctx.lastComponent, doneLabel(theme, count) + (items.length > 0 ? expandHint(theme) : ""));
+    return makeText(ctx.lastComponent, doneLabel(theme, count) + (itemCount > 0 ? expandHint(theme) : ""));
   }
 
   const styled = items.map((item: string) => {
