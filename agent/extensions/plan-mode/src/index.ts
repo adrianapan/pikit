@@ -273,9 +273,10 @@ export default function planMode(pi: ExtensionAPI) {
       const content = `# Plan: ${title}\n\n${planText.replace(/^\s*#{1,6}\s*Plan:[^\n]*\n?/, '').trimStart()}\n`;
       writeFileSync(filePath, content, "utf-8");
       updateStatus(ctx);
-    }
 
-    await showPlanMenu(ctx)
+      // Only show menu when a plan was actually produced
+      await showPlanMenu(ctx);
+    }
   });
 
   // ─── Event: session_tree ──────────────────────────────────────────────────
