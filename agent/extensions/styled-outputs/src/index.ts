@@ -235,7 +235,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     promptSnippet: "Read file contents",
     promptGuidelines: ["Use read to examine files instead of cat or sed."],
     parameters: readTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return readTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -253,7 +253,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     description: bashTool.description,
     promptSnippet: "Execute bash commands (ls, grep, find, etc.)",
     parameters: bashTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return bashTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -273,7 +273,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     renderShell: "default",
     prepareArguments: editTool.prepareArguments,
     parameters: editTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return editTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -292,7 +292,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     promptSnippet: "Create or overwrite files",
     promptGuidelines: ["Use write only for new files or complete rewrites."],
     parameters: writeTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return writeTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -311,7 +311,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     promptSnippet: "Search file contents for patterns (respects .gitignore)",
     promptGuidelines: ["Prefer grep/find over bash for file exploration (faster, respects .gitignore)"],
     parameters: grepTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return grepTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -330,7 +330,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     promptSnippet: "Find files by glob pattern (respects .gitignore)",
     promptGuidelines: ["Prefer grep/find over bash for file exploration (faster, respects .gitignore)"],
     parameters: findTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return findTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
@@ -348,7 +348,7 @@ export default function styledOutputs(pi: ExtensionAPI) {
     description: lsTool.description,
     promptSnippet: "List directory contents",
     parameters: lsTool.parameters,
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId, params, signal, onUpdate) {
       return lsTool.execute(toolCallId, params, signal, onUpdate);
     },
     renderCall(args, theme, ctx) {
