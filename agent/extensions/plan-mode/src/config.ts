@@ -29,8 +29,8 @@ export const PLAN_MODE_TOOLS: string[] = [
 
 // ─── Bash Safety ─────────────────────────────────────────────────────────────
 
-/** Safe command patterns — only these are allowed in PLAN mode. */
-export const SAFE_COMMAND_PATTERNS: RegExp[] = [
+/** Default safe command patterns — only these are allowed in PLAN mode. */
+const DEFAULT_SAFE_PATTERNS: RegExp[] = [
   /^\s*cat\b/, /^\s*head\b/, /^\s*tail\b/, /^\s*less\b/, /^\s*more\b/,
   /^\s*grep\b/, /^\s*find\b/, /^\s*ls\b/, /^\s*pwd\b/,
   /^\s*echo\b/, /^\s*printf\b/, /^\s*wc\b/, /^\s*sort\b/,
@@ -46,8 +46,8 @@ export const SAFE_COMMAND_PATTERNS: RegExp[] = [
   /^\s*yarn\s+(list|info|why|audit)/i,
 ];
 
-/** Destructive command patterns — always blocked in PLAN mode, even if matching a safe pattern. */
-export const DESTRUCTIVE_PATTERNS: RegExp[] = [
+/** Default destructive command patterns — always blocked in PLAN mode, even if matching a safe pattern. */
+const DEFAULT_DESTRUCTIVE_PATTERNS: RegExp[] = [
   /\brm\b/i, /\brmdir\b/i, /\bmv\b/i, /\bcp\b/i,
   /\bmkdir\b/i, /\btouch\b/i, /\bchmod\b/i, /\bchown\b/i,
   /\btee\b/i, /\bdd\b/i, /\bshred\b/i,
@@ -177,6 +177,34 @@ function loadUserConfig(): PlanModeUserConfig {
 }
 
 const userConfig = loadUserConfig();
+
+// ─── Bash Pattern Resolution ──────────────────────────────────────────────────
+
+/** Compile string patterns to RegExp. Falls back to defaults if list is empty or all fail. */
+function resolvePatterns(strings: string[] | undefined, defaults: RegExp[]): RegExp[] {
+  if (!strings || strings.length === 0) return defaults;
+  const patterns: RegExp[] = [];
+  for (const p of strings) {
+    try {
+      patterns.push(new RegExp(p, "i"));
+    } catch {
+      console.warn(`[plan-mode] Invalid pattern: "${p}" — skipping`);
+    }
+  }
+  return patterns.length > 0 ? patterns : defaults;
+}
+
+/** Safe command patterns — resolved from user config or defaults. Replace-only: user list replaces all defaults. */
+export const SAFE_COMMAND_PATTERNS: RegExp[] = resolvePatterns(
+  userConfig.bashPatterns?.safePatterns,
+  DEFAULT_SAFE_PATTERNS,
+);
+
+/** Destructive command patterns — resolved from user config or defaults. Replace-only: user list replaces all defaults. */
+export const DESTRUCTIVE_PATTERNS: RegExp[] = resolvePatterns(
+  userConfig.bashPatterns?.destructivePatterns,
+  DEFAULT_DESTRUCTIVE_PATTERNS,
+);
 
 export const USER_CONFIG = {
   cleanup: {

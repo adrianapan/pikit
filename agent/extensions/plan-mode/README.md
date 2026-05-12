@@ -81,6 +81,8 @@ Create `~/.pi/agent/configs/plan-mode.json` to customize behavior. An example fi
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `cleanup.cleanupOnComplete` | boolean | `false` | Delete the plan file after successful execution (via `plan_complete`) |
+| `bashPatterns.safePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own safe command regex patterns to **replace** all defaults. Omit to keep built-in safe patterns |
+| `bashPatterns.destructivePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own destructive command regex patterns to **replace** all defaults. Omit to keep built-in destructive patterns |
 | `ui.hideNotify` | boolean | `false` | Suppress toast notifications on mode transitions |
 | `ui.hideWidget` | boolean | `true` | Hide the widget when in plan/execute mode |
 | `shortcuts.toggleMode` | string | `"shift+tab"` | Keybinding action for toggling plan mode on/off |
@@ -113,6 +115,23 @@ Fields ending in `WithTitle` support the `{title}` placeholder, which is replace
 ### Notify types
 
 `notifyType` fields accept one of: `"info"`, `"warning"`, `"error"`, `"success"`. The type determines the visual treatment (color, icon) of the toast notification.
+
+### Bash patterns (replace-only)
+
+`bashPatterns.safePatterns` and `bashPatterns.destructivePatterns` are **replace-only** — if you provide an array, it entirely replaces the built-in defaults. There is no merge/append. This matches the permission-gate extension's approach.
+
+Patterns are case-insensitive regex strings (the `i` flag is applied automatically). Invalid patterns are warned and skipped; if all patterns in an array are invalid, the built-in defaults are used as fallback.
+
+Example — allow only `ls` and `cat` as safe, and block `rm` and `sudo` as destructive:
+
+```json
+{
+  "bashPatterns": {
+    "safePatterns": ["^\\s*ls\\b", "^\\s*cat\\b"],
+    "destructivePatterns": ["\\brm\\b", "\\bsudo\\b"]
+  }
+}
+```
 
 ### `cleanup.cleanupOnComplete`
 

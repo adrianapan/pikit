@@ -10,6 +10,12 @@
   "shortcuts": {
     "toggleMode": "shift+tab"
   },
+  "bashPatterns": {
+    "_comment_safe": "Replace-only: providing safePatterns replaces ALL defaults. Omit to keep built-in safe patterns.",
+    "_comment_destructive": "Replace-only: providing destructivePatterns replaces ALL defaults. Omit to keep built-in destructive patterns.",
+    "safePatterns": null,
+    "destructivePatterns": null
+  },
   "labels": {
     "plan": {
       "notify": "✓ Plan mode ON",

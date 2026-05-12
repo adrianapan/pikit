@@ -58,9 +58,15 @@ export interface LabelsUserConfig {
   off?: OffLabelUserConfig;
 }
 
+export interface BashPatternsUserConfig {
+  safePatterns?: string[];
+  destructivePatterns?: string[];
+}
+
 export interface PlanModeUserConfig {
   cleanup?: CleanupUserConfig;
   ui?: UiUserConfig;
   shortcuts?: ShortcutsUserConfig;
   labels?: LabelsUserConfig;
+  bashPatterns?: BashPatternsUserConfig;
 }
