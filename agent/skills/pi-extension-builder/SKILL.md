@@ -30,10 +30,10 @@ agent/extensions/<name>/
 agent/extensions/<name>/
 ├── README.md
 ├── package.json
+├── <name>.example.json     # Example user config (with relevant _comment)
 └── src/
     ├── index.ts            # Wiring only
     ├── config.ts           # Dumb values (single source of truth)
-    ├── <name>.example.json # Example user config (with relevant _comment)
     ├── utils.ts            # Pure helpers
     └── components/         # TUI components if needed
         └── <name>.ts
