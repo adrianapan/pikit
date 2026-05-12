@@ -39,12 +39,17 @@ export default function planMode(pi: ExtensionAPI) {
     pi.setActiveTools(toolNames);
   }
 
+  /** Tool names from the registry, excluding plan_complete (only available in execute mode). */
+  function toolsWithoutPlanComplete(names: string[]): string[] {
+    return names.filter((n) => n !== "plan_complete");
+  }
+
   function restoreAllTools(): void {
     if (savedToolNames !== null) {
-      pi.setActiveTools(savedToolNames);
+      pi.setActiveTools(toolsWithoutPlanComplete(savedToolNames));
       savedToolNames = null;
     } else {
-      pi.setActiveTools(pi.getAllTools().map((t) => t.name));
+      pi.setActiveTools(toolsWithoutPlanComplete(pi.getAllTools().map((t) => t.name)));
     }
   }
 
@@ -104,7 +109,10 @@ export default function planMode(pi: ExtensionAPI) {
 
   function enterExecuteMode(ctx: ExtensionContext): void {
     transition("execute", pi);
-    restoreAllTools();
+    // Restore all tools AND include plan_complete (only available during execute mode)
+    const baseNames = savedToolNames ?? pi.getAllTools().map((t) => t.name);
+    pi.setActiveTools([...baseNames, "plan_complete"]);
+    savedToolNames = null;
     updateStatus(ctx);
     const title = getPlanDisplayTitle();
     const notifyText = title
@@ -154,6 +162,10 @@ export default function planMode(pi: ExtensionAPI) {
 
     if (getMode() === "plan") {
       saveAndSetActiveTools(PLAN_MODE_TOOLS);
+    } else if (getMode() === "execute") {
+      // Restore execute mode tools including plan_complete
+      const allNames = pi.getAllTools().map((t) => t.name);
+      pi.setActiveTools([...toolsWithoutPlanComplete(allNames), "plan_complete"]);
     }
 
     updateStatus(ctx);
@@ -197,9 +209,17 @@ export default function planMode(pi: ExtensionAPI) {
     return {};
   });
 
-  // ─── Event: tool_call (block unsafe bash in PLAN mode) ─────────────────────
+  // ─── Event: tool_call (block unsafe bash in PLAN mode + plan_complete outside EXECUTE) ─
 
   pi.on("tool_call", (event: ToolCallEvent): ToolCallEventResult => {
+    // Guard: plan_complete only callable in execute mode
+    if (event.toolName === "plan_complete" && getMode() !== "execute") {
+      return {
+        block: true,
+        reason: `[plan-mode] plan_complete only available in execute mode. Current mode: ${getMode()}`,
+      };
+    }
+
     if (getMode() !== "plan") return {};
     if (event.toolName !== "bash") return {};
 
@@ -217,7 +237,7 @@ export default function planMode(pi: ExtensionAPI) {
   pi.registerTool({
     name: "plan_complete",
     label: "Plan Complete",
-    description: "Signal that all plan steps have been executed. Call this once after finishing the final step. This exits execute mode.",
+    description: "Signal that all plan steps have been executed. ONLY callable in EXECUTE mode. Call this once after finishing the final step. This exits execute mode. Do NOT call this outside execute mode.",
     parameters: {
       type: "object",
       properties: {},
