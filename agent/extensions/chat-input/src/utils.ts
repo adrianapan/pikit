@@ -1,4 +1,5 @@
 import type { Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
+import { COMPANION_ARTS, ROTATION_INTERVAL_MS } from "./config.js";
 
 function isHexColor(color: string): boolean {
 	return color.startsWith("#");
@@ -19,4 +20,10 @@ export function applyColor(theme: Theme, color: string, text: string): string {
 		return `${hexToAnsi(color)}${text}\x1b[0m`;
 	}
 	return theme.fg(color as ThemeColor, text);
+}
+
+export function getCompanionArt(now: number): { line1: string; line2: string } {
+	const idx = Math.floor(now / ROTATION_INTERVAL_MS) % COMPANION_ARTS.length;
+	const [line1, line2] = COMPANION_ARTS[idx]!;
+	return { line1, line2 };
 }

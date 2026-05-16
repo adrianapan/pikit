@@ -10,6 +10,7 @@ Replaces the default chat input with a configurable, boxed input. All native edi
 - **Scroll indicators**: Shows `↑ N more` / `↓ N more` when content scrolls
 - **Responsive**: Adapts to terminal width; degrades gracefully on narrow terminals
 - **Unboxed mode**: Optionally drop side borders for a minimal horizontal-rule look
+- **ASCII companion**: Rotating cat (7 expressions, 5s interval) shown above the input
 
 ## Installation
 
@@ -29,19 +30,28 @@ User config lives in `~/.pi/agent/configs/chat-input.json`. Create it to overrid
 
 ```json
 {
-  "boxedView": true
+  "boxedView": true,
+  "companion": {
+    "enabled": true,
+    "color": "accent"
+  }
 }
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `boxedView` | `boolean` | `true` | `true` = full box with side borders. `false` = top/bottom horizontal rules only, no sides. |
+| `boxPadX` | `number` | `1` | Horizontal padding inside the box. |
+| `menuGap` | `number` | `0` | Blank lines between bottom border and slash-menu. |
+| `extraMenuIndent` | `number` | `1` | Extra indent (spaces) for slash-menu lines. |
 | `borderColor` | `string` | `"border"` | Theme colour token **or** hex colour |
 | `prefixColor` | `string` | `"accent"` | Theme colour token **or** hex colour |
 | `prefix` | `string` | `"❯"` | Unicode prefix character shown on the first body line. |
 | `planModeBorderColor` | `string` | `"customMessageLabel"` | Border colour in plan/execute mode (theme token or hex) |
 | `planModePrefixColor` | `string` | `"customMessageLabel"` | Prefix colour in plan/execute mode (theme token or hex) |
 | `planModePrefix` | `string` | `"⏸"` | Prefix character in plan/execute mode |
+| `companion.enabled` | `boolean` | `true` | Show a rotating ASCII cat companion above the input. 7 expressions rotate every 5 seconds. |
+| `companion.color` | `string` | `"accent"` | Theme colour token **or** hex colour for the companion art. |
 
 ### Border colour tokens
 

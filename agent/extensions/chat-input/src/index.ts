@@ -2,8 +2,8 @@ import { CustomEditor, type ExtensionAPI } from "@earendil-works/pi-coding-agent
 import type { TUI, EditorTheme } from "@earendil-works/pi-tui";
 import type { KeybindingsManager } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
-import { CONFIG } from "./config.js";
-import { applyColor } from "./utils.js";
+import { CONFIG, COMPANION_PADDING, MIN_WIDTH_FOR_COMPANION } from "./config.js";
+import { applyColor, getCompanionArt } from "./utils.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 const ANSI_RE = /\x1b\[[0-9;]*m|\x1b\[0?m/g;
@@ -25,6 +25,8 @@ class ChatInput extends CustomEditor {
 	private bashAccent: (s: string) => string;
 	private planModeBorder: (s: string) => string;
 	private planModeAccent: (s: string) => string;
+	private companionColor: (s: string) => string;
+	private companionTimer: ReturnType<typeof setInterval> | null = null;
 
 	constructor(
 		tui: TUI,
@@ -36,6 +38,7 @@ class ChatInput extends CustomEditor {
 		bashAccentFn: (s: string) => string,
 		planModeColorFn: (s: string) => string,
 		planModeAccentFn: (s: string) => string,
+		companionColor: (s: string) => string,
 	) {
 		super(tui, theme, keybindings, { paddingX: 0 });
 		this.border = colorFn;
@@ -44,6 +47,10 @@ class ChatInput extends CustomEditor {
 		this.bashAccent = bashAccentFn;
 		this.planModeBorder = planModeColorFn;
 		this.planModeAccent = planModeAccentFn;
+		this.companionColor = companionColor;
+
+		// Rotate companion art even when idle
+		this.companionTimer = setInterval(() => this.tui.requestRender(), 1000);
 	}
 
 	private isBashMode(): boolean {
@@ -125,6 +132,18 @@ class ChatInput extends CustomEditor {
 
 		const top = buildTop(topScrollText);
 		const bottom = buildBottom(bottomScrollText);
+
+		// ── companion art ──
+		const companionLines: string[] = [];
+		if (CONFIG.COMPANION_ENABLED && width >= MIN_WIDTH_FOR_COMPANION) {
+			const art = getCompanionArt(Date.now());
+			const artWidth = Math.max(visibleWidth(art.line1), visibleWidth(art.line2));
+			const pad = width - COMPANION_PADDING - artWidth;
+			const spaces = " ".repeat(Math.max(0, pad));
+			companionLines.push(spaces + this.companionColor(art.line1));
+			companionLines.push(spaces + this.companionColor(art.line2));
+		}
+
 		const leftPad = " ".repeat(CONFIG.BOX_PAD_X);
 		const rightPad = leftPad;
 
@@ -154,7 +173,7 @@ class ChatInput extends CustomEditor {
 		}
 
 		const gap = Array.from({ length: CONFIG.MENU_GAP }, () => "");
-		return [top, ...body, bottom, ...gap, ...menu];
+		return [...companionLines, top, ...body, bottom, ...gap, ...menu];
 	}
 
 	private renderUnboxed(
@@ -207,6 +226,18 @@ class ChatInput extends CustomEditor {
 
 		const top = buildTop(topScrollText);
 		const bottom = buildBottom(bottomScrollText);
+
+		// ── companion art ──
+		const companionLines: string[] = [];
+		if (CONFIG.COMPANION_ENABLED && width >= MIN_WIDTH_FOR_COMPANION) {
+			const art = getCompanionArt(Date.now());
+			const artWidth = Math.max(visibleWidth(art.line1), visibleWidth(art.line2));
+			const pad = width - COMPANION_PADDING - artWidth;
+			const spaces = " ".repeat(Math.max(0, pad));
+			companionLines.push(spaces + this.companionColor(art.line1));
+			companionLines.push(spaces + this.companionColor(art.line2));
+		}
+
 		const leftPad = " ".repeat(CONFIG.BOX_PAD_X);
 
 		// ── body lines ──
@@ -235,7 +266,7 @@ class ChatInput extends CustomEditor {
 		}
 
 		const gap = Array.from({ length: CONFIG.MENU_GAP }, () => "");
-		return [top, ...body, bottom, ...gap, ...menu];
+		return [...companionLines, top, ...body, bottom, ...gap, ...menu];
 	}
 }
 
@@ -249,7 +280,8 @@ export default function (pi: ExtensionAPI) {
 			const bashAccentFn = (s: string) => applyColor(ctx.ui.theme, "bashMode", s);
 			const planModeColorFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.PLAN_MODE_BORDER_COLOR, s);
 			const planModeAccentFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.PLAN_MODE_PREFIX_COLOR, s);
-			return new ChatInput(tui, theme, kb, colorFn, accentFn, bashColorFn, bashAccentFn, planModeColorFn, planModeAccentFn);
+			const companionColorFn = (s: string) => applyColor(ctx.ui.theme, CONFIG.COMPANION_COLOR, s);
+			return new ChatInput(tui, theme, kb, colorFn, accentFn, bashColorFn, bashAccentFn, planModeColorFn, planModeAccentFn, companionColorFn);
 		});
 	});
 }

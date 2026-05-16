@@ -13,6 +13,8 @@ export const DEFAULT_CONFIG = {
 	PLAN_MODE_PREFIX: "\u23F8",
 	PREFIX: "\u276F",
 	BOXED_VIEW: true,
+	COMPANION_ENABLED: true,
+	COMPANION_COLOR: "accent" as const,
 };
 
 interface ChatInputUserConfig {
@@ -26,6 +28,10 @@ interface ChatInputUserConfig {
 	planModePrefixColor?: string;
 	planModePrefix?: string;
 	prefix?: string;
+	companion?: {
+		enabled?: boolean;
+		color?: string;
+	};
 }
 
 const CONFIG_PATH = join(homedir(), ".pi", "agent", "configs", "chat-input.json");
@@ -52,4 +58,21 @@ export const CONFIG = {
 	PLAN_MODE_PREFIX: userConfig.planModePrefix ?? DEFAULT_CONFIG.PLAN_MODE_PREFIX,
 	PREFIX: userConfig.prefix ?? DEFAULT_CONFIG.PREFIX,
 	BOXED_VIEW: userConfig.boxedView ?? DEFAULT_CONFIG.BOXED_VIEW,
+	COMPANION_ENABLED: userConfig.companion?.enabled ?? DEFAULT_CONFIG.COMPANION_ENABLED,
+	COMPANION_COLOR: (userConfig.companion?.color ?? DEFAULT_CONFIG.COMPANION_COLOR) as string,
 };
+
+// Non-user-configurable constants
+export const COMPANION_PADDING = 3;
+export const ROTATION_INTERVAL_MS = 3000;
+export const MIN_WIDTH_FOR_COMPANION = 40;
+
+export const COMPANION_ARTS: [string, string][] = [
+	[" /\\_/\\ ", "( o.o )"],  // original
+	[" /\\_/\\ ", "( -.- )"],  // sleepy
+	[" /\\_/\\ ", "( ^.^ )"],  // happy
+	[" /\\_/\\ ", "( O.O )"],  // awake
+	[" /\\_/\\ ", "( o.- )"],  // winking
+	[" /\\_/\\ ", "( >.< )"],  // closed
+	[" /\\_/\\ ", "( o.O )"],  // curious
+];
