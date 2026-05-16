@@ -1,5 +1,59 @@
 {
   "_comment": "Place this file at ~/.pi/agent/configs/llm-council.json",
   "members": ["qwen3.5:cloud", "kimi-k2.6:cloud", "minimax-m2.7:cloud"],
-  "chairman": "glm-5.1:cloud"
+  "chairman": "glm-5.1:cloud",
+  "labels": ["A", "B", "C", "D", "E", "F", "G", "H"],
+  "spinner": {
+    "prefixChars": ["·", "✢", "✳", "✶", "✻", "✽"],
+    "interval": 80,
+    "color": "muted"
+  },
+  "successPrefix": {
+    "prefix": "✓",
+    "color": "success"
+  },
+  "errorPrefix": {
+    "prefix": "✗",
+    "color": "error"
+  },
+  "branch": {
+    "prefix": "└─",
+    "color": "separator"
+  },
+  "chairmanDisplay": {
+    "icon": "👑",
+    "modelColor": "dim"
+  },
+  "member": {
+    "labelColor": "accent",
+    "modelColor": "dim"
+  },
+  "status": {
+    "doneLabel": "Done",
+    "doneColor": "success",
+    "errorLabel": "Error",
+    "errorColor": "error",
+    "workingLabel": "Working...",
+    "workingColor": "muted",
+    "pendingLabel": "Pending",
+    "pendingColor": "muted",
+    "spawningLabel": "Spawning",
+    "synthesizingLabel": "Synthesizing...",
+    "waitingLabel": "Waiting for members",
+    "elapsedColor": "dim"
+  },
+  "toolHeader": {
+    "titleColor": "toolTitle",
+    "summaryColor": "dim"
+  },
+  "expandHint": {
+    "color": "dim"
+  },
+  "questionPreview": {
+    "maxLength": 40
+  },
+  "systemPrompts": {
+    "member": "You are a member of an LLM Council. Answer the user's question thoroughly and concisely. Provide your best reasoning.",
+    "chairman": "You are the Chairman of an LLM Council. Multiple AI models answered the same question anonymously, labeled A, B, C, etc. Synthesize the best answer, drawing on the strongest points from each response. Resolve any disagreements. Present a unified, well-reasoned answer. Do not mention which model gave which answer — treat them as anonymous perspectives."
+  }
 }

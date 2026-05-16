@@ -6,75 +6,39 @@
  * Progress streams inline via renderResult.
  *
  * Rendering follows styled-outputs visual vocabulary:
- * ✓/✗ prefiix, └─ branch lines, · indent, expand hints.
+ * ✓/✗ prefix, └─ branch lines, · indent, expand hints.
+ * All labels, colors, and symbols are configurable via
+ * ~/.pi/agent/configs/llm-council.json
  */
 
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import type { ExtensionAPI, Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import { getMarkdownTheme } from "@earendil-works/pi-coding-agent";
 import { Markdown, Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
-import { loadConfig } from "./config.js";
+import { CONFIG } from "./config.js";
+import { applyColor, formatElapsed, getExpandToggleKey, getVisibleWidth } from "./utils.js";
 
-// ── Styling helpers (styled-outputs vocabulary) ──────────────────────────
+// ── Derived constants (computed once from CONFIG) ────────────────────────
 
-function isHexColor(color: string): boolean {
-  return typeof color === "string" && color.startsWith("#");
-}
+const SPINNER_FRAMES = [...CONFIG.spinner.prefixChars, ...[...CONFIG.spinner.prefixChars].reverse()];
+const INDENT_WIDTH = getVisibleWidth(CONFIG.branch.prefix) + 1;
 
-function applyColor(theme: Theme, color: string, text: string): string {
-  if (isHexColor(color)) {
-    const h = color.replace("#", "");
-    if (!/^[0-9a-fA-F]{6}$/.test(h)) return text;
-    const r = parseInt(h.slice(0, 2), 16);
-    const g = parseInt(h.slice(2, 4), 16);
-    const b = parseInt(h.slice(4, 6), 16);
-    return `\x1b[38;2;${r};${g};${b}m${text}\x1b[39m`;
-  }
-  try {
-    return theme.fg(color as ThemeColor, text);
-  } catch {
-    return text;
-  }
-}
-
-function getVisibleWidth(text: string): number {
-  return text.replace(/\x1b\[[0-9;]*m/g, "").length;
-}
-
-function getExpandToggleKey(): string {
-  const kbPath = path.join(os.homedir(), ".pi", "agent", "keybindings.json");
-  try {
-    if (!fs.existsSync(kbPath)) return "ctrl+o";
-    const bindings = JSON.parse(fs.readFileSync(kbPath, "utf-8"));
-    return (bindings["app.tools.expand"] as string) ?? "ctrl+o";
-  } catch {
-    return "ctrl+o";
-  }
-}
-
-const SUCCESS_PREFIX = "✓";
-const ERROR_PREFIX = "✗";
-const BRANCH_PREFIX = "└─";
-const SPINNER_CHARS = ["·", "✢", "✳", "✶", "✻", "✽"];
-const SPINNER_FRAMES = [...SPINNER_CHARS, ...[...SPINNER_CHARS].reverse()];
-const SPINNER_INTERVAL = 80;
-const MAX_QUESTION_PREVIEW_LENGTH = 40;
-const INDENT_WIDTH = getVisibleWidth(BRANCH_PREFIX) + 1;
+// ── Styling helpers ──────────────────────────────────────────────────────
 
 function successPrefix(theme: Theme): string {
-  return `${applyColor(theme, "success", SUCCESS_PREFIX)} `;
+  return `${applyColor(theme, CONFIG.successPrefix.color, CONFIG.successPrefix.prefix)} `;
 }
 
 function errorPrefix(theme: Theme): string {
-  return `${applyColor(theme, "error", ERROR_PREFIX)} `;
+  return `${applyColor(theme, CONFIG.errorPrefix.color, CONFIG.errorPrefix.prefix)} `;
 }
 
 function branchLine(text: string, theme: Theme): string {
-  return `${applyColor(theme, "separator", BRANCH_PREFIX)} ${text}`;
+  return `${applyColor(theme, CONFIG.branch.color, CONFIG.branch.prefix)} ${text}`;
 }
 
 function indentLine(text: string): string {
@@ -82,15 +46,14 @@ function indentLine(text: string): string {
 }
 
 function expandHint(theme: Theme): string {
-  return applyColor(theme, "dim", ` • ${getExpandToggleKey()} to expand`);
+  return applyColor(theme, CONFIG.expandHint.color, ` • ${getExpandToggleKey()} to expand`);
 }
 
 function toolHeader(label: string, summary: string, theme: Theme, dot?: string, isError?: boolean): string {
   const d = dot ?? (isError ? errorPrefix(theme) : successPrefix(theme));
-  const title = applyColor(theme, "toolTitle", theme.bold(label));
+  const title = applyColor(theme, CONFIG.toolHeader.titleColor, theme.bold(label));
   return `${d}${title} ${summary}`;
 }
-
 
 function makeText(lastComponent: any, text: string): Text {
   const comp = lastComponent instanceof Text ? lastComponent : new Text("", 0, 0);
@@ -111,20 +74,20 @@ function renderMemberTree(
   const lines: string[] = [];
   for (const m of details.members) {
     const icon =
-      m.status === "done" ? applyColor(theme, "success", "✓") :
-      m.status === "error" ? applyColor(theme, "error", "✗") :
-      m.status === "working" ? applyColor(theme, "muted", SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
-      applyColor(theme, "muted", "·");
-    lines.push(indentLine(`${icon} ${applyColor(theme, "accent", m.label)}: ${applyColor(theme, "dim", m.model)}`));
+      m.status === "done" ? applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix) :
+      m.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) :
+      m.status === "working" ? applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
+      applyColor(theme, CONFIG.status.pendingColor, CONFIG.spinner.prefixChars[0]);
+    lines.push(indentLine(`${icon} ${applyColor(theme, CONFIG.member.labelColor, m.label)}: ${applyColor(theme, CONFIG.member.modelColor, m.model)}`));
     lines.push(indentLine(branchLine(opts.memberSubLine(m), theme)));
   }
   if (details.chairman) {
     const cIcon =
-      details.chairman.status === "done" ? applyColor(theme, "success", "✓") :
-      details.chairman.status === "error" ? applyColor(theme, "error", "✗") :
-      details.chairman.status === "working" ? applyColor(theme, "muted", SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
-      applyColor(theme, "muted", "·");
-    lines.push(indentLine(`${cIcon} 👑 ${applyColor(theme, "dim", `Chairman: ${details.chairman.model}`)}`));
+      details.chairman.status === "done" ? applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix) :
+      details.chairman.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) :
+      details.chairman.status === "working" ? applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
+      applyColor(theme, CONFIG.status.pendingColor, CONFIG.spinner.prefixChars[0]);
+    lines.push(indentLine(`${cIcon} ${CONFIG.chairmanDisplay.icon} ${applyColor(theme, CONFIG.chairmanDisplay.modelColor, `Chairman: ${details.chairman.model}`)}`));
     const suffix = opts.chairmanSubLineSuffix ?? "";
     lines.push(indentLine(branchLine(opts.chairmanSubLine + suffix, theme)));
   }
@@ -138,7 +101,7 @@ function ensureSpinner(ctx: any): number {
   ctx.state.spinnerInterval = setInterval(() => {
     ctx.state.spinnerFrame = (ctx.state.spinnerFrame + 1) % SPINNER_FRAMES.length;
     ctx.invalidate?.();
-  }, SPINNER_INTERVAL);
+  }, CONFIG.spinner.interval);
   return 0;
 }
 
@@ -149,14 +112,8 @@ function clearSpinner(ctx: any) {
   }
 }
 
-function formatElapsed(startedAt: number | undefined, endedAt?: number): string {
-  if (!startedAt) return "";
-  const ms = (endedAt ?? Date.now()) - startedAt;
-  return `(${(ms / 1000).toFixed(1)}s)`;
-}
-
 function spinnerDot(theme: Theme, frame: number): string {
-  return `${applyColor(theme, "muted", SPINNER_FRAMES[frame % SPINNER_FRAMES.length])} `;
+  return `${applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[frame % SPINNER_FRAMES.length])} `;
 }
 
 function createExpandedView(details: CouncilDetails, theme: Theme, markdownTheme: any) {
@@ -178,26 +135,26 @@ function createExpandedView(details: CouncilDetails, theme: Theme, markdownTheme
       const lines: string[] = [];
 
       for (const { m, md } of memberMds) {
-        const icon = m.status === "error" ? applyColor(theme, "error", "✗") : applyColor(theme, "success", "✓");
-        lines.push(indentLine(`${icon} ${applyColor(theme, "accent", m.label)}: ${applyColor(theme, "dim", m.model)}`));
+        const icon = m.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) : applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix);
+        lines.push(indentLine(`${icon} ${applyColor(theme, CONFIG.member.labelColor, m.label)}: ${applyColor(theme, CONFIG.member.modelColor, m.model)}`));
         if (m.status === "error") {
-          lines.push(indentLine(branchLine(`${applyColor(theme, "error", "Failed")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}`, theme)));
-          if (m.error) lines.push(indentLine(indentLine(applyColor(theme, "error", m.error))));
+          lines.push(indentLine(branchLine(`${applyColor(theme, CONFIG.status.errorColor, CONFIG.status.errorLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}`, theme)));
+          if (m.error) lines.push(indentLine(indentLine(applyColor(theme, CONFIG.status.errorColor, m.error))));
         } else {
-          lines.push(indentLine(branchLine(`${applyColor(theme, "success", "Done")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}`, theme)));
+          lines.push(indentLine(branchLine(`${applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}`, theme)));
           if (md) for (const l of md.render(cw)) lines.push(indentLine(indentLine(l)));
         }
       }
 
       if (details.chairman) {
-        const cIcon = details.chairman.status === "error" ? applyColor(theme, "error", "✗") : applyColor(theme, "success", "✓");
+        const cIcon = details.chairman.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) : applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix);
         const cStatus = details.chairman.status === "done"
-          ? applyColor(theme, "success", "Done")
-          : applyColor(theme, "error", "Failed");
-        lines.push(indentLine(`${cIcon} 👑 ${applyColor(theme, "dim", `Chairman: ${details.chairman.model}`)}`));
+          ? applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)
+          : applyColor(theme, CONFIG.status.errorColor, CONFIG.status.errorLabel);
+        lines.push(indentLine(`${cIcon} ${CONFIG.chairmanDisplay.icon} ${applyColor(theme, CONFIG.chairmanDisplay.modelColor, `Chairman: ${details.chairman.model}`)}`));
         lines.push(indentLine(branchLine(cStatus, theme)));
         if (details.chairman.status === "error" && details.chairman.error) {
-          lines.push(indentLine(indentLine(applyColor(theme, "error", details.chairman.error))));
+          lines.push(indentLine(indentLine(applyColor(theme, CONFIG.status.errorColor, details.chairman.error))));
         } else if (chairmanMd) {
           for (const l of chairmanMd.render(cw)) lines.push(indentLine(indentLine(l)));
         }
@@ -215,17 +172,6 @@ function createExpandedView(details: CouncilDetails, theme: Theme, markdownTheme
     },
   };
 }
-
-// ── System prompts ────────────────────────────────────────────────────────
-
-const MEMBER_SYSTEM_PROMPT =
-  "You are a member of an LLM Council. Answer the user's question thoroughly and concisely. Provide your best reasoning.";
-
-const CHAIRMAN_SYSTEM_PROMPT =
-  "You are the Chairman of an LLM Council. Multiple AI models answered the same question anonymously, labeled A, B, C, etc. " +
-  "Synthesize the best answer, drawing on the strongest points from each response. " +
-  "Resolve any disagreements. Present a unified, well-reasoned answer. " +
-  "Do not mention which model gave which answer — treat them as anonymous perspectives.";
 
 // ── Types ────────────────────────────────────────────────────────────────
 
@@ -251,7 +197,6 @@ interface SubagentResult {
   stderr: string;
   error?: string;
 }
-
 
 // ── Subprocess ───────────────────────────────────────────────────────────
 
@@ -374,22 +319,19 @@ async function runSubagent(
 
 async function runCouncil(
   question: string,
-  config: { members: string[]; chairman: string },
   cwd: string,
   signal: AbortSignal | undefined,
   onUpdate: (details: CouncilDetails) => void,
 ): Promise<{ content: { type: "text"; text: string }[]; details: CouncilDetails }> {
-  const labels = ["A", "B", "C", "D", "E", "F", "G", "H"];
-
   const details: CouncilDetails = {
     stage: "members",
-    members: config.members.map((model, i) => ({
-      label: labels[i] ?? String(i + 1),
+    members: CONFIG.members.map((model, i) => ({
+      label: CONFIG.labels[i] ?? String(i + 1),
       model,
       status: "pending" as const,
       text: "",
     })),
-    chairman: { model: config.chairman, status: "pending", text: "" },
+    chairman: { model: CONFIG.chairman, status: "pending", text: "" },
   };
 
   const emit = () => onUpdate(details);
@@ -401,7 +343,7 @@ async function runCouncil(
     m.status = "working";
     m.startedAt = Date.now();
     emit();
-    const result = await runSubagent(m.model, question, MEMBER_SYSTEM_PROMPT, cwd, signal);
+    const result = await runSubagent(m.model, question, CONFIG.systemPrompts.member, cwd, signal);
     if (result.exitCode === 0 && result.text) {
       m.status = "done";
       m.doneAt = Date.now();
@@ -428,7 +370,7 @@ async function runCouncil(
   }
 
   // Phase 2: Run chairman
-  details.chairman = { model: config.chairman, status: "working", text: "", startedAt: Date.now() };
+  details.chairman = { model: CONFIG.chairman, status: "working", text: "", startedAt: Date.now() };
   details.stage = "chairman";
   emit();
 
@@ -438,7 +380,7 @@ async function runCouncil(
   }
   chairmanPrompt += "\n---\nSynthesize a unified answer incorporating the best points from each response.";
 
-  const chairmanResult = await runSubagent(config.chairman, chairmanPrompt, CHAIRMAN_SYSTEM_PROMPT, cwd, signal);
+  const chairmanResult = await runSubagent(CONFIG.chairman, chairmanPrompt, CONFIG.systemPrompts.chairman, cwd, signal);
 
   if (chairmanResult.exitCode === 0 && chairmanResult.text) {
     details.chairman.status = "done";
@@ -486,8 +428,7 @@ export default function (pi: ExtensionAPI) {
     }),
 
     async execute(_toolCallId, params, signal, onUpdate, ctx) {
-      const config = loadConfig();
-      return runCouncil(params.question, config, ctx.cwd, signal, (details) => {
+      return runCouncil(params.question, ctx.cwd, signal, (details) => {
         liveDetails = details;
         const stageLabels: Record<string, string> = {
           members: "Members deliberating...",
@@ -509,8 +450,8 @@ export default function (pi: ExtensionAPI) {
     },
 
     renderCall(args, theme, ctx) {
-      const preview = args.question?.length > MAX_QUESTION_PREVIEW_LENGTH ? `${args.question.slice(0, MAX_QUESTION_PREVIEW_LENGTH)}...` : (args.question || "...");
-      const summary = applyColor(theme, "dim", preview);
+      const preview = args.question?.length > CONFIG.questionPreview.maxLength ? `${args.question.slice(0, CONFIG.questionPreview.maxLength)}...` : (args.question || "...");
+      const summary = applyColor(theme, CONFIG.toolHeader.summaryColor, preview);
 
       if (!ctx?.isPartial) {
         clearSpinner(ctx);
@@ -519,21 +460,17 @@ export default function (pi: ExtensionAPI) {
       }
 
       const frame = ensureSpinner(ctx);
-      const dot = applyColor(theme, "muted", SPINNER_FRAMES[frame % SPINNER_FRAMES.length]);
+      const dot = applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[frame % SPINNER_FRAMES.length]);
       const lines = [toolHeader("LLM Council", summary, theme, spinnerDot(theme, frame))];
 
       if (!liveDetails) {
-        // Skeleton before first onUpdate fires
-        if (!ctx.state.config) ctx.state.config = loadConfig();
-        const config = ctx.state.config;
-        const labels = ["A", "B", "C", "D", "E", "F", "G", "H"];
-        for (const [i, model] of config.members.entries()) {
-          const label = labels[i] ?? String(i + 1);
-          lines.push(indentLine(`${dot} ${applyColor(theme, "accent", label)}: ${applyColor(theme, "dim", model)}`));
-          lines.push(indentLine(branchLine(applyColor(theme, "muted", "Spawning"), theme)));
+        for (const [i, model] of CONFIG.members.entries()) {
+          const label = CONFIG.labels[i] ?? String(i + 1);
+          lines.push(indentLine(`${dot} ${applyColor(theme, CONFIG.member.labelColor, label)}: ${applyColor(theme, CONFIG.member.modelColor, model)}`));
+          lines.push(indentLine(branchLine(applyColor(theme, CONFIG.status.workingColor, CONFIG.status.spawningLabel), theme)));
         }
-        lines.push(indentLine(`${dot} 👑 ${applyColor(theme, "dim", `Chairman: ${config.chairman}`)}`));
-        lines.push(indentLine(branchLine(applyColor(theme, "muted", "Waiting for members"), theme)));
+        lines.push(indentLine(`${dot} ${CONFIG.chairmanDisplay.icon} ${applyColor(theme, CONFIG.chairmanDisplay.modelColor, `Chairman: ${CONFIG.chairman}`)}`));
+        lines.push(indentLine(branchLine(applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.waitingLabel), theme)));
         return makeText(ctx.lastComponent, lines.join("\n"));
       }
 
@@ -541,14 +478,14 @@ export default function (pi: ExtensionAPI) {
       const details = liveDetails;
       lines.push(...renderMemberTree(details, theme, frame, {
         memberSubLine: (m) =>
-          m.status === "done"    ? `${applyColor(theme, "success", "Done")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-          m.status === "working" ? applyColor(theme, "muted", "Working...") :
-          m.status === "error"   ? `${applyColor(theme, "error", m.error?.slice(0, 60) || "Error")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-                                   applyColor(theme, "muted", "Pending"),
+          m.status === "done"    ? `${applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+          m.status === "working" ? applyColor(theme, CONFIG.status.workingColor, CONFIG.status.workingLabel) :
+          m.status === "error"   ? `${applyColor(theme, CONFIG.status.errorColor, m.error?.slice(0, 60) || CONFIG.status.errorLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+                                   applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.pendingLabel),
         chairmanSubLine:
           details.stage === "chairman" && details.chairman?.status === "working"
-            ? applyColor(theme, "muted", "Synthesising...")
-            : applyColor(theme, "muted", "Waiting for members"),
+            ? applyColor(theme, CONFIG.status.workingColor, CONFIG.status.synthesizingLabel)
+            : applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.waitingLabel),
       }));
       return makeText(ctx.lastComponent, lines.join("\n"));
     },
@@ -568,8 +505,8 @@ export default function (pi: ExtensionAPI) {
       // ── Error state ──────────────────────────────────────────────────
       if (details.stage === "error") {
         const lines = renderMemberTree(details, theme, 0, {
-          memberSubLine: (m) => applyColor(theme, "error", m.error?.slice(0, 60) || "Unknown error"),
-          chairmanSubLine: applyColor(theme, "muted", "Not started"),
+          memberSubLine: (m) => applyColor(theme, CONFIG.status.errorColor, m.error?.slice(0, 60) || CONFIG.status.errorLabel),
+          chairmanSubLine: applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.waitingLabel),
         });
         return makeText(ctx?.lastComponent, lines.join("\n"));
       }
@@ -578,11 +515,11 @@ export default function (pi: ExtensionAPI) {
       if (details.stage === "members") {
         const lines = renderMemberTree(details, theme, frame, {
           memberSubLine: (m) =>
-            m.status === "done"    ? `${applyColor(theme, "success", "Done")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-            m.status === "working" ? applyColor(theme, "muted", "Working...") :
-            m.status === "error"   ? `${applyColor(theme, "error", m.error?.slice(0, 60) || "Error")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-            applyColor(theme, "muted", "Pending"),
-          chairmanSubLine: applyColor(theme, "muted", "Waiting for members"),
+            m.status === "done"    ? `${applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+            m.status === "working" ? applyColor(theme, CONFIG.status.workingColor, CONFIG.status.workingLabel) :
+            m.status === "error"   ? `${applyColor(theme, CONFIG.status.errorColor, m.error?.slice(0, 60) || CONFIG.status.errorLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+            applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.pendingLabel),
+          chairmanSubLine: applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.waitingLabel),
         });
         return makeText(ctx?.lastComponent, lines.join("\n"));
       }
@@ -591,13 +528,13 @@ export default function (pi: ExtensionAPI) {
       if (details.stage === "chairman") {
         const lines = renderMemberTree(details, theme, frame, {
           memberSubLine: (m) =>
-            m.status === "done"  ? `${applyColor(theme, "success", "Done")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-            `${applyColor(theme, "error", m.error?.slice(0, 60) || "Error")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}`,
+            m.status === "done"  ? `${applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+            `${applyColor(theme, CONFIG.status.errorColor, m.error?.slice(0, 60) || CONFIG.status.errorLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}`,
           chairmanSubLine:
-            details.chairman?.status === "working" ? applyColor(theme, "muted", "Synthesizing...") :
-            details.chairman?.status === "error"   ? applyColor(theme, "error", details.chairman.error?.slice(0, 60) || "Failed") :
-            details.chairman?.status === "done"    ? applyColor(theme, "success", "Done") :
-            applyColor(theme, "muted", "Waiting for members"),
+            details.chairman?.status === "working" ? applyColor(theme, CONFIG.status.workingColor, CONFIG.status.synthesizingLabel) :
+            details.chairman?.status === "error"   ? applyColor(theme, CONFIG.status.errorColor, details.chairman.error?.slice(0, 60) || CONFIG.status.errorLabel) :
+            details.chairman?.status === "done"    ? applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel) :
+            applyColor(theme, CONFIG.status.pendingColor, CONFIG.status.waitingLabel),
         });
         return makeText(ctx?.lastComponent, lines.join("\n"));
       }
@@ -606,11 +543,11 @@ export default function (pi: ExtensionAPI) {
       if (!expanded) {
         const lines = renderMemberTree(details, theme, 0, {
           memberSubLine: (m) =>
-            m.status === "done"  ? `${applyColor(theme, "success", "Done")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}` :
-            `${applyColor(theme, "error", m.error?.slice(0, 60) || "Error")} ${applyColor(theme, "dim", formatElapsed(m.startedAt, m.doneAt))}`,
+            m.status === "done"  ? `${applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}` :
+            `${applyColor(theme, CONFIG.status.errorColor, m.error?.slice(0, 60) || CONFIG.status.errorLabel)} ${applyColor(theme, CONFIG.status.elapsedColor, formatElapsed(m.startedAt, m.doneAt))}`,
           chairmanSubLine: details.chairman?.status === "error"
-            ? applyColor(theme, "error", details.chairman.error?.slice(0, 60) || "Failed")
-            : applyColor(theme, "success", "Done"),
+            ? applyColor(theme, CONFIG.status.errorColor, details.chairman.error?.slice(0, 60) || CONFIG.status.errorLabel)
+            : applyColor(theme, CONFIG.status.doneColor, CONFIG.status.doneLabel),
           chairmanSubLineSuffix: expandHint(theme),
         });
         return makeText(ctx?.lastComponent, lines.join("\n"));
