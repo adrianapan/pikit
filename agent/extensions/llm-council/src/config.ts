@@ -57,7 +57,7 @@ export const DEFAULT_CONFIG = {
      * systemPrompt - string, optional, falls back to DEFAULT_SYSTEM_PROMPT
      */
     COUNCIL: [
-      { model: "glm-5.1:cloud", displayName: "GLM 5.1/", label: "Member A"},
+      { model: "glm-5.1:cloud", displayName: "GLM 5.1", label: "Member A"},
       { model: "kimi-k2.6:cloud", displayName: "Kimi K2.6", label: "Member B" },
       { model: "minimax-m2.7:cloud", displayName: "MiniMax M2.7", label: "Member C" },
     ],

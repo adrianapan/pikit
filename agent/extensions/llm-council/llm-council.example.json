@@ -33,7 +33,7 @@
     "council": [
       {
         "model": "glm-5.1:cloud",
-        "displayName": "GLM 5.1/",
+        "displayName": "GLM 5.1",
         "label": "Member A"
       },
       {
