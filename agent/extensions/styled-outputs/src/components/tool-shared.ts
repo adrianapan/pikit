@@ -103,7 +103,7 @@ export function renderPartial(theme: Theme): string {
 export function doneLabel(theme: Theme, count?: { label: string; value: number }): string {
   const done = applyColor(theme, CONFIG.tools.toolSuccess.labelColor, "Done");
   const text = count
-    ? `${done} ${applyColor(theme, CONFIG.tools.general.countColor, `• ${count.value} ${count.label}`)}`
+    ? `${done}${applyColor(theme, CONFIG.tools.general.expandHintColor, " • ")}${applyColor(theme, CONFIG.tools.general.countColor, `${count.value} ${count.label}`)}`
     : done;
   return branchLine(text, theme);
 }
