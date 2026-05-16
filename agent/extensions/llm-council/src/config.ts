@@ -57,7 +57,7 @@ export const DEFAULT_CONFIG = {
      * systemPrompt - string, optional, falls back to DEFAULT_SYSTEM_PROMPT
      */
     COUNCIL: [
-      { model: "gemma4:31b:cloud", displayName: "Gemma 4 (31B)", label: "Member A"},
+      { model: "glm-5.1:cloud", displayName: "GLM 5.1/", label: "Member A"},
       { model: "kimi-k2.6:cloud", displayName: "Kimi K2.6", label: "Member B" },
       { model: "minimax-m2.7:cloud", displayName: "MiniMax M2.7", label: "Member C" },
     ],
@@ -75,8 +75,8 @@ export const DEFAULT_CONFIG = {
   },
 
   CHAIRMAN: {
-    MODEL: "glm-5.1:cloud",
-    DISPLAY_NAME: "GLM 5.1",
+    MODEL: "deepseek-v4-pro:cloud",
+    DISPLAY_NAME: "DeepSeek V4 Pro",
     SYSTEM_PROMPT:
       "You are the Chairman of an LLM Council. Multiple AI models answered the same question anonymously, labeled A, B, C, etc. " +
       "Synthesize the best answer, drawing on the strongest points from each response. " +
