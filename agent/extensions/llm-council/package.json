@@ -1,0 +1,8 @@
+{
+  "name": "llm-council",
+  "version": "1.0.0",
+  "private": true,
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  }
+}
