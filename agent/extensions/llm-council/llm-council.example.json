@@ -35,6 +35,8 @@
     "errorColor": "error",
     "workingLabel": "Working...",
     "workingColor": "muted",
+    "waitingIcon": "·",
+    "waitingIconColor": "muted",
     "pendingLabel": "Pending",
     "pendingColor": "muted",
     "spawningLabel": "Spawning",

@@ -77,7 +77,7 @@ function renderMemberTree(
       m.status === "done" ? applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix) :
       m.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) :
       m.status === "working" ? applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
-      applyColor(theme, CONFIG.status.pendingColor, CONFIG.spinner.prefixChars[0]);
+      applyColor(theme, CONFIG.status.waitingIconColor, CONFIG.status.waitingIcon);
     lines.push(indentLine(`${icon} ${applyColor(theme, CONFIG.member.labelColor, m.label)}: ${applyColor(theme, CONFIG.member.modelColor, m.model)}`));
     lines.push(indentLine(branchLine(opts.memberSubLine(m), theme)));
   }
@@ -86,7 +86,7 @@ function renderMemberTree(
       details.chairman.status === "done" ? applyColor(theme, CONFIG.status.doneColor, CONFIG.successPrefix.prefix) :
       details.chairman.status === "error" ? applyColor(theme, CONFIG.status.errorColor, CONFIG.errorPrefix.prefix) :
       details.chairman.status === "working" ? applyColor(theme, CONFIG.spinner.color, SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length]) :
-      applyColor(theme, CONFIG.status.pendingColor, CONFIG.spinner.prefixChars[0]);
+      applyColor(theme, CONFIG.status.waitingIconColor, CONFIG.status.waitingIcon);
     lines.push(indentLine(`${cIcon} ${CONFIG.chairmanDisplay.icon} ${applyColor(theme, CONFIG.chairmanDisplay.modelColor, `Chairman: ${details.chairman.model}`)}`));
     const suffix = opts.chairmanSubLineSuffix ?? "";
     lines.push(indentLine(branchLine(opts.chairmanSubLine + suffix, theme)));

@@ -26,6 +26,8 @@ export interface StatusUserConfig {
   errorColor?: string;
   workingLabel?: string;
   workingColor?: string;
+  waitingIcon?: string;
+  waitingIconColor?: string;
   pendingLabel?: string;
   pendingColor?: string;
   spawningLabel?: string;
