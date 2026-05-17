@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, SkillInvocationMessageComponent, CustomMessageComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool } from "@earendil-works/pi-coding-agent";
-import { Markdown } from "@earendil-works/pi-tui";
-import { PATCH_FLAG, setCurrentTheme, currentTheme } from "./utils.js";
+import { AssistantMessageComponent, UserMessageComponent, ToolExecutionComponent, SkillInvocationMessageComponent, CustomMessageComponent, BashExecutionComponent, createReadTool, createBashTool, createEditTool, createWriteTool, createLsTool, createGrepTool, createFindTool, truncateTail, DEFAULT_MAX_BYTES, DEFAULT_MAX_LINES, keyText } from "@earendil-works/pi-coding-agent";
+import { Markdown, Text } from "@earendil-works/pi-tui";
+import { PATCH_FLAG, setCurrentTheme, currentTheme, applyColor, toolPrefix, errorPrefix } from "./utils.js";
 import { CONFIG } from "./config.js";
 import { createAssistantMessage } from "./components/assistant-message.js";
 import { createThinkingMessage } from "./components/thinking-message.js";
@@ -23,6 +23,7 @@ import {
 } from "./components/web-renderer.js";
 import { createSkillInvocationMessage } from "./components/skill-message.js";
 import { createCustomMessage } from "./components/custom-message.js";
+import { branchLine, doneLabel, errorLabel, expandHint, formatExpandedLines } from "./components/tool-shared.js";
 
 const WEB_TOOLS = new Set(["web_search", "fetch_content", "get_search_content"]);
 
@@ -231,6 +232,131 @@ export default function styledOutputs(pi: ExtensionAPI) {
     };
 
     customProto[PATCH_FLAG] = true;
+  }
+
+  // --- Patch BashExecutionComponent (! / !! commands) ---
+  const bashExecProto = BashExecutionComponent.prototype as any;
+  if (!bashExecProto[PATCH_FLAG]) {
+    const SPINNER_CHARS = CONFIG.tools.toolSpinnerPrefix.prefixChars;
+    const SPINNER_FRAMES = [...SPINNER_CHARS, ...[...SPINNER_CHARS].reverse()];
+    const SPINNER_INTERVAL = 80;
+
+    // Module-level state: user_bash fires before component construction,
+    // and constructor patching via prototype.constructor doesn't work with ES6 classes
+    let lastBashExcludeFromContext = false;
+
+    pi.on("user_bash", async (event: any, _ctx: any) => {
+      lastBashExcludeFromContext = event.excludeFromContext;
+    });
+
+    // Replace updateDisplay with styled version matching tool call pattern
+    bashExecProto.updateDisplay = function patchedBashUpdateDisplay() {
+      const t = currentTheme!;
+      const bc = CONFIG.bashExecution;
+      const tc = CONFIG.tools;
+
+      // First-run: remove borders, stop loader, start spinner
+      if (!this._styledInitDone) {
+        // Remove borders + spacer from original constructor (children layout: Spacer, DynamicBorder, contentContainer, DynamicBorder)
+        this.children.splice(this.children.length - 1, 1); // bottom border
+        this.children.splice(1, 1);                        // top border
+        this.children.splice(0, 1);                        // spacer
+
+        // Stop original loader — we render our own status line
+        this.loader.stop();
+
+        // Start header spinner
+        this._spinnerFrame = 0;
+        this._spinnerInterval = setInterval(() => {
+          this._spinnerFrame = (this._spinnerFrame + 1) % SPINNER_FRAMES.length;
+          this.updateDisplay();
+        }, SPINNER_INTERVAL);
+
+        this._styledInitDone = true;
+      }
+
+      // Truncation
+      const fullOutput = (this.outputLines as string[]).join("\n");
+      const contextTruncation = truncateTail(fullOutput, {
+        maxLines: DEFAULT_MAX_LINES,
+        maxBytes: DEFAULT_MAX_BYTES,
+      });
+      const availableLines = contextTruncation.content ? contextTruncation.content.split("\n") : [];
+      const nonEmptyLines = availableLines.filter((l: string) => l.trim().length > 0);
+
+      // Rebuild content container
+      const cc = this.contentContainer as any;
+      cc.clear();
+
+      // --- Header: <prefix-icon> <Command|Shell> <dim-command> ---
+      const typeLabel = lastBashExcludeFromContext ? "Shell" : "Command";
+      const labelText = applyColor(t, bc.titleColor, t.bold(typeLabel));
+      const cmdText = applyColor(t, tc.general.summaryColor, ` ${this.command}`);
+
+      let headerLine: string;
+      if (this.status === "running") {
+        const frame = (this._spinnerFrame as number) ?? 0;
+        const spinnerChar = applyColor(t, tc.toolSpinnerPrefix.color, SPINNER_FRAMES[frame % SPINNER_FRAMES.length]);
+        headerLine = `${spinnerChar} ${labelText}${cmdText}`;
+      } else if (this.status === "complete") {
+        headerLine = `${toolPrefix(t)}${labelText}${cmdText}`;
+      } else {
+        headerLine = `${errorPrefix(t)}${labelText}${cmdText}`;
+      }
+
+      // --- Status footer ---
+      let statusLine: string;
+      if (this.status === "running") {
+        statusLine = branchLine(
+          applyColor(t, tc.general.outputColor, `Running... (${keyText("tui.select.cancel")} to cancel)`),
+          t
+        );
+      } else if (this.status === "cancelled") {
+        statusLine = branchLine(applyColor(t, tc.toolError.labelColor, "Cancelled"), t);
+      } else if (this.status === "error") {
+        statusLine = errorLabel(t);
+        if (!this.expanded && nonEmptyLines.length > 0) {
+          statusLine += expandHint(t);
+        }
+      } else {
+        const count = nonEmptyLines.length > 0
+          ? { label: "lines" as const, value: nonEmptyLines.length }
+          : undefined;
+        const done = doneLabel(t, count);
+        statusLine = (!this.expanded && nonEmptyLines.length > 0) ? done + expandHint(t) : done;
+      }
+
+      // --- Assemble: header, then status, then output (if expanded) ---
+      let display = "\n" + headerLine + "\n" + statusLine;
+
+      if (this.expanded && nonEmptyLines.length > 0) {
+        const styled = nonEmptyLines.map((l: string) => applyColor(t, tc.general.outputColor, l));
+        display += formatExpandedLines(styled, "tail", t);
+      }
+
+      // Truncation warning
+      const wasTruncated = (this.truncationResult as any)?.truncated || contextTruncation.truncated;
+      if (wasTruncated && this.fullOutputPath) {
+        display += "\n" + branchLine(
+          applyColor(t, tc.toolError.labelColor, `Output truncated. Full output: ${this.fullOutputPath}`),
+          t
+        );
+      }
+
+      cc.addChild(new Text(display, 1, 0));
+    };
+
+    // Patch setComplete to clear spinner
+    const OrigSetComplete = bashExecProto.setComplete;
+    bashExecProto.setComplete = function patchedSetComplete(exitCode: any, cancelled: any, truncationResult: any, fullOutputPath: any) {
+      if (this._spinnerInterval) {
+        clearInterval(this._spinnerInterval);
+        this._spinnerInterval = undefined;
+      }
+      OrigSetComplete.call(this, exitCode, cancelled, truncationResult, fullOutputPath);
+    };
+
+    bashExecProto[PATCH_FLAG] = true;
   }
 
   // --- Register styled tool renderers ---

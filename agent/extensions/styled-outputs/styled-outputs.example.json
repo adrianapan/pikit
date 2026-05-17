@@ -36,6 +36,9 @@
     "expandHintColor": "dim",
     "outputColor": "dim"
   },
+  "bashExecution": {
+    "titleColor": "toolTitle"
+  },
   "tools": {
     "toolSpinnerPrefix": {
       "prefixChars": ["·", "✢", "✳", "✶", "✻", "✽"],

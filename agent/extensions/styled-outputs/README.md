@@ -12,6 +12,7 @@ Custom styled rendering for every message type in pi — assistant messages, use
 - **Skill invocations** — Expandable skill blocks with prefix icon, title, and content
 - **Custom messages** — Expandable custom messages with prefix icon, type name, and content; all custom messages get styled output regardless of registered renderers
 - **Tool spinner** — Animated character spinner while tools are running
+- **Bash execution** — `!` commands styled as `Command`, `!!` commands styled as `Shell` (no context); error prefix swaps to `✗`
 - **Group-aware config** — Override any general tool setting per group (`base`, `mcp`, `web`, `custom`); unset properties fall through to `general`
 - **Theme-aware colours** — All colour fields accept pi theme tokens (`"accent"`, `"dim"`, etc.) or hex values (`"#ff6347"`)
 - **Expand/collapse** — Tool outputs and skill blocks collapse by default; expand with a keypress
@@ -92,6 +93,19 @@ Styled rendering for all custom messages. Custom messages registered via `pi.reg
 | `customMessages.expandHintColor` | `string` | `"dim"` | Colour for the expand/collapse hint |
 | `customMessages.outputColor` | `string` | `"dim"` | Colour for expanded content |
 
+### Bash execution (! and !! commands)
+
+`!` and `!!` commands share the same visual pattern as tool executions:
+
+- **`!` commands** — labelled `Command` (output is included in LLM context)
+- **`!!` commands** — labelled `Shell` (output runs in background, excluded from context)
+
+Both use the same header format, status footer, and expandable output. The label word is the only visual difference — no border, no separate `$` prefix icon.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `bashExecution.titleColor` | `string` | `"toolTitle"` | Colour for the "Command" / "Shell" label |
+
 ### Tool execution
 
 | Key | Type | Default | Description |
@@ -166,7 +180,9 @@ Theme tokens adapt to your active theme automatically.
 
 ## How it works
 
-The extension patches pi's built-in message components (`AssistantMessage`, `UserMessage`, `ToolExecution`, `SkillInvocationMessage`, `CustomMessage`) at prototype level. A `Symbol.for` patch flag prevents double-patching on reload.
+The extension patches pi's built-in message components (`AssistantMessage`, `UserMessage`, `ToolExecution`, `SkillInvocationMessage`, `CustomMessage`, `BashExecution`) at prototype level. A `Symbol.for` patch flag prevents double-patching on reload.
+
+For `BashExecutionComponent`, the extension listens to the `user_bash` event to determine whether a command is `!` (Command) or `!!` (Shell), then patches `updateDisplay` to strip borders and apply the styled header/status/output format.
 
 Tool renderers are registered via `pi.registerTool()` for built-in tools (`read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`) — each with custom call and result renderers. For web tools and MCP tools, the extension patches `getCallRenderer` / `getResultRenderer` to provide specialised renderers when no built-in renderer exists.
 

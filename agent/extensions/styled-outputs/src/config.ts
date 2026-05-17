@@ -34,7 +34,7 @@ export const DEFAULT_CONFIG = {
   CUSTOM_MESSAGES: {
     PREFIX: "✓",
     PREFIX_COLOR: "accent",
-    TITLE_COLOR: "toolTitle",
+    TITLE_COLOR: "customMessageLabel",
     NAME_COLOR: "dim",
     LABEL_COLOR: "success",
     EXPAND_HINT_COLOR: "dim",
@@ -49,6 +49,11 @@ export const DEFAULT_CONFIG = {
     LABEL_COLOR: "muted",
     IS_LABEL_VISIBLE: false,
     MESSAGE_COLOR: "dim",
+  },
+
+  // Bash execution (! and !! commands)
+  BASH_EXECUTION: {
+    TITLE_COLOR: "bashMode",
   },
 
   TOOLS: {
@@ -141,6 +146,9 @@ export const CONFIG = {
     labelColor: userConfig.thinkingMessage?.labelColor ?? DEFAULT_CONFIG.THINKING_MESSAGE.LABEL_COLOR,
     isLabelVisible: userConfig.thinkingMessage?.isLabelVisible ?? DEFAULT_CONFIG.THINKING_MESSAGE.IS_LABEL_VISIBLE,
     messageColor: userConfig.thinkingMessage?.messageColor ?? DEFAULT_CONFIG.THINKING_MESSAGE.MESSAGE_COLOR,
+  },
+  bashExecution: {
+    titleColor: userConfig.bashExecution?.titleColor ?? DEFAULT_CONFIG.BASH_EXECUTION.TITLE_COLOR,
   },
   tools: {
     toolSpinnerPrefix: {

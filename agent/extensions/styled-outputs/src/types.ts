@@ -87,6 +87,10 @@ export interface ToolsUserConfig {
   groups?: ToolGroupsUserConfig;
 }
 
+export interface BashExecutionUserConfig {
+  titleColor?: string;
+}
+
 export interface CustomMessagesUserConfig {
   prefix?: string;
   prefixColor?: string;
@@ -103,5 +107,6 @@ export interface StyledOutputsUserConfig {
   skills?: SkillsUserConfig;
   thinkingMessage?: ThinkingMessageUserConfig;
   customMessages?: CustomMessagesUserConfig;
+  bashExecution?: BashExecutionUserConfig;
   tools?: ToolsUserConfig;
 }
