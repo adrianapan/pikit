@@ -13,7 +13,7 @@ export const DEFAULT_CONFIG = {
 	PLAN_MODE_PREFIX: "\u23F8",
 	PREFIX: "\u276F",
 	BOXED_VIEW: true,
-	COMPANION_ENABLED: true,
+	COMPANION_ENABLED: false,
 	COMPANION_COLOR: "accent" as const,
 };
 
@@ -64,15 +64,72 @@ export const CONFIG = {
 
 // Non-user-configurable constants
 export const COMPANION_PADDING = 3;
-export const ROTATION_INTERVAL_MS = 3000;
 export const MIN_WIDTH_FOR_COMPANION = 40;
 
-export const COMPANION_ARTS: [string, string][] = [
-	[" /\\_/\\ ", "( o.o )"],  // original
-	[" /\\_/\\ ", "( -.- )"],  // sleepy
-	[" /\\_/\\ ", "( ^.^ )"],  // happy
-	[" /\\_/\\ ", "( O.O )"],  // awake
-	[" /\\_/\\ ", "( o.- )"],  // winking
-	[" /\\_/\\ ", "( >.< )"],  // closed
-	[" /\\_/\\ ", "( o.O )"],  // curious
+// ── animation timing (all in ms) ────────────────────────────────────
+export const DIP_INTERVAL_MS = 10000;
+export const RISE_INTERVAL_MS = 30000;
+export const EARS_MIN_DURATION_MS = 2000;
+export const EARS_MAX_DURATION_MS = 4000;
+export const FULL_MIN_DURATION_MS = 3000;
+export const FULL_MAX_DURATION_MS = 23000;
+export const NONE_MIN_DURATION_MS = 800;
+export const NONE_MAX_DURATION_MS = 2000;
+export const FACE_MIN_DURATION_MS = 6000;
+export const FACE_MAX_DURATION_MS = 36000;
+
+// expression cycling
+export const EXPR_MIN_DURATION_MS = 2000;
+export const EXPR_MAX_DURATION_MS = 5500;
+export const STARE_MIN_DURATION_MS = 8000;
+export const STARE_MAX_DURATION_MS = 13000;
+export const STARE_CHANCE = 0.15;
+export const BLINK_MIN_DURATION_MS = 80;
+export const BLINK_MAX_DURATION_MS = 330;
+
+// expression transition: blink vs instant vs double-blink
+export const EXPR_BLINK_CHANCE = 0.50;
+export const EXPR_DOUBLE_BLINK_CHANCE = 0.15;   // remainder = instant
+export const DOUBLE_BLINK_GAP_MIN_MS = 80;
+export const DOUBLE_BLINK_GAP_MAX_MS = 160;
+
+// wobble (ears phase)
+export const WOBBLE_RANGE = 8;
+export const WOBBLE_MIN_INTERVAL_MS = 200;
+export const WOBBLE_MAX_INTERVAL_MS = 600;
+export const DIR_STEPS_MIN = 2;
+export const DIR_STEPS_MAX = 5;
+export const EDGE_BIAS_STRENGTH = 0.45;
+export const EDGE_PAUSE_MIN_MS = 300;
+export const EDGE_PAUSE_MAX_MS = 800;
+
+// face micro-drift
+export const FACE_DRIFT_RANGE = 3;
+export const FACE_DRIFT_MIN_INTERVAL_MS = 2000;
+export const FACE_DRIFT_MAX_INTERVAL_MS = 5000;
+
+// phase transitions
+export const EARS_TO_NONE_CHANCE = 0.15;
+export const EARS_TO_FULL_CHANCE = 0.425;       // remainder = face
+export const FULL_TO_EARS_CHANCE = 0.15;
+export const FULL_TO_NONE_CHANCE = 0.10;         // remainder = face
+
+// transition frames
+export const SLOW_TRANSITION_CHANCE = 0.2;
+export const SLOW_TRANSITION_MULT_MIN = 2;
+export const SLOW_TRANSITION_MULT_MAX = 3;
+
+export const BLINK_ART: [string, string, string] = [" /\\_/\\ ", "( -.- )", " |   | "];
+
+export const COMPANION_ARTS: [string, string, string][] = [
+	[" /\\_/\\ ", "( ⌒.⌒ )", " |   | "],  // happy
+	[" /\\_/\\ ", "( o.o )", " |   | "],  // original
+	[" /\\_/\\ ", "( ^.^ )", " |   | "],  // happy
+	[" /\\_/\\ ", "( O.O )", " |   | "],  // awake
+	[" /\\_/\\ ", "( o.- )", " |   | "],  // winking
+	[" /\\_/\\ ", "( >.< )", " |   | "],  // closed
+	[" /\\_/\\ ", "( o.O )", " |   | "],  // curious
+	[" /\\_/\\ ", "( *.* )", " |   | "],  // sparkle
+	[" /\\_/\\ ", "( ᴗ.ᴗ )", " |   | "],  // unimpressed
+	[" /\\_/\\ ", "( ω.ω )", " |   | "],  // joyful
 ];

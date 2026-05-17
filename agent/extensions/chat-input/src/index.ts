@@ -3,7 +3,7 @@ import type { TUI, EditorTheme } from "@earendil-works/pi-tui";
 import type { KeybindingsManager } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
 import { CONFIG, COMPANION_PADDING, MIN_WIDTH_FOR_COMPANION } from "./config.js";
-import { applyColor, getCompanionArt } from "./utils.js";
+import { applyColor, CompanionAnimator } from "./utils.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 const ANSI_RE = /\x1b\[[0-9;]*m|\x1b\[0?m/g;
@@ -26,6 +26,7 @@ class ChatInput extends CustomEditor {
 	private planModeBorder: (s: string) => string;
 	private planModeAccent: (s: string) => string;
 	private companionColor: (s: string) => string;
+	private animator = new CompanionAnimator();
 	private companionTimer: ReturnType<typeof setInterval> | null = null;
 
 	constructor(
@@ -49,8 +50,11 @@ class ChatInput extends CustomEditor {
 		this.planModeAccent = planModeAccentFn;
 		this.companionColor = companionColor;
 
-		// Rotate companion art even when idle
-		this.companionTimer = setInterval(() => this.tui.requestRender(), 1000);
+		// Animate companion even when idle — tick drives state machine
+		this.companionTimer = setInterval(() => {
+			this.animator.tick(Date.now());
+			this.tui.requestRender();
+		}, 100);
 	}
 
 	private isBashMode(): boolean {
@@ -78,6 +82,27 @@ class ChatInput extends CustomEditor {
 			return this.renderBoxed(stock, contentWidth, width, border, accent, prefix);
 		}
 		return this.renderUnboxed(stock, contentWidth, width, border, accent, prefix);
+	}
+
+	private buildCompanionLines(width: number): string[] {
+		if (!CONFIG.COMPANION_ENABLED || width < MIN_WIDTH_FOR_COMPANION) return [];
+
+		const state = this.animator.getState();
+		const artWidth = Math.max(...state.lines.map(l => visibleWidth(l)), 0);
+		const rawPad = width - COMPANION_PADDING - artWidth + state.extraPad;
+		// Clamp: never negative, never exceed terminal width
+		const pad = Math.max(0, Math.min(rawPad, width - artWidth));
+		const spaces = " ".repeat(pad);
+
+		const lines: string[] = [];
+		for (const line of state.lines) {
+			lines.push(spaces + this.companionColor(line));
+		}
+		// Always reserve 3 lines so chat bar doesn't jump — art anchored to bottom
+		while (lines.length < 3) {
+			lines.unshift("");
+		}
+		return lines;
 	}
 
 	private renderBoxed(
@@ -134,15 +159,7 @@ class ChatInput extends CustomEditor {
 		const bottom = buildBottom(bottomScrollText);
 
 		// ── companion art ──
-		const companionLines: string[] = [];
-		if (CONFIG.COMPANION_ENABLED && width >= MIN_WIDTH_FOR_COMPANION) {
-			const art = getCompanionArt(Date.now());
-			const artWidth = Math.max(visibleWidth(art.line1), visibleWidth(art.line2));
-			const pad = width - COMPANION_PADDING - artWidth;
-			const spaces = " ".repeat(Math.max(0, pad));
-			companionLines.push(spaces + this.companionColor(art.line1));
-			companionLines.push(spaces + this.companionColor(art.line2));
-		}
+		const companionLines = this.buildCompanionLines(width);
 
 		const leftPad = " ".repeat(CONFIG.BOX_PAD_X);
 		const rightPad = leftPad;
@@ -228,15 +245,7 @@ class ChatInput extends CustomEditor {
 		const bottom = buildBottom(bottomScrollText);
 
 		// ── companion art ──
-		const companionLines: string[] = [];
-		if (CONFIG.COMPANION_ENABLED && width >= MIN_WIDTH_FOR_COMPANION) {
-			const art = getCompanionArt(Date.now());
-			const artWidth = Math.max(visibleWidth(art.line1), visibleWidth(art.line2));
-			const pad = width - COMPANION_PADDING - artWidth;
-			const spaces = " ".repeat(Math.max(0, pad));
-			companionLines.push(spaces + this.companionColor(art.line1));
-			companionLines.push(spaces + this.companionColor(art.line2));
-		}
+		const companionLines = this.buildCompanionLines(width);
 
 		const leftPad = " ".repeat(CONFIG.BOX_PAD_X);
 
