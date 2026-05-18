@@ -34,7 +34,7 @@ export const DEFAULT_CONFIG = {
   CUSTOM_MESSAGES: {
     PREFIX: "✓",
     PREFIX_COLOR: "accent",
-    TITLE_COLOR: "customMessageLabel",
+    TITLE_COLOR: "toolTitle",
     NAME_COLOR: "dim",
     LABEL_COLOR: "success",
     EXPAND_HINT_COLOR: "dim",
