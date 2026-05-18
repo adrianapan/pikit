@@ -296,6 +296,10 @@ async function runSubagent(
       args.push("--append-system-prompt", tmpFile);
     }
 
+    if (process.env.PI_SUBAGENT_DEPTH) {
+      throw new Error("Subagents cannot spawn further subprocesses");
+    }
+
     args.push(prompt);
 
     const result: SubagentResult = { text: "", exitCode: 0, stderr: "" };
@@ -306,6 +310,7 @@ async function runSubagent(
         cwd,
         shell: false,
         stdio: ["ignore", "pipe", "pipe"],
+        env: { ...process.env, PI_SUBAGENT_DEPTH: "1" },
       });
 
       let buffer = "";

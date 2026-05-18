@@ -54,7 +54,6 @@
       "grep",
       "find",
       "ls",
-      "bash",
       "web_search",
       "fetch_content",
       "get_search_content"

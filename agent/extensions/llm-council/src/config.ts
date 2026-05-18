@@ -62,12 +62,12 @@ export const DEFAULT_CONFIG = {
       { model: "minimax-m2.7:cloud", displayName: "MiniMax M2.7", label: "Member C" },
     ],
     DEFAULT_SYSTEM_PROMPT:
-      "You are a member of an LLM Council. Answer the user's question thoroughly and concisely. Provide your best reasoning.",
+      "You are a member of an LLM Council. Answer the user's question thoroughly and concisely. Provide your best reasoning. Do not spawn subprocesses or delegate tasks to other agents.",
     DISPLAY: {
       LABEL_COLOR: "accent",
       MODEL_COLOR: "dim",
     },
-    TOOLS: ["read", "grep", "find", "ls", "bash", "web_search", "fetch_content", "get_search_content"],
+    TOOLS: ["read", "grep", "find", "ls", "web_search", "fetch_content", "get_search_content"],
     THINKING: "medium",
     EXTENSIONS: ["env-loader", "web-access", "permission-gate", "protected-paths"],
     SKILLS: ["gh"],

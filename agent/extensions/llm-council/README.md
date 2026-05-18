@@ -46,7 +46,7 @@ llm-council/
 | Member | MiniMax M2.7 | Member C |
 | Chairman | DeepSeek V4 Pro | Chairman |
 
-Members have read-only tool access (`read`, `grep`, `find`, `ls`, `bash`, `web_search`, `fetch_content`, `get_search_content`). The chairman has no tools — it only synthesizes.
+Members have read-only tool access (`read`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`). The chairman has no tools — it only synthesizes.
 
 ## Configuration
 
