@@ -39,8 +39,7 @@ User config lives in `~/.pi/agent/configs/chat-input.json`. Create it to overrid
   "planModePrefixColor": "customMessageLabel",
   "companion": {
     "enabled": true,
-    "color": "accent",
-    "topPadding": 3
+    "color": "accent"
   }
 }
 ```
@@ -59,7 +58,6 @@ User config lives in `~/.pi/agent/configs/chat-input.json`. Create it to overrid
 | `planModePrefixColor` | `string` | `"customMessageLabel"` | Prefix colour in plan/execute mode (theme token or hex) |
 | `companion.enabled` | `boolean` | `false` | Show a rotating ASCII cat companion above the input. When disabled, top padding is `0`. |
 | `companion.color` | `string` | `"accent"` | Theme colour token **or** hex colour for the companion art. |
-| `companion.topPadding` | `number` | `3` | Reserved lines above the input for the companion. Only applies when `companion.enabled` is `true`. |
 
 ### Border colour tokens
 

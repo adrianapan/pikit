@@ -15,7 +15,7 @@ export const DEFAULT_CONFIG = {
 	BOXED_VIEW: true,
 	COMPANION_ENABLED: false,
 	COMPANION_COLOR: "accent" as const,
-	COMPANION_TOP_PADDING: 0,
+	COMPANION_TOP_PADDING: 3,
 };
 
 interface ChatInputUserConfig {
@@ -32,7 +32,6 @@ interface ChatInputUserConfig {
 	companion?: {
 		enabled?: boolean;
 		color?: string;
-		topPadding?: number;
 	};
 }
 
@@ -62,7 +61,7 @@ export const CONFIG = {
 	BOXED_VIEW: userConfig.boxedView ?? DEFAULT_CONFIG.BOXED_VIEW,
 	COMPANION_ENABLED: userConfig.companion?.enabled ?? DEFAULT_CONFIG.COMPANION_ENABLED,
 	COMPANION_COLOR: (userConfig.companion?.color ?? DEFAULT_CONFIG.COMPANION_COLOR) as string,
-	COMPANION_TOP_PADDING: userConfig.companion?.topPadding ?? DEFAULT_CONFIG.COMPANION_TOP_PADDING,
+	COMPANION_TOP_PADDING: DEFAULT_CONFIG.COMPANION_TOP_PADDING,
 };
 
 // Non-user-configurable constants

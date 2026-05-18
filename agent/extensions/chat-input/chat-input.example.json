@@ -9,7 +9,6 @@
   "planModePrefixColor": "customMessageLabel",
   "companion": {
     "enabled": true,
-    "color": "accent",
-    "topPadding": 0
+    "color": "accent"
   }
 }
