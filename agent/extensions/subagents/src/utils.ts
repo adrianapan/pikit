@@ -65,9 +65,17 @@ export async function mapWithConcurrencyLimit<TIn, TOut>(
 export function truncateParallelOutput(output: string): string {
   const byteLen = Buffer.byteLength(output, "utf8");
   if (byteLen <= PER_TASK_OUTPUT_CAP) return output;
-  const truncated = Buffer.from(output.slice(0, PER_TASK_OUTPUT_CAP), "utf8");
-  const omitted = byteLen - truncated.byteLength;
-  return truncated.toString("utf8") + `\n\n[Output truncated: ${omitted} bytes omitted. Full output preserved in tool details.]`;
+
+  let byteCount = 0;
+  let charIndex = 0;
+  for (; charIndex < output.length; charIndex++) {
+    const charBytes = Buffer.byteLength(output[charIndex], "utf8");
+    if (byteCount + charBytes > PER_TASK_OUTPUT_CAP) break;
+    byteCount += charBytes;
+  }
+  const truncated = output.slice(0, charIndex);
+  const omitted = byteLen - byteCount;
+  return truncated + `\n\n[Output truncated: ${omitted} bytes omitted. Full output preserved in tool details.]`;
 }
 
 // ── Result check ───────────────────────────────────────────────────────

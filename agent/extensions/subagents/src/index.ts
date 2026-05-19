@@ -23,7 +23,7 @@ import { Type } from "typebox";
 import { discoverAgents, formatAgentList } from "./agents.js";
 import { CONFIG, MAX_PARALLEL_TASKS, MAX_CONCURRENCY, TASK_PREVIEW_LENGTH } from "./config.js";
 import type { AgentConfig, SingleResult, SubagentDetails, TaskItem } from "./types.js";
-import { applyColor, formatElapsed, getExpandToggleKey, getVisibleWidth, mapWithConcurrencyLimit, truncateParallelOutput, isFailedResult } from "./utils.js";
+import { applyColor, formatElapsed, getExpandToggleKey, getVisibleWidth, mapWithConcurrencyLimit, truncateParallelOutput } from "./utils.js";
 
 // ── Derived constants (computed once from CONFIG) ────────────────────────
 
@@ -459,7 +459,7 @@ export default function (pi: ExtensionAPI) {
         task: Type.String({ description: "Task with optional {previous} placeholder for prior step output" }),
         cwd: Type.Optional(Type.String({ description: "Working directory for this agent process" })),
       }), { description: "Array of {agent, task} for sequential execution. Use {previous} to reference prior output." })),
-      cwd: Type.Optional(Type.String({ description: "Working directory for the agent process (single mode)" })),
+      cwd: Type.Optional(Type.String({ description: "Working directory for the agent process (applies to all modes; per-task cwd overrides it)" })),
     }),
 
     async execute(_toolCallId, params, signal, onUpdate, ctx) {
@@ -508,6 +508,7 @@ export default function (pi: ExtensionAPI) {
           if (!agent) {
             results[i].status = "error";
             results[i].error = `Unknown agent "${step.agent}"`;
+            results[i].text = "";
             results[i].startedAt = Date.now();
             results[i].doneAt = Date.now();
             emit();
@@ -609,6 +610,7 @@ export default function (pi: ExtensionAPI) {
           if (!agent) {
             results[index].status = "error";
             results[index].error = `Unknown agent "${task.agent}"`;
+            results[index].text = "";
             results[index].startedAt = Date.now();
             results[index].doneAt = Date.now();
             emit();
@@ -767,7 +769,7 @@ export default function (pi: ExtensionAPI) {
             const aggregateElapsed = details.mode === "chain"
               ? details.results.reduce((sum, r) => sum + ((r.doneAt ?? 0) - (r.startedAt ?? 0)), 0)
               : Math.max(...details.results.map(r => r.doneAt ?? 0)) - Math.min(...details.results.map(r => r.startedAt || Infinity));
-            lines.push(applyColor(theme, "dim", `Worked for ${(aggregateElapsed / 1000).toFixed(1)}s • ${getExpandToggleKey()} to expand`));
+            lines.push(applyColor(theme, "dim", `Worked for ${(aggregateElapsed / 1000).toFixed(1)}s`) + expandHint(theme));
           }
 
           return makeText(ctx?.lastComponent, lines.join("\n"));
@@ -798,7 +800,7 @@ export default function (pi: ExtensionAPI) {
         const lines: string[] = ["", ...renderAgentTree(singleDetails, theme, 0)];
         const r = details.results[0];
         const elapsed = formatElapsed(r.startedAt, r.doneAt);
-        lines.push(applyColor(theme, "dim", `Worked for ${elapsed} • ${getExpandToggleKey()} to expand`));
+        lines.push(applyColor(theme, "dim", `Worked for ${elapsed}`) + expandHint(theme));
         return makeText(ctx?.lastComponent, lines.join("\n"));
       }
 

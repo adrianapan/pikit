@@ -46,10 +46,6 @@ export const DEFAULT_CONFIG = {
       PREFIX: "└─",
       COLOR: "separator",
     },
-    WAITING_ICON: {
-      ICON: "↪",
-      COLOR: "muted",
-    },
   },
 };
 
