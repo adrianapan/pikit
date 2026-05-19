@@ -112,7 +112,7 @@ export default function planMode(pi: ExtensionAPI) {
     transition("execute", pi);
     // Restore all tools AND include plan_complete (only available during execute mode)
     const baseNames = savedToolNames ?? pi.getAllTools().map((t) => t.name);
-    pi.setActiveTools([...baseNames, "plan_complete"]);
+    pi.setActiveTools([...toolsWithoutPlanComplete(baseNames), "plan_complete"]);
     savedToolNames = null;
     updateStatus(ctx);
     const title = getPlanDisplayTitle();
