@@ -1,0 +1,30 @@
+{
+  "_comment": "Place this file at ~/.pi/agent/configs/subagents.json",
+
+  "shared": {
+    "spinner": {
+      "prefixChars": ["·", "✢", "✳", "✶", "✻", "✽"],
+      "interval": 80,
+      "color": "muted"
+    },
+    "successPrefix": { "prefix": "✓", "color": "success" },
+    "errorPrefix": { "prefix": "✗", "color": "error" },
+    "branch": { "prefix": "└─", "color": "separator" },
+    "status": {
+      "doneLabel": "Done",
+      "doneColor": "success",
+      "errorLabel": "Error",
+      "errorColor": "error",
+      "workingLabel": "Running...",
+      "workingColor": "dim",
+      "elapsedColor": "muted",
+      "countColor": "muted",
+      "separatorColor": "dim"
+    },
+    "header": {
+      "titleColor": "toolTitle",
+      "agentColor": "dim"
+    },
+    "expandHint": { "color": "dim" }
+  }
+}

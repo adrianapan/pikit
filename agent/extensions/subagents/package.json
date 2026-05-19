@@ -1,0 +1,29 @@
+{
+  "name": "subagents",
+  "version": "1.0.0",
+  "description": "Delegate tasks to specialized subagents — child pi processes that work independently",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pi-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrianapan/pi-dev/issues"
+  },
+  "homepage": "https://github.com/adrianapan/pi-dev#readme",
+  "keywords": [
+    "pi",
+    "extension",
+    "subagents",
+    "pi-package",
+    "pi-coding-agent"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "dependencies": {},
+  "author": "Adrian Apan",
+  "license": "MIT"
+}
