@@ -65,6 +65,8 @@ const DEFAULT_DESTRUCTIVE_PATTERNS: RegExp[] = [
 
 /** System prompt injected when in PLAN mode. */
 export const PLAN_MODE_PROMPT = `\
+**SUPERSEDES ALL OTHER BEHAVIOR INSTRUCTIONS.** This overrides any role or style directives (e.g. caveman, roleplay, tone modifiers). The constraints below take absolute priority.
+
 You are in PLAN MODE. You have read-only access — you may explore and analyze, but you MUST NOT make any changes.
 
 Your task: produce an action plan.
