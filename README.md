@@ -40,8 +40,10 @@ agent/
     ├── plan-mode/     # Plan-then-execute workflow: read-only planning, then execute with plan_complete
     ├── permission-gate/ # Confirms dangerous bash commands before running
     ├── protected-paths/ # Blocks read/write access to sensitive files and directories
+    ├── llm-council/   # Multi-model council: members answer independently, chairman synthesises
     ├── spinners/     # Rotating spinner verbs while the agent thinks
     ├── startup/      # Welcome header shown at session start
+    ├── styled-outputs/ # Custom styled rendering for all message types (tools, diffs, thinking, skills)
     ├── subagents/    # Delegate tasks to specialized child agents (single, parallel, chain)
     └── web-access/   # Web search, page fetching, and PDF extraction
 ```
@@ -93,6 +95,14 @@ Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-o
 ### spinners
 
 Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal. Shows elapsed time and estimated token count as the turn progresses. Icon and colors are fully customisable via `spinners.json`. → [`README`](agent/extensions/spinners/README.md)
+
+### llm-council
+
+Convene an LLM Council — multiple models answer a question independently in parallel, then a chairman synthesises their answers into a unified response. Useful when accuracy matters or perspectives diverge. Members get read-only tool access; the chairman only synthesises. Configurable council roster, system prompts, thinking levels, and display options via `llm-council.json`. → [`README`](agent/extensions/llm-council/README.md)
+
+### styled-outputs
+
+Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, MCP tools, and bash commands. Replaces flat output with prefix icons, colour-coded diffs, expandable sections, and grouped tool configs. All colours accept pi theme tokens or hex values. → [`README`](agent/extensions/styled-outputs/README.md)
 
 ### subagents
 
