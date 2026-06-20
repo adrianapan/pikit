@@ -22,7 +22,7 @@ Plan mode restricts tools via `pi.setActiveTools()`. On entering plan mode, the 
 
 ## Keyboard Shortcuts
 
-- Default: `Shift+Tab` — Toggle plan mode on/off (configurable via `shortcuts.toggleMode`)
+- Default: `shift+tab` — Toggle plan mode on/off (configurable via `shortcuts.toggleMode`)
 
 ## CLI Flag
 

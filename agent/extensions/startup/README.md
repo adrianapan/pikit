@@ -6,7 +6,7 @@ A startup header for the pi coding agent. Displays a three-column welcome box at
 
 - **Pi logo**: ASCII art rendered in the accent colour
 - **Loaded counts**: Reports how many extensions, skills, MCP configs, prompt templates, and context files are active
-- **Quick tips**: Inline keyboard shortcut reminders (`/`, `!`, `Ctrl+P`, `Shift+Tab`)
+- **Quick tips**: Inline keyboard shortcut reminders
 - **Version banner**: Agent version shown in the top border
 - **Responsive layout**: Box adapts to terminal width; hidden below 44 columns
 - **Nerd Font icons**: Uses Nerd Font glyphs where available, falls back to plain Unicode symbols automatically
@@ -29,7 +29,7 @@ pi -e ./src/index.ts
 |--------|---------|
 | Left | Pi ASCII art logo |
 | Centre | Counts of extensions, skills, MCP configs, prompt templates, and context files |
-| Right | Keyboard shortcuts: `/` for commands, `!` for bash, `Ctrl+P` cycle model, `Shift+Tab` cycle thinking |
+| Right | Keyboard shortcuts |
 
 ## Loaded counts discovery
 

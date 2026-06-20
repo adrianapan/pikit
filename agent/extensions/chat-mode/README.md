@@ -20,9 +20,7 @@ Chat mode restricts tools via `pi.setActiveTools()`. On entering chat mode, the 
 
 ## Keyboard Shortcuts
 
-- Default: `Ctrl+Shift+C` — Toggle chat mode on/off (configurable via `shortcuts.toggleMode`)
-
-`Ctrl+Shift+C` is chosen to avoid collisions with plan-mode's `Shift+Tab` and OS/compositor window-switcher interception (e.g. `Alt+Tab`).
+- Default: `ctrl+shift+c` — Toggle chat mode on/off (configurable via `shortcuts.toggleMode`)
 
 ## CLI Flag
 
