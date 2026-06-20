@@ -144,7 +144,7 @@ const DEFAULT_CONFIG = {
     HIDE_WIDGET: true
   },
   SHORTCUTS: {
-    TOGGLE_MODE: "ctrl+shift+p"
+    TOGGLE_MODE: "ctrl+shift+l"
   },
   LABELS: {
     PLAN: {

@@ -78,7 +78,7 @@ const DEFAULT_CONFIG = {
     HIDE_WIDGET: true,
   },
   SHORTCUTS: {
-    TOGGLE_MODE: "shift+tab",
+    TOGGLE_MODE: "ctrl+shift+c",
   },
   LABELS: {
     CHAT: {

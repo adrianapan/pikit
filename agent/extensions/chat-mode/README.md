@@ -20,7 +20,7 @@ Chat mode restricts tools via `pi.setActiveTools()`. On entering chat mode, the 
 
 ## Keyboard Shortcuts
 
-- Default: `shift+tab` — Toggle chat mode on/off (configurable via `shortcuts.toggleMode`)
+- Default: `ctrl+shift+c` — Toggle chat mode on/off (configurable via `shortcuts.toggleMode`)
 
 ## CLI Flag
 
@@ -44,7 +44,7 @@ Create `~/.pi/agent/configs/chat-mode.json` to customize behavior. An example fi
 | `bashPatterns.destructivePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own destructive command regex patterns to **replace** all defaults. Omit to keep built-in destructive patterns |
 | `ui.hideNotify` | boolean | `false` | Suppress toast notifications on mode transitions |
 | `ui.hideWidget` | boolean | `true` | Hide the widget when in chat mode |
-| `shortcuts.toggleMode` | string | `"shift+tab"` | Keybinding action for toggling chat mode on/off |
+| `shortcuts.toggleMode` | string | `"ctrl+shift+c"` | Keybinding action for toggling chat mode on/off |
 | `labels.chat.notify` | string | `"✓ Chat mode ON"` | Notify text when entering chat mode |
 | `labels.chat.notifyType` | string | `"info"` | Notify type: `"info"`, `"warning"`, `"error"`, `"success"` |
 | `labels.chat.widget` | string | `"✓ Chat mode"` | Widget text when in chat mode |

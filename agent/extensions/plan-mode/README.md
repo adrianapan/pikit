@@ -22,7 +22,7 @@ Plan mode restricts tools via `pi.setActiveTools()`. On entering plan mode, the 
 
 ## Keyboard Shortcuts
 
-- Default: `ctrl+shift+p` — Toggle plan mode on/off (configurable via `shortcuts.toggleMode`)
+- Default: `ctrl+shift+l` — Toggle plan mode on/off (configurable via `shortcuts.toggleMode`)
 
 ## CLI Flag
 
@@ -89,7 +89,7 @@ Create `~/.pi/agent/configs/plan-mode.json` to customize behavior. An example fi
 | `bashPatterns.destructivePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own destructive command regex patterns to **replace** all defaults. Omit to keep built-in destructive patterns |
 | `ui.hideNotify` | boolean | `false` | Suppress toast notifications on mode transitions |
 | `ui.hideWidget` | boolean | `true` | Hide the widget when in plan/execute mode |
-| `shortcuts.toggleMode` | string | `"ctrl+shift+p"` | Keybinding action for toggling plan mode on/off |
+| `shortcuts.toggleMode` | string | `"ctrl+shift+l"` | Keybinding action for toggling plan mode on/off |
 | `labels.plan.notify` | string | `"✓ Plan mode ON"` | Notify text when entering plan mode |
 | `labels.plan.notifyType` | string | `"info"` | Notify type: `"info"`, `"warning"`, `"error"`, `"success"` |
 | `labels.plan.notifyWithTitle` | string | `"✓ Active plan {title}"` | Notify text with `{title}` placeholder (creating named plan) |

@@ -8,7 +8,8 @@
     "hideWidget": true
   },
   "shortcuts": {
-    "toggleMode": "ctrl+shift+p"
+    "_comment": "Example override (default is ctrl+shift+l). Note: alt+shift+tab is OS window-switch on Windows; use a different key if running pi on Windows.",
+    "toggleMode": "alt+shift+tab"
   },
   "bashPatterns": {
     "_comment_safe": "Replace-only: providing safePatterns replaces ALL defaults. Omit to keep built-in safe patterns.",

@@ -5,6 +5,7 @@
     "hideWidget": true
   },
   "shortcuts": {
+    "_comment": "Example override (default is ctrl+shift+c). Note: shift+tab is reserved by app.thinking.cycle by default; to use it, rebind app.thinking.cycle in keybindings.json (e.g. to ctrl+shift+t).",
     "toggleMode": "shift+tab"
   },
   "bashPatterns": {
