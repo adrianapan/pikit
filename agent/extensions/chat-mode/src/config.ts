@@ -24,7 +24,7 @@ export const CHAT_MODE_TOOLS: string[] = [
 /** Default safe command patterns — only these are allowed in CHAT mode. */
 const DEFAULT_SAFE_PATTERNS: RegExp[] = [
   /^\s*cat\b/, /^\s*head\b/, /^\s*tail\b/, /^\s*less\b/, /^\s*more\b/,
-  /^\s*grep\b/, /^\s*find\b/, /^\s*ls\b/, /^\s*pwd\b/,
+  /^\s*grep\b/, /^\s*find\b/, /^\s*ls\b/, /^\s*pwd\b/, /^\s*cd\b/,
   /^\s*echo\b/, /^\s*printf\b/, /^\s*wc\b/, /^\s*sort\b/,
   /^\s*diff\b/, /^\s*file\b/, /^\s*stat\b/, /^\s*du\b/, /^\s*df\b/,
   /^\s*tree\b/, /^\s*which\b/, /^\s*whereis\b/, /^\s*type\b/,
@@ -43,7 +43,7 @@ const DEFAULT_DESTRUCTIVE_PATTERNS: RegExp[] = [
   /\brm\b/i, /\brmdir\b/i, /\bmv\b/i, /\bcp\b/i,
   /\bmkdir\b/i, /\btouch\b/i, /\bchmod\b/i, /\bchown\b/i,
   /\btee\b/i, /\bdd\b/i, /\bshred\b/i,
-  /(^|[^<])>(?!>)/, />>/,
+  /(^|[^<])>(?!>|&)/, />>/,
   /\bnpm\s+(install|uninstall|update|ci)/i,
   /\byarn\s+(add|remove|install)/i,
   /\bpip\s+(install|uninstall)/i,
