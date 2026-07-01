@@ -36,17 +36,7 @@ Examples:
 - `qwen3.5:397b-cloud` → `Qwen 3.5 397B`
 - `llama3.3:70b-cloud` → `Llama 3.3 70B`
 
-### Step 4 — Check the API key
-
-Run this via bash — do NOT read the `.env` file directly:
-
-```bash
-grep -q ^OLLAMA_API_KEY ~/.pi/agent/configs/.env && echo "set" || echo "missing"
-```
-
-If missing, tell the user to add `OLLAMA_API_KEY=their-key` to `~/.pi/agent/configs/.env` before continuing.
-
-### Step 5 — Update models.json
+### Step 4 — Update models.json
 
 Check if `~/.pi/agent/models.json` exists. If not, create it with an empty `providers` object.
 
