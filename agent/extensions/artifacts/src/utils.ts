@@ -1,6 +1,6 @@
 /** Pure helpers: slugify, artifact file I/O, browser open. */
 
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, normalize, sep } from "node:path";
 import { spawn } from "node:child_process";
 
@@ -82,11 +82,19 @@ export function listArtifacts(): ArtifactEntry[] {
     const slug = file.replace(/\.html$/, "");
     const titleMatch = content.match(/<title>(.*?)<\/title>/s);
     const kindMatch = content.match(/<meta name="artifact-kind" content="(.*?)"/);
+    const kindRaw = kindMatch?.[1];
+    // Meta present → trust it. Absent (pre-fix full-doc html or external file) →
+    // infer from the shell marker: buildShell always emits <style data-base>, so
+    // its presence means a rendered markdown/fragment artifact; absence means a
+    // full-doc html or a foreign file → call it html.
+    const kind: "markdown" | "html" = kindRaw === "html" || kindRaw === "markdown"
+      ? kindRaw
+      : content.includes("<style data-base") ? "markdown" : "html";
     entries.push({
       slug,
       title: titleMatch ? titleMatch[1].trim() : slug,
-      kind: kindMatch?.[1] === "html" ? "html" : "markdown",
-      mtime: extractMtime(content) ?? 0,
+      kind,
+      mtime: extractMtime(content) ?? statSync(absPath).mtimeMs,
       absPath,
     });
   }

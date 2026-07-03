@@ -204,17 +204,37 @@ export function renderMarkdownDocument(title: string, slug: string, content: str
   return buildShell({ title, slug, kind: "markdown", bodyHtml, flags });
 }
 
-/** Render an html artifact: full documents get only the SSE reload snippet spliced in; fragments get the shell. */
+/** Render an html artifact: full documents get the shell's metadata metas + SSE reload snippet spliced in; fragments get the full shell. */
 export function renderHtmlDocument(title: string, slug: string, content: string): string {
   const trimmed = content.trimStart();
   const isFullDoc = /^<!doctype/i.test(trimmed) || /^<html[\s>]/i.test(trimmed);
   if (isFullDoc) {
-    // Inject the SSE reload listener so `update` live-reloads full documents too —
-    // a passive listener changes no rendering, and consistency across all three
-    // artifact shapes (markdown, html fragment, full doc) beats pass-through purity.
+    // Full documents bypass the shell, so inject the same metadata metas the shell
+    // writes (artifact-kind/generated/project) plus the SSE reload listener. Both
+    // are passive — they change no rendering — but they keep full-doc html consistent
+    // on the index page (date + kind badge) and let `update` live-reload like any
+    // other artifact. Skip any meta the document already declares to avoid dupes.
+    const generated = Date.now();
+    const projectPath = process.cwd();
+    const metas: string[] = [];
+    if (!content.includes('name="artifact-kind"')) metas.push(`<meta name="artifact-kind" content="html">`);
+    if (!content.includes('name="artifact-generated"')) metas.push(`<meta name="artifact-generated" content="${generated}">`);
+    if (!content.includes('name="artifact-project"')) metas.push(`<meta name="artifact-project" content="${escapeAttr(projectPath)}">`);
+    const metaBlock = metas.length ? metas.join("\n") + "\n" : "";
     const snippet = sseSnippet(slug);
-    const closeIdx = content.search(/<\/body>/i);
-    return closeIdx !== -1 ? content.slice(0, closeIdx) + snippet + content.slice(closeIdx) : content + snippet;
+
+    let out = content;
+    // Metas belong in <head>; splice there when present.
+    const headClose = out.search(/<\/head>/i);
+    if (headClose !== -1 && metaBlock) {
+      out = out.slice(0, headClose) + metaBlock + out.slice(headClose);
+    }
+    // SSE listener before </body>. If there was no <head>, also drop the metas here —
+    // the index parser is regex-based, so location is irrelevant to function.
+    const tail = (headClose === -1 ? metaBlock : "") + snippet;
+    const bodyClose = out.search(/<\/body>/i);
+    out = bodyClose !== -1 ? out.slice(0, bodyClose) + tail + out.slice(bodyClose) : out + tail;
+    return out;
   }
 
   const flags: RenderFlags = { hasMermaid: false, hasDiff: false, hasCode: false };

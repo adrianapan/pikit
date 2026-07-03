@@ -28,7 +28,7 @@ Rendered to styled HTML at write time. Fenced code blocks are detected and handl
 
 ### `html` (escape hatch)
 
-For what markdown can't express: custom layout, Chart.js visualizations, interactive widgets. Body fragment injected into the styled shell as-is; full Documents (`<!DOCTYPE`/`<html>` detected) get only the SSE reload listener spliced in before `</body>` (appended if none) so `update` live-reloads them like any other artifact — a passive listener changes no rendering. They are otherwise unchanged.
+For what markdown can't express: custom layout, Chart.js visualizations, interactive widgets. Body fragment injected into the styled shell as-is; full documents (`<!DOCTYPE`/`<html>` detected) bypass the shell, so the extension splices in the same metadata metas the shell writes (`artifact-kind`/`generated`/`project`, skipping any the doc already declares) plus the SSE reload listener — both passive, change no rendering. This keeps full-doc html consistent on the index page (date + kind badge) and lets `update` live-reload them like any other artifact. Otherwise the document is unchanged.
 
 Kind is never auto-detected from content — markdown legitimately opens with inline HTML, and a misdetection produces a confusing artifact. The two-value enum costs one token and removes all ambiguity.
 
