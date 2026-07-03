@@ -2,7 +2,6 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
-import { Text } from "@earendil-works/pi-tui";
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -162,25 +161,6 @@ export default function artifacts(pi: ExtensionAPI) {
       };
     },
 
-    renderCall(args, theme) {
-      const action = args.action ?? "";
-      const title = args.title ?? (args.path ? args.path : "");
-      const label = theme.bold("Artifact");
-      const summary = theme.fg("dim", `${action} ${title}`);
-      return new Text(`${theme.fg("toolTitle", label)} ${summary}`, 0, 0);
-    },
-
-    renderResult(result, _options, theme, ctx) {
-      const details = (result.details ?? {}) as Partial<ArtifactDetails>;
-      const isError = ctx.isError;
-      const title = details.title ?? details.slug ?? "artifact";
-      const kind = details.kind ?? "";
-      const url = details.url ?? "";
-      const icon = isError ? theme.fg("error", "✗") : theme.fg("success", "✓");
-      const name = theme.fg("toolTitle", title);
-      const meta = theme.fg("dim", [kind, url].filter(Boolean).join(" · "));
-      return new Text(`${icon} ${name} ${meta}`, 0, 0);
-    },
   });
 }
 
