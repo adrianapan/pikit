@@ -30,30 +30,30 @@ agent/
 ├── skills/
 │   ├── pi-extension-builder/    # Guidelines for building and modifying extensions in this repo
 │   ├── add-ollama-cloud-model/  # Guidelines for adding an Ollama Cloud model to models.json
-│   ├── gh/                        # Read-only GitHub CLI access via enforced wrapper
+│   ├── gh/                      # Read-only GitHub CLI access via enforced wrapper
 │   └── pr-review/               # Review a GitHub PR and emit findings as a markdown artifact
 ├── prompts/
-│   ├── handoff.md    # /handoff — write a session handoff document to .pi/handoffs/
-│   └── pickup.md     # /pickup — resume work from the latest handoff document
+│   ├── handoff.md               # /handoff — write a session handoff document to .pi/handoffs/
+│   └── pickup.md                # /pickup — resume work from the latest handoff document
 ├── themes/
-│   └── slop.json     # Custom warm color theme
+│   └── slop.json                # Custom warm color theme
 └── extensions/
-    ├── chat-input/   # Unicode box border around the main chat input editor
-    ├── caveman/      # Compresses LLM responses: lite (professional) / full (caveman) / ultra (max compression)
-    ├── env-loader/   # Injects .env tokens into process.env at startup
-    ├── footer/       # Status bar with git, tokens, cost, context
-    ├── mcp/          # MCP server bridge with lazy connections and proxy tool
-    ├── plan-mode/     # Plan-then-execute workflow: read-only planning, then execute with plan_complete
-    ├── chat-mode/     # Read-only conversational mode: chat, explore, search — no edits
-    ├── permission-gate/ # Confirms dangerous bash commands before running
-    ├── protected-paths/ # Blocks read/write access to sensitive files and directories
-    ├── llm-council/   # Multi-model council: members answer independently, chairman synthesises
-    ├── spinners/     # Rotating spinner verbs while the agent thinks
-    ├── startup/      # Welcome header shown at session start
-    ├── styled-outputs/ # Custom styled rendering for all message types (tools, diffs, thinking, skills)
-    ├── subagents/    # Delegate tasks to specialized child agents (single, parallel, chain)
-    ├── web-access/   # Web search, page fetching, and PDF extraction
-    └── artifacts/    # Visual HTML artifacts (markdown/html) on a lazy localhost server with live reload
+    ├── chat-input/              # Unicode box border around the main chat input editor
+    ├── caveman/                 # Compresses LLM responses: lite (professional) / full (caveman) / ultra (max compression)
+    ├── env-loader/              # Injects .env tokens into process.env at startup
+    ├── footer/                  # Status bar with git, tokens, cost, context
+    ├── mcp/                     # MCP server bridge with lazy connections and proxy tool
+    ├── plan-mode/               # Plan-then-execute workflow: read-only planning, then execute with plan_complete
+    ├── chat-mode/               # Read-only conversational mode: chat, explore, search — no edits
+    ├── permission-gate/         # Confirms dangerous bash commands before running
+    ├── protected-paths/         # Blocks read/write access to sensitive files and directories
+    ├── llm-council/             # Multi-model council: members answer independently, chairman synthesises
+    ├── spinners/                # Rotating spinner verbs while the agent thinks
+    ├── startup/                 # Welcome header shown at session start
+    ├── styled-outputs/          # Custom styled rendering for all message types (tools, diffs, thinking, skills)
+    ├── subagents/               # Delegate tasks to specialized child agents (single, parallel, chain)
+    ├── web-access/              # Web search, page fetching, and PDF extraction
+    └── artifacts/               # Visual HTML artifacts (markdown/html) on a lazy localhost server with live reload
 ```
 
 ---
