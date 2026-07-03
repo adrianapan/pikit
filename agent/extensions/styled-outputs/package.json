@@ -1,6 +1,7 @@
 {
   "name": "styled-outputs",
   "version": "1.0.0",
+  "private": true,
   "description": "Custom styled outputs for tools, assistant messages, diff viewer, and more.",
   "type": "module",
   "pi": {

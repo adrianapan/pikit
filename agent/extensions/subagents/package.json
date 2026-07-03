@@ -1,6 +1,7 @@
 {
   "name": "subagents",
   "version": "1.0.0",
+  "private": true,
   "description": "Delegate tasks to specialized subagents — child pi processes that work independently",
   "type": "module",
   "repository": {

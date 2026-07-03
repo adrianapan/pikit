@@ -1,5 +1,7 @@
 bin
 sessions
+/agent/bin/
+/agent/sessions/
 .DS_Store
 node_modules
 dist

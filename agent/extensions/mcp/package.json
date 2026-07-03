@@ -1,6 +1,7 @@
 {
   "name": "mcp",
   "version": "1.0.0",
+  "private": true,
   "description": "MCP bridge extension for pi",
   "type": "module",
   "repository": {

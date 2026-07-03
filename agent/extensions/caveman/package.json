@@ -1,6 +1,7 @@
 {
   "name": "caveman",
   "version": "1.0.0",
+  "private": true,
   "description": "Caveman speak mode for pi — compresses LLM responses from professional to prehistoric",
   "type": "module",
   "repository": {

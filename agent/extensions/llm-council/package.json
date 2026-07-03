@@ -1,6 +1,7 @@
 {
   "name": "llm-council",
   "version": "1.0.0",
+  "private": true,
   "description": "Convene an LLM Council — multiple models answer a question, then a chairman synthesizes their answers",
   "type": "module",
   "repository": {

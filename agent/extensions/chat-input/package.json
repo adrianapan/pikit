@@ -1,6 +1,7 @@
 {
   "name": "chat-input",
   "version": "1.0.0",
+  "private": true,
   "description": "Styled chat input for pi",
   "type": "module",
   "repository": {

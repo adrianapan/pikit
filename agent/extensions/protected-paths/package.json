@@ -1,6 +1,7 @@
 {
   "name": "protected-paths",
   "version": "1.0.0",
+  "private": true,
   "description": "Blocks write and edit operations to protected paths",
   "type": "module",
   "repository": {

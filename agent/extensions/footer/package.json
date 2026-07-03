@@ -1,6 +1,7 @@
 {
   "name": "footer",
   "version": "1.0.0",
+  "private": true,
   "description": "A customizable footer status bar for pi",
   "type": "module",
   "repository": {

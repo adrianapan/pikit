@@ -1,6 +1,7 @@
 {
   "name": "env-loader",
   "version": "1.0.0",
+  "private": true,
   "description": "Injects ~/.pi/agent/configs/.env into process.env at startup",
   "type": "module",
   "repository": {

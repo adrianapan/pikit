@@ -25,6 +25,7 @@ agent/
 │   ├── protected-paths.json     # Protected path entries — gitignored, see protected-paths.example.json
 │   └── .env                     # Secret env vars — gitignored, see env-loader/.env.example
 ├── APPEND_SYSTEM.md             # Coding guidelines appended to the system prompt every session
+├── settings.example.json        # Opinionated pi settings — copy to settings.json (gitignored)
 ├── skills/
 │   ├── pi-extension-builder/    # Guidelines for building and modifying extensions in this repo
 │   ├── add-ollama-cloud-model/  # Guidelines for adding an Ollama Cloud model to models.json
@@ -147,10 +148,10 @@ A warm, earthy palette with terracotta primary (`#d67858`) and warm-white text (
 ### 1. Install pi
 
 ```bash
-npm install -g @mariozechner/pi-coding-agent
+npm install -g @earendil-works/pi-coding-agent
 ```
 
-Requires Node.js 18+. On macOS, the easiest way to get Node is via [nvm](https://github.com/nvm-sh/nvm) or [Homebrew](https://brew.sh).
+Requires Node.js 22.19+. On macOS, the easiest way to get Node is via [nvm](https://github.com/nvm-sh/nvm) or [Homebrew](https://brew.sh).
 
 ### 2. Clone this repo
 
@@ -206,12 +207,17 @@ pi
 
 See the full provider list in the [pi providers docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md).
 
-### 5. Enable the slop theme
+### 5. Apply the opinionated settings
 
-Open `/settings` inside pi, navigate to **Theme**, and select `slop`.
+Copy the example settings — slop theme, quiet startup, and a few UX preferences — into place:
 
-> For a smoother UX, I'd recommend enabling the quite startup mode in pi's settings
-> `/settings > Quiet startup (true)`
+```bash
+cp ~/.pi/agent/settings.example.json ~/.pi/agent/settings.json
+```
+
+> If you already have a `settings.json`, merge the keys you want instead of overwriting.
+
+Alternatively, configure it manually inside pi: open `/settings`, set **Theme** to `slop`, and enable **Quiet startup**.
 
 ### 6. Set up Nerd Fonts (recommended)
 

@@ -11,7 +11,7 @@ import type {
   AgentEndEvent,
 } from "@earendil-works/pi-coding-agent";
 import { DynamicBorder } from "@earendil-works/pi-coding-agent";
-import { Container, Input, Text, Spacer, SelectList, matchesKey, Key, type KeyId, type Component, type SelectItem } from "@earendil-works/pi-tui";
+import { Container, Input, Text, Spacer, matchesKey, Key, type KeyId, type Component, type SelectItem } from "@earendil-works/pi-tui";
 import { join } from "node:path";
 import { existsSync, writeFileSync, readFileSync, unlinkSync } from "node:fs";
 
@@ -28,6 +28,7 @@ import {
   applyLabelColor,
 } from "./utils.js";
 import { getMode, getRefining, setRefining, getActivePlanFile, setActivePlanFile, transition, enterPlanWithFile, restore, resetState } from "./state.js";
+import { showSelectMenu } from "./menus.js";
 
 export default function planMode(pi: ExtensionAPI) {
   // ─── Saved tool list for restoring ────────────────────────────────────────
@@ -394,42 +395,7 @@ export default function planMode(pi: ExtensionAPI) {
       // Guard: mode may have changed externally (shortcut, /plan off) while awaiting input
       if (getMode() !== "plan") return;
 
-      const choice = await ctx.ui.custom<string | null>((tui, theme, kb, done) => {
-        const border = new DynamicBorder((s: string) => theme.fg("border", s));
-        const title = new Text(theme.fg("text", theme.bold("How'd you like to proceed?")), 1, 0);
-
-        const selectList = new SelectList(options, Math.min(options.length, 10), {
-          selectedPrefix: (t) => theme.fg("accent", t),
-          selectedText: (t) => theme.fg("accent", t),
-          description: (t) => theme.fg("muted", t),
-          scrollInfo: (t) => theme.fg("dim", t),
-          noMatch: (t) => theme.fg("warning", t),
-        });
-        selectList.onSelect = (item) => done(item.value);
-        selectList.onCancel = () => done(null);
-
-        const help = new Text(theme.fg("dim", "↑↓") + theme.fg("muted", " navigate ") + theme.fg("dim", "enter") + theme.fg("muted", " select ") + theme.fg("dim", "esc") + theme.fg("muted", " cancel"), 1, 0);
-
-        const container = new Container();
-        container.addChild(border);
-        container.addChild(new Spacer());
-        container.addChild(title);
-        container.addChild(new Spacer());
-        container.addChild(selectList);
-        container.addChild(new Spacer());
-        container.addChild(help);
-        container.addChild(border);
-
-        return {
-          render(width: number) { return container.render(width); },
-          invalidate() { container.invalidate(); },
-          handleInput(data: string) {
-            if (kb.matches(data, "app.tools.expand")) { ctx.ui.setToolsExpanded(!ctx.ui.getToolsExpanded()); return; }
-            selectList.handleInput(data);
-            tui.requestRender();
-          },
-        };
-      });
+      const choice = await showSelectMenu(ctx, "How'd you like to proceed?", options);
 
       if (choice === "execute") {
         enterExecuteMode(ctx);
@@ -451,41 +417,9 @@ export default function planMode(pi: ExtensionAPI) {
           { value: "yes", label: "Yes, I am sure" },
           { value: "cancel", label: "Cancel" },
         ];
-        const confirmed = await ctx.ui.custom<string | null>((tui, theme, kb, done) => {
-          const border = new DynamicBorder((s: string) => theme.fg("border", s));
-          const title = new Text(theme.fg("text", "Are you sure?") + theme.fg("dim", " (this will delete the plan file)"), 1, 0);
-
-          const selectList = new SelectList(confirmOptions, Math.min(confirmOptions.length, 10), {
-            selectedPrefix: (t) => theme.fg("accent", t),
-            selectedText: (t) => theme.fg("accent", t),
-            description: (t) => theme.fg("muted", t),
-            scrollInfo: (t) => theme.fg("dim", t),
-            noMatch: (t) => theme.fg("warning", t),
-          });
-          selectList.onSelect = (item) => done(item.value);
-          selectList.onCancel = () => done(null);
-
-          const help = new Text(theme.fg("dim", "↑↓") + theme.fg("muted", " navigate ") + theme.fg("dim", "enter") + theme.fg("muted", " select ") + theme.fg("dim", "esc") + theme.fg("muted", " cancel"), 1, 0);
-
-          const container = new Container();
-          container.addChild(border);
-          container.addChild(new Spacer());
-          container.addChild(title);
-          container.addChild(new Spacer());
-          container.addChild(selectList);
-          container.addChild(new Spacer());
-          container.addChild(help);
-          container.addChild(border);
-
-          return {
-            render(width: number) { return container.render(width); },
-            invalidate() { container.invalidate(); },
-            handleInput(data: string) {
-              if (kb.matches(data, "app.tools.expand")) { ctx.ui.setToolsExpanded(!ctx.ui.getToolsExpanded()); return; }
-              selectList.handleInput(data);
-              tui.requestRender();
-            },
-          };
+        const confirmed = await showSelectMenu(ctx, "Are you sure?", confirmOptions, {
+          bold: false,
+          dimSuffix: " (this will delete the plan file)",
         });
 
         if (confirmed === "yes") {
@@ -557,42 +491,7 @@ export default function planMode(pi: ExtensionAPI) {
             { value: "create", label: "Create new plan" },
             ...files.map((f) => ({ value: f.name, label: f.title })),
           ];
-          const choice = await ctx.ui.custom<string | null>((tui, theme, kb, done) => {
-            const border = new DynamicBorder((s: string) => theme.fg("border", s));
-            const title = new Text(theme.fg("text", theme.bold("Select a plan or create a new one:")), 1, 0);
-
-            const selectList = new SelectList(selectItems, Math.min(selectItems.length, 10), {
-              selectedPrefix: (t) => theme.fg("accent", t),
-              selectedText: (t) => theme.fg("accent", t),
-              description: (t) => theme.fg("muted", t),
-              scrollInfo: (t) => theme.fg("dim", t),
-              noMatch: (t) => theme.fg("warning", t),
-            });
-            selectList.onSelect = (item) => done(item.value);
-            selectList.onCancel = () => done(null);
-
-            const help = new Text(theme.fg("dim", "↑↓") + theme.fg("muted", " navigate ") + theme.fg("dim", "enter") + theme.fg("muted", " select ") + theme.fg("dim", "esc") + theme.fg("muted", " cancel"), 1, 0);
-
-            const container = new Container();
-            container.addChild(border);
-            container.addChild(new Spacer());
-            container.addChild(title);
-            container.addChild(new Spacer());
-            container.addChild(selectList);
-            container.addChild(new Spacer());
-            container.addChild(help);
-            container.addChild(border);
-
-            return {
-              render(width: number) { return container.render(width); },
-              invalidate() { container.invalidate(); },
-              handleInput(data: string) {
-                if (kb.matches(data, "app.tools.expand")) { ctx.ui.setToolsExpanded(!ctx.ui.getToolsExpanded()); return; }
-                selectList.handleInput(data);
-                tui.requestRender();
-              },
-            };
-          });
+          const choice = await showSelectMenu(ctx, "Select a plan or create a new one:", selectItems);
           if (choice === null) return; // cancelled
           if (choice === "create") {
             await promptNameAndEnterPlanMode(ctx);

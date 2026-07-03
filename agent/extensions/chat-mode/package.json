@@ -1,6 +1,7 @@
 {
   "name": "chat-mode",
   "version": "1.0.0",
+  "private": true,
   "description": "Toggle chat mode: read-only conversational access — chat, explore, search the web, without making any changes",
   "type": "module",
   "repository": {

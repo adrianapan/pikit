@@ -1,6 +1,7 @@
 {
   "name": "startup",
   "version": "1.0.0",
+  "private": true,
   "description": "Custom startup header for pi",
   "type": "module",
   "repository": {

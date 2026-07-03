@@ -1,6 +1,7 @@
 {
   "name": "web-access",
   "version": "1.0.0",
+  "private": true,
   "description": "Web search and content extraction for pi",
   "type": "module",
   "repository": {

@@ -1,0 +1,10 @@
+{
+  "theme": "slop",
+  "quietStartup": true,
+  "defaultThinkingLevel": "medium",
+  "hideThinkingBlock": true,
+  "doubleEscapeAction": "tree",
+  "terminal": {
+    "showTerminalProgress": false
+  }
+}
