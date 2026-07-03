@@ -6,6 +6,7 @@
   <a href="#whats-in-here">What's in here</a> &nbsp;·&nbsp;
   <a href="#extensions">Extensions</a> &nbsp;·&nbsp;
   <a href="#skills">Skills</a> &nbsp;·&nbsp;
+  <a href="#prompt-templates">Prompt templates</a> &nbsp;·&nbsp;
   <a href="#theme">Theme</a> &nbsp;·&nbsp;
   <a href="#first-run-setup">First-run setup</a> &nbsp;·&nbsp;
   <a href="#about-pidev">About pi.dev</a>
@@ -30,6 +31,9 @@ agent/
 │   ├── pi-extension-builder/    # Guidelines for building and modifying extensions in this repo
 │   ├── add-ollama-cloud-model/  # Guidelines for adding an Ollama Cloud model to models.json
 │   └── gh/                        # Read-only GitHub CLI access via enforced wrapper
+├── prompts/
+│   ├── handoff.md    # /handoff — write a session handoff document to .pi/handoffs/
+│   └── pickup.md     # /pickup — resume work from the latest handoff document
 ├── themes/
 │   └── slop.json     # Custom warm color theme
 └── extensions/
@@ -129,6 +133,20 @@ Loaded when you ask pi to add an Ollama Cloud model. Fetches the model page, ext
 ### gh
 
 Read-only GitHub CLI access via an enforced wrapper. Lists issues, PRs, repos, runs, releases, and more — but blocks all write, delete, and modify commands. Load when working with GitHub resources. Invoke explicitly with `/skill:gh`.
+
+---
+
+## Prompt templates
+
+### handoff
+
+`/handoff [filename]` — generates a comprehensive handoff document (summary, work completed, files affected, current state, next steps) and saves it to the project's `.pi/handoffs/` directory (same convention as plan-mode's `.pi/plans/`). Use it when a session's context is getting full or you want to continue in a fresh session without carrying the full conversation over.
+
+### pickup
+
+`/pickup [filename]` — the companion to `/handoff`. Reads the most recent handoff document from `.pi/handoffs/` (or a specific one by name), verifies it against the current git state, summarises where things stand, and starts on the "Immediate Next Steps" section.
+
+> Note: for simply continuing a previous conversation as-is, pi's native sessions already cover it (`pi -c`, `/resume`). The handoff/pickup pair is for starting *fresh* with distilled context.
 
 ---
 
