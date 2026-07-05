@@ -1,6 +1,6 @@
 <img src="banner.png" alt="pikit — opinionated pi.dev configuration">
 
-<h3 align="center">pikit — an opinionated <a href="https://pi.dev/">pi.dev</a> configuration. Batteries included.</h3>
+<h3 align="center">Pikit — an opinionated <a href="https://pi.dev/">pi.dev</a> configuration. Batteries included.</h3>
 
 <p align="center">
   <a href="#whats-in-here">What's in here</a> &nbsp;·&nbsp;
@@ -9,7 +9,7 @@
   <a href="#skills">Skills</a> &nbsp;·&nbsp;
   <a href="#prompt-templates">Prompt templates</a> &nbsp;·&nbsp;
   <a href="#theme">Theme</a> &nbsp;·&nbsp;
-  <a href="#setup">Setup</a> &nbsp;·&nbsp;
+  <a href="#setup">Setup</a>
 </p>
 
 ---
