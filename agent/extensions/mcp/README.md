@@ -1,18 +1,9 @@
-# pikit-mcp — MCP server bridge for [pi.dev](https://pi.dev)
+# mcp
 
 MCP bridge extension for pi. Connects to configured MCP servers on-demand and exposes their tools via a single proxy tool — keeping context window usage minimal — with optional per-server direct tool registration. Supports both **stdio** (local process) and **HTTP** (Streamable HTTP, MCP spec 2025-03-26) transports.
 
 > [!TIP]
 > Prefer native CLI commands wrapped in skills over MCP where possible. A well-documented script in a skill uses far fewer context tokens than an MCP server's full tool schema, and is composable, modifiable, and transparent — no protocol overhead required.
-
-## Install
-
-```bash
-pi install npm:pikit-mcp
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## How it works
@@ -37,17 +28,15 @@ Tool metadata is cached to `~/.pi/agent/cache/mcp-{serverName}.json` (one file p
 
 ```
 mcp/
-├── package.json
 ├── README.md
-├── mcp.json.example
-└── src/
-    ├── types.ts        — all interfaces and shared types (McpClient, McpServerConfig, …)
-    ├── client.ts       — McpStdioClient (stdio JSON-RPC transport)
-    ├── http-client.ts  — McpHttpClient (Streamable HTTP transport)
-    ├── config.ts       — loadConfig() from ~/.pi/agent/configs/mcp.json
-    ├── cache.ts        — disk cache read/write per server
-    ├── helpers.ts      — utilities and proxy tool formatters
-    └── index.ts        — extension entry point and wiring
+├── mcp.example.json
+├── types.ts        — all interfaces and shared types (McpClient, McpServerConfig, …)
+├── client.ts       — McpStdioClient (stdio JSON-RPC transport)
+├── http-client.ts  — McpHttpClient (Streamable HTTP transport)
+├── config.ts       — loadConfig() from ~/.pi/agent/configs/mcp.json
+├── cache.ts        — disk cache read/write per server
+├── helpers.ts      — utilities and proxy tool formatters
+└── index.ts        — extension entry point and wiring
 ```
 
 ## Configuration

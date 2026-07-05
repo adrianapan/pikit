@@ -1,17 +1,8 @@
-# pikit-permission-gate — dangerous-command confirmation gate for [pi.dev](https://pi.dev)
+# permission-gate
 
 Intercepts `bash` tool calls and prompts for confirmation before running commands that match dangerous patterns. Blocks silently in non-interactive mode.
 
 https://github.com/user-attachments/assets/cef479b8-6d1c-4c57-89f5-175009e9b856
-
-## Install
-
-```bash
-pi install npm:pikit-permission-gate
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 
@@ -21,12 +12,10 @@ On every `bash` tool call, the extension tests the command string against a list
 
 ```
 permission-gate/
-├── package.json
 ├── README.md
 ├── permission-gate.example.json
-└── src/
-    ├── config.ts  — loads permission-gate.json, falls back to built-in defaults
-    └── index.ts   — extension entry point, tool_call hook
+├── config.ts  — loads permission-gate.json, falls back to built-in defaults
+└── index.ts   — extension entry point, tool_call hook
 ```
 
 ## Default patterns

@@ -9,7 +9,7 @@ description: Guidelines for creating or modifying pi.dev extensions in this repo
 
 - Read root `README.md` — documents extensions, file tree, setup conventions
 - Read extension's `README.md` if exists
-- Read existing `src/index.ts` to understand current patterns
+- Read existing `index.ts` to understand current patterns
 - Source of truth: code, not README
 
 ### Structure decision: simple vs complex
@@ -20,39 +20,34 @@ Judge scope first, then pick pattern:
 ```
 agent/extensions/<name>/
 ├── README.md
-├── package.json
-└── src/
-    └── index.ts
+└── index.ts
 ```
 
 **Complex** (TUI components, user config, multiple tools, layered logic):
 ```
 agent/extensions/<name>/
 ├── README.md
-├── package.json
 ├── <name>.example.json     # Example user config (with relevant _comment)
-└── src/
-    ├── index.ts            # Wiring only
-    ├── config.ts           # Dumb values (single source of truth)
-    ├── utils.ts            # Pure helpers
-    └── components/         # TUI components if needed
-        └── <name>.ts
+├── index.ts               # Wiring only
+├── config.ts              # Dumb values (single source of truth)
+├── utils.ts               # Pure helpers
+└── components/            # TUI components if needed
+    └── <name>.ts
 ```
 
 **Rules:**
 - Start simple — split only when needed
 - If user config is needed, `config.ts` and `<name>.example.json` are mandatory
-- `index.ts` always the entry point, always exports default function receiving `ExtensionAPI`
-- `package.json` must include `"pi": { "extensions": ["./src/index.ts"] }` — see `web-access/package.json`
-- New extensions go in root npm workspace
-- Extensions are published to npm as `pikit-<name>` — mirror the full manifest shape of `footer/package.json`: `pikit-` prefixed `name`, `files` (src + example config), `repository` with `directory`, `keywords` including `pi-package`, and `peerDependencies` (see below)
+- `index.ts` always the entry point, always exports default function receiving `ExtensionAPI`. Pi auto-discovers `~/.pi/agent/extensions/*/index.ts` — no manifest needed
+- No per-extension `package.json` — the whole kit is one npm package (`pikit`, root `package.json`). Extensions are just directories; the root `pi.extensions` glob (`./agent/extensions/*/index.ts`) is what ships them when `pikit` is installed as a package. See `PUBLISHING.md`
+- If the extension imports a new third-party runtime dep, add it to root `package.json` `dependencies`. If it imports a new `@earendil-works/*` package, add it to root `peerDependencies` (the pi loader provides `@earendil-works/*` at runtime — never list those in `dependencies`)
 
 ### Code conventions
 
 - Export single default function receiving `ExtensionAPI` — no classes, no extra exports
-- Reference existing extensions: `web-access/src/index.ts` (tool registration), `startup/src/index.ts` (lifecycle), `permission-gate/src/index.ts` (interception)
+- Reference existing extensions: `web-access/index.ts` (tool registration), `startup/index.ts` (lifecycle), `permission-gate/index.ts` (interception)
 - Match TypeScript style of file being edited — no new patterns
-- Opening a URL in the default browser — use the `mcp/src/helpers.ts` `openBrowser` pattern: `spawn(cmd, [url], { detached: true, stdio: "ignore" }).unref()` with `cmd` = `open` (darwin) / `start` (win32) / `xdg-open` (linux). No shell, no `exec` string concatenation. See `agent/extensions/mcp/src/helpers.ts`
+- Opening a URL in the default browser — use the `mcp/helpers.ts` `openBrowser` pattern: `spawn(cmd, [url], { detached: true, stdio: "ignore" }).unref()` with `cmd` = `open` (darwin) / `start` (win32) / `xdg-open` (linux). No shell, no `exec` string concatenation. See `agent/extensions/mcp/helpers.ts`
 - One concern per extension
 
 ### Import ordering
@@ -89,7 +84,7 @@ Pi's npm packages live under `@earendil-works/` (the old `@mariozechner/` scope 
 | `@mariozechner/pi-agent-core` | `@earendil-works/pi-agent-core` |
 | `@mariozechner/pi-ai` | `@earendil-works/pi-ai` |
 
-**Convention:** Use `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui` for imports. Match existing extension code. Never put these in `dependencies` — the loader provides them. Because extensions are published to npm, list each pi package the extension imports in `peerDependencies` with a `"*"` range (`@earendil-works/pi-coding-agent` always; `pi-tui`, `pi-ai`, `typebox` only if imported). Genuine third-party runtime deps (e.g. `@sinclair/typebox`, `marked`) go in `dependencies` as usual.
+**Convention:** Use `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui` for imports. Match existing extension code. Never put `@earendil-works/*` in `dependencies` — the loader provides them at runtime. List each `@earendil-works/*` package the extension imports in root `package.json` `peerDependencies` with a `"*"` range (`@earendil-works/pi-coding-agent` always; `pi-tui`, `pi-ai` only if imported). Genuine third-party runtime deps (e.g. `typebox`, `marked`) go in root `package.json` `dependencies` as usual. **Use `typebox` (v1.x) — the same package `pi-coding-agent` depends on internally — for all TypeBox schema imports.** The old `@sinclair/typebox` name is deprecated; the API surface used here (`Type.Object/String/Array/Optional/Union/Literal/Boolean/Number/Unsafe`) is identical between the two, and their JSON Schema output is semantically equivalent (only key order differs).
 
 ### Complex extension patterns
 
@@ -109,7 +104,7 @@ const PADDING = " ".repeat(WIDTH);  // Auto-matched
 - `index.ts` — Wiring (patches, events, registrations)
 - `config.ts` — Dumb values only (no logic)
 - `utils.ts` — Pure helpers (parsers, validators, formatters)
-- `types.ts` — Type definitions (always extract when config exists). User config types mirror the config shape with all-optional fields. See `styled-outputs/src/types.ts` for pattern
+- `types.ts` — Type definitions (always extract when config exists). User config types mirror the config shape with all-optional fields. See `styled-outputs/types.ts` for pattern
 - `components/` — TUI rendering (implement `render(width)` interface)
 
 **3. Clean porting** — From reference implementations:
@@ -122,7 +117,7 @@ const PADDING = " ".repeat(WIDTH);  // Auto-matched
    - `config.ts` defines `DEFAULT_CONFIG` with all defaults (color fields use theme tokens like `"text"`, `"accent"`, `"success"`, `"muted"`, `"dim"`, `"separator"`)
    - `loadUserConfig()` reads user config (`readFileSync` + `JSON.parse`, catch → `{}`)
    - Merge via `??`: `userConfig.field ?? DEFAULT_CONFIG.FIELD` — user overrides win, defaults fill gaps
-   - See `styled-outputs/src/config.ts` for full pattern
+   - See `styled-outputs/config.ts` for full pattern
 
 **5. Color support** — All color config fields must accept both theme tokens and hex:
    - Theme tokens: `"text"`, `"accent"`, `"success"`, `"error"`, `"muted"`, `"dim"`, `"separator"`, `"toolTitle"`, etc.
@@ -131,7 +126,7 @@ const PADDING = " ".repeat(WIDTH);  // Auto-matched
      - `isHexColor(color)` — checks `color.startsWith("#")`
      - `applyColor(theme, color, text)` — hex → ANSI truecolor (`\x1b[38;2;r;g;bm`), otherwise `theme.fg(color, text)`
      - `applyBgColor(theme, color, text)` — hex → ANSI truecolor bg (`\x1b[48;2;r;g;bm`), otherwise converts theme fg ANSI to bg ANSI (swap `38` → `48`)
-   - See `styled-outputs/src/utils.ts` for full implementation
+   - See `styled-outputs/utils.ts` for full implementation
 
 **6. Example config** — Include `<extension-name>.example.json` at extension root:
    - `_comment` key with file placement instructions (e.g. `"Place this file at ~/.pi/agent/configs/<name>.json"`)

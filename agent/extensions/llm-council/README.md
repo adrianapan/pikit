@@ -1,17 +1,8 @@
-# pikit-llm-council — multi-LLM council synthesis for [pi.dev](https://pi.dev)
+# llm-council
 
 Convene an LLM Council — multiple models answer a question independently, then a chairman synthesizes their answers into a unified response.
 
 https://github.com/user-attachments/assets/031066b9-c47e-4ece-9491-a648d2cc545f
-
-## Install
-
-```bash
-pi install npm:pikit-llm-council
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 
@@ -38,14 +29,12 @@ Registered as `llm_council` — available to the agent when this extension is lo
 
 ```
 llm-council/
-├── package.json
 ├── README.md
 ├── llm-council.example.json
-└── src/
-    ├── config.ts   — loads llm-council.json, falls back to built-in defaults
-    ├── index.ts     — extension entry point, tool registration & rendering
-    ├── types.ts     — TypeScript interfaces for user config
-    └── utils.ts     — color, formatting, and width helpers
+├── config.ts   — loads llm-council.json, falls back to built-in defaults
+├── index.ts     — extension entry point, tool registration & rendering
+├── types.ts     — TypeScript interfaces for user config
+└── utils.ts     — color, formatting, and width helpers
 ```
 
 ## Default council

@@ -39,7 +39,7 @@ agent/
 │   ├── handoff.md               # /handoff — write a session handoff document to .pi/handoffs/
 │   └── pickup.md                # /pickup — resume work from the latest handoff document
 ├── themes/
-│   └── slop.json                # Custom warm color theme — also published as pikit-theme-slop
+│   └── slop.json                # Custom warm color theme
 └── extensions/
     ├── chat-input/              # Unicode box border around the main chat input editor
     ├── caveman/                 # Compresses LLM responses: lite (professional) / full (caveman) / ultra (max compression)
@@ -63,7 +63,7 @@ agent/
 
 ## Install
 
-Three ways in, depending on how much of the kit you want:
+Two ways in, depending on how much control you want:
 
 ### 1. The full setup (recommended)
 
@@ -76,26 +76,13 @@ cd ~/.pi && npm install
 
 ### 2. Already using pi? Layer it on top
 
-Keep your existing `~/.pi` exactly as it is and install this repo as a single [pi package](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md) — all 16 extensions, 4 skills, the prompt templates, and the slop theme load alongside your current setup:
+Keep your existing `~/.pi` exactly as it is and install the whole kit as one [pi package](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md) — all 16 extensions, 4 skills, the prompt templates, and the slop theme load alongside your current setup:
 
 ```bash
-pi install git:github.com/adrianapan/pikit
+pi install npm:pikit
 ```
 
-Settings, keybindings, and the `APPEND_SYSTEM.md` prompt additions don't travel with the package — pi reads those only from `~/.pi/agent/`. Toggle individual extensions on or off with `pi config`.
-
-### 3. Individual extensions
-
-Every extension (and the theme) is published standalone on npm with the `pikit-` prefix:
-
-```bash
-pi install npm:pikit-footer
-pi install npm:pikit-caveman
-pi install npm:pikit-theme-slop
-# ... any of the extensions listed below
-```
-
-Package name = `pikit-` + the directory name in the [Extensions](#extensions) list. Browse them all in the [pi package gallery](https://pi.dev/packages).
+That single package is the entire kit. Toggle individual extensions on or off with `pi config`. Settings, keybindings, and the `APPEND_SYSTEM.md` prompt additions don't travel with the package — pi reads those only from `~/.pi/agent/`. Browse it in the [pi package gallery](https://pi.dev/packages).
 
 ---
 
@@ -273,7 +260,7 @@ cp ~/.pi.bak/agent/models.json ~/.pi/agent/
 cp -R ~/.pi.bak/agent/sessions ~/.pi/agent/
 ```
 
-Prefer to keep your own config as the base? Layer the kit on top instead — `pi install git:github.com/adrianapan/pikit` (see [Install](#install)).
+Prefer to keep your own config as the base? Layer the kit on top instead — `pi install npm:pikit` (see [Install](#install)).
 
 </details>
 

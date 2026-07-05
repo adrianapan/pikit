@@ -1,4 +1,0 @@
-# pi's theme auto-discovery reads every non-hidden *.json in this directory;
-# this file (respected by pi, invisible to git) keeps it from treating the
-# npm packaging manifest as a theme.
-package.json

@@ -1,17 +1,8 @@
-# pikit-artifacts — visual HTML artifacts for [pi.dev](https://pi.dev)
+# artifacts
 
 Give the agent a way to produce visual output — PR review reports, diagrams, comparison tables, rendered diffs — as **HTML artifacts** served from a lazy localhost server and opened in the browser, instead of dumping walls of text into the terminal.
 
 https://github.com/user-attachments/assets/b84e0ebd-84db-45ec-ba77-52aede167b4e
-
-## Install
-
-```bash
-pi install npm:pikit-artifacts
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## The `artifact` tool
 
@@ -69,7 +60,7 @@ User-facing front door to the index page: starts the lazy server (if not running
 
 ## Styling: bespoke document stylesheet
 
-No CSS framework. `src/styles.ts` owns the entire design system (~300 lines): system fonts, fixed 15px base (no viewport scaling), GitHub-README density, hairline borders, one accent color. Light and dark schemes are defined as token sets and follow the OS via `prefers-color-scheme` by default. diff2html's base CSS (read from the installed package, so it can't drift from its JS) is compacted to code-block scale and recolored through the same tokens; the highlight.js theme is mapped onto scheme tokens too — prose, diffs, and code read as one design in both schemes.
+No CSS framework. `styles.ts` owns the entire design system (~300 lines): system fonts, fixed 15px base (no viewport scaling), GitHub-README density, hairline borders, one accent color. Light and dark schemes are defined as token sets and follow the OS via `prefers-color-scheme` by default. diff2html's base CSS (read from the installed package, so it can't drift from its JS) is compacted to code-block scale and recolored through the same tokens; the highlight.js theme is mapped onto scheme tokens too — prose, diffs, and code read as one design in both schemes.
 
 `kind: "html"` fragments inherit the stylesheet and its CSS variables (`--bg`, `--fg`, `--muted`, `--border`, `--code-bg`, `--accent`), so LLM-authored pages stay on-design without carrying their own CSS.
 
@@ -99,4 +90,4 @@ Tuning *when* artifacts appear never touches extension code.
 
 ## Dependencies
 
-Three workspace deps — `marked`, `diff2html`, `highlight.js` — each the de-facto standard in its lane, plus one CDN script for mermaid fences only. All rendering happens at write time; everything is viewable offline except mermaid artifacts. Deps are lockfile-tracked and auditable (workspace pattern per `web-access`), not checked-in min.js blobs. diff2html's stylesheet is read from the installed package at load time; all other CSS is authored in `src/styles.ts`.
+Three runtime deps — `marked`, `diff2html`, `highlight.js` — each the de-facto standard in its lane, plus one CDN script for mermaid fences only. All rendering happens at write time; everything is viewable offline except mermaid artifacts. Deps are lockfile-tracked and auditable (declared in the root `pikit` package, same pattern as `web-access`), not checked-in min.js blobs. diff2html's stylesheet is read from the installed package at load time; all other CSS is authored in `styles.ts`.

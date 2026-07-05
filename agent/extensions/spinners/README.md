@@ -1,15 +1,6 @@
-# pikit-spinners — custom thinking-verb spinners for [pi.dev](https://pi.dev)
+# spinners
 
 Replaces the default **Thinking** verb with Claude-style random alternatives from a curated list, cycling periodically with a typewriter reveal.
-
-## Install
-
-```bash
-pi install npm:pikit-spinners
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features
@@ -63,7 +54,7 @@ Use any valid pi.dev theme token. Common values:
 
 ## Verbs
 
-Edit `src/verbs.ts` to customize the verb list:
+Edit `verbs.ts` to customize the verb list:
 
 ```typescript
 // Add your own verbs

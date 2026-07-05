@@ -1,15 +1,6 @@
-# pikit-subagents — specialized subagent delegation for [pi.dev](https://pi.dev)
+# subagents
 
 Delegate tasks to specialized subagents — child pi processes that work independently with their own model, tools, extensions, and skills. Supports single, parallel, and chain modes.
-
-## Install
-
-```bash
-pi install npm:pikit-subagents
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 
@@ -49,7 +40,7 @@ Agents are `.md` files with YAML frontmatter and a body (system prompt).
 | `tools` | No | string | Comma-separated tool names. Absent → default list (`read, grep, find, ls, web_search, fetch_content, get_search_content`). Empty → no tools. |
 | `model` | No | string | Model for the subagent. Omitted → inherits from parent. |
 | `thinking` | No | string | Thinking budget: `low`, `medium`, `high`. Omitted → inherits from parent. |
-| `extensions` | No | string | Extensions to load. Absent → defaults (`env-loader, web-access, permission-gate, protected-paths`). Empty → no extensions. Values → exact list. Paths resolved to `~/.pi/agent/extensions/<name>/src/index.ts`. |
+| `extensions` | No | string | Extensions to load. Absent → defaults (`env-loader, web-access, permission-gate, protected-paths`). Empty → no extensions. Values → exact list. Paths resolved to `~/.pi/agent/extensions/<name>/index.ts`. |
 | `skills` | No | string | Skills to load. Absent → none. Empty → no skills. Values → exact list. Paths resolved to `~/.pi/agent/skills/<name>/SKILL.md`. |
 
 ### Example

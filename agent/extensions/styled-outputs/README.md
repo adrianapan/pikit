@@ -1,17 +1,8 @@
-# pikit-styled-outputs — custom styled message rendering for [pi.dev](https://pi.dev)
+# styled-outputs
 
 Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, and MCP tools. Replaces the default flat output with prefix icons, colour-coded diffs, expandable sections, grouped tool configs, and per-tool-type rendering.
 
 https://github.com/user-attachments/assets/6bcf414f-9114-405e-af9e-392a8f4e8bdc
-
-## Install
-
-```bash
-pi install npm:pikit-styled-outputs
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features
@@ -194,22 +185,20 @@ All rendering uses factory functions + closures (no classes). Derived values lik
 
 ```
 styled-outputs/
-├── package.json
 ├── styled-outputs.example.json
-└── src/
-    ├── index.ts                # Extension entry point, patching & tool registration
-    ├── config.ts               # Defaults + user config loading
-    ├── types.ts                # TypeScript interfaces for user config
-    ├── utils.ts                # Colour helpers, ANSI utilities, path shortening
-    └── components/
-        ├── assistant-message.ts # Assistant message renderer
-        ├── thinking-message.ts # Thinking block renderer
-        ├── user-message.ts     # User message renderer
-        ├── skill-message.ts    # Skill invocation renderer
-        ├── custom-message.ts   # Custom message renderer
-        ├── base-renderer.ts    # Built-in tool call/result renderers
-        ├── mcp-renderer.ts     # MCP tool call/result renderers
-        ├── web-renderer.ts     # Web tool call/result renderers
-        ├── markdown-result.ts  # Shared markdown result renderer
-        └── tool-shared.ts      # Group config resolution, spinner, branch/indent helpers
+├── index.ts                # Extension entry point, patching & tool registration
+├── config.ts               # Defaults + user config loading
+├── types.ts                # TypeScript interfaces for user config
+├── utils.ts                # Colour helpers, ANSI utilities, path shortening
+└── components/
+    ├── assistant-message.ts # Assistant message renderer
+    ├── thinking-message.ts # Thinking block renderer
+    ├── user-message.ts     # User message renderer
+    ├── skill-message.ts    # Skill invocation renderer
+    ├── custom-message.ts   # Custom message renderer
+    ├── base-renderer.ts    # Built-in tool call/result renderers
+    ├── mcp-renderer.ts     # MCP tool call/result renderers
+    ├── web-renderer.ts     # Web tool call/result renderers
+    ├── markdown-result.ts  # Shared markdown result renderer
+    └── tool-shared.ts      # Group config resolution, spinner, branch/indent helpers
 ```

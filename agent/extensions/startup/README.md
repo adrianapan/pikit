@@ -1,17 +1,8 @@
-# pikit-startup — session-start welcome header for [pi.dev](https://pi.dev)
+# startup
 
 A startup header for the pi coding agent. Displays a three-column welcome box at session start showing the pi logo, loaded configuration counts, and quick keyboard shortcuts.
 
 <img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/startup/preview.png" alt="startup preview">
-
-## Install
-
-```bash
-pi install npm:pikit-startup
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features

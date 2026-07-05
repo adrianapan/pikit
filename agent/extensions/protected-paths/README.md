@@ -1,17 +1,8 @@
-# pikit-protected-paths — path read/write protection for [pi.dev](https://pi.dev)
+# protected-paths
 
 Blocks `read`, `write`, and/or `edit` tool calls to protected paths. Each entry defines a path and an explicit `deny` list — so you can block writes to `node_modules/` while still allowing the agent to read it for docs and type references. The agent is told why it was blocked and recovers gracefully.
 
 https://github.com/user-attachments/assets/4e41c2f5-0702-404c-97ae-487ce52970dc
-
-## Install
-
-```bash
-pi install npm:pikit-protected-paths
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## Philosophy
 
@@ -43,12 +34,10 @@ When a call is blocked, a warning notification is shown (if a UI is available) a
 
 ```
 protected-paths/
-├── package.json
 ├── README.md
 ├── protected-paths.example.json
-└── src/
-    ├── config.ts  — PathEntry type, loadConfig(), built-in defaults
-    └── index.ts   — matchesEntry(), getBlockedOps(), tool_call hook
+├── config.ts  — PathEntry type, loadConfig(), built-in defaults
+└── index.ts   — matchesEntry(), getBlockedOps(), tool_call hook
 ```
 
 ## Default protected paths

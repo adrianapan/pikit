@@ -9,5 +9,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["agent/extensions/*/src"]
+  "include": ["agent/extensions/**/*.ts"]
 }

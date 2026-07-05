@@ -1,17 +1,8 @@
-# pikit-footer — customizable status footer for [pi.dev](https://pi.dev)
+# footer
 
 A customizable two-row footer for the pi coding agent. Provides a rich status bar at the bottom of the terminal showing model info, git status, token usage, and more.
 
 <img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/footer/preview.png" alt="footer preview">
-
-## Install
-
-```bash
-pi install npm:pikit-footer
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Layout

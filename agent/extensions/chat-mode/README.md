@@ -1,17 +1,8 @@
-# pikit-chat-mode — read-only chat mode for [pi.dev](https://pi.dev)
+# chat-mode
 
 Toggle chat mode via `/chat` command or configurable keyboard shortcut. Read-only conversational access — chat, explore code, search the web — without making any changes.
 
 https://github.com/user-attachments/assets/fc337d4c-bd23-4d28-80e2-01253f7bc89e
-
-## Install
-
-```bash
-pi install npm:pikit-chat-mode
-```
-
-> [!TIP]
-> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## Modes
 
