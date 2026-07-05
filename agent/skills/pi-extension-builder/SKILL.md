@@ -45,6 +45,7 @@ agent/extensions/<name>/
 - `index.ts` always the entry point, always exports default function receiving `ExtensionAPI`
 - `package.json` must include `"pi": { "extensions": ["./src/index.ts"] }` — see `web-access/package.json`
 - New extensions go in root npm workspace
+- Extensions are published to npm as `pikit-<name>` — mirror the full manifest shape of `footer/package.json`: `pikit-` prefixed `name`, `files` (src + example config), `repository` with `directory`, `keywords` including `pi-package`, and `peerDependencies` (see below)
 
 ### Code conventions
 
@@ -88,7 +89,7 @@ Pi's npm packages live under `@earendil-works/` (the old `@mariozechner/` scope 
 | `@mariozechner/pi-agent-core` | `@earendil-works/pi-agent-core` |
 | `@mariozechner/pi-ai` | `@earendil-works/pi-ai` |
 
-**Convention:** Use `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui` for imports. Match existing extension code. Do not add these packages to `package.json` dependencies — the loader provides them.
+**Convention:** Use `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui` for imports. Match existing extension code. Never put these in `dependencies` — the loader provides them. Because extensions are published to npm, list each pi package the extension imports in `peerDependencies` with a `"*"` range (`@earendil-works/pi-coding-agent` always; `pi-tui`, `pi-ai`, `typebox` only if imported). Genuine third-party runtime deps (e.g. `@sinclair/typebox`, `marked`) go in `dependencies` as usual.
 
 ### Complex extension patterns
 

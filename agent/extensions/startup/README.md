@@ -2,6 +2,17 @@
 
 A startup header for the pi coding agent. Displays a three-column welcome box at session start showing the pi logo, loaded configuration counts, and quick keyboard shortcuts.
 
+<img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/startup/preview.png" alt="startup preview">
+
+## Install
+
+```bash
+pi install npm:pikit-startup
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Features
 
 - **Pi logo**: ASCII art rendered in the accent colour
@@ -10,18 +21,6 @@ A startup header for the pi coding agent. Displays a three-column welcome box at
 - **Version banner**: Agent version shown in the top border
 - **Responsive layout**: Box adapts to terminal width; hidden below 44 columns
 - **Nerd Font icons**: Uses Nerd Font glyphs where available, falls back to plain Unicode symbols automatically
-
-## Installation
-
-This extension is included in the pi-dev repo and auto-discovered from
-`~/.pi/agent/extensions/`. No additional installation is required.
-
-To use it outside this repo, copy the extension directory to your
-pi extensions folder manually or load it directly:
-
-```bash
-pi -e ./src/index.ts
-```
 
 ## What it shows
 

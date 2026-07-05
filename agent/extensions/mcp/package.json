@@ -1,27 +1,40 @@
 {
-  "name": "mcp",
+  "name": "pikit-mcp",
   "version": "1.0.0",
-  "private": true,
   "description": "MCP bridge extension for pi",
   "type": "module",
+  "license": "MIT",
+  "author": "Adrian Apan",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianapan/pi-dev.git"
+    "url": "git+https://github.com/adrianapan/pikit.git",
+    "directory": "agent/extensions/mcp"
   },
+  "homepage": "https://github.com/adrianapan/pikit/tree/main/agent/extensions/mcp#readme",
   "bugs": {
-    "url": "https://github.com/adrianapan/pi-dev/issues"
+    "url": "https://github.com/adrianapan/pikit/issues"
   },
-  "homepage": "https://github.com/adrianapan/pi-dev#readme",
   "keywords": [
     "pi",
-    "extension",
-    "mcp",
     "pi-package",
-    "pi-coding-agent"
+    "pi-extension",
+    "pi-coding-agent",
+    "pikit",
+    "mcp"
   ],
-  "pi": {
-    "extensions": ["./src/index.ts"]
+  "files": [
+    "src",
+    "mcp.example.json"
+  ],
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.0"
   },
-  "author": "Adrian Apan",
-  "license": "MIT"
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  }
 }

@@ -5,6 +5,15 @@ MCP bridge extension for pi. Connects to configured MCP servers on-demand and ex
 > [!TIP]
 > Prefer native CLI commands wrapped in skills over MCP where possible. A well-documented script in a skill uses far fewer context tokens than an MCP server's full tool schema, and is composable, modifiable, and transparent — no protocol overhead required.
 
+## Install
+
+```bash
+pi install npm:pikit-mcp
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## How it works
 
 Instead of registering every MCP tool individually at startup (which burns the entire tool schema list into the context window whether or not they're used), mcp registers a single `mcp` proxy tool (~200 tokens). The LLM calls `mcp({ search: "keyword" })` to discover what's available, `mcp({ describe: "tool_name" })` to inspect schemas, and `mcp({ tool: "tool_name", args: '{"k":"v"}' })` to call tools. Servers connect lazily — only when a tool is actually needed.
@@ -39,10 +48,6 @@ mcp/
     ├── helpers.ts      — utilities and proxy tool formatters
     └── index.ts        — extension entry point and wiring
 ```
-
-## Installation
-
-Auto-discovered from `~/.pi/agent/extensions/`. No additional registration required.
 
 ## Configuration
 

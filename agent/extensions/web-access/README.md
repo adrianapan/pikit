@@ -2,6 +2,15 @@
 
 Web search and content extraction for pi. Search the web via Gemini AI, fetch and read web pages, and extract text from PDFs — all from within the agent.
 
+## Install
+
+```bash
+pi install npm:pikit-web-access
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Features
 
 - **Web search**: Queries Gemini AI with Google Search grounding — returns a synthesized answer with source citations. Uses `gemini-2.5-flash-lite` (hardcoded in `src/search.ts`), the cheapest model in the 2.5 family that supports the `google_search` grounding tool.
@@ -27,28 +36,6 @@ web-access/
     ├── pdf.ts       — PDF text extraction via unpdf
     └── utils.ts     — shared helpers (truncate, errorMessage, abort check, PDF detection)
 ```
-
-## Installation
-
-Auto-discovered from `~/.pi/agent/extensions/`. No additional registration required.
-
-This repo uses npm workspaces. Run once from the pi root to install dependencies for all extensions:
-
-```bash
-cd ~/.pi && npm install
-```
-
-Dependencies are hoisted to `~/.pi/node_modules/` — no per-extension install needed. The dependencies declared by this extension are:
-
-| Package | Purpose |
-|---------|---------|
-| `@sinclair/typebox` | Tool parameter schema definitions |
-| `@mozilla/readability` | Article extraction from web pages |
-| `linkedom` | DOM parsing |
-| `turndown` | HTML to Markdown conversion |
-| `unpdf` | PDF text extraction |
-
-If pi fails to start with a `Cannot find module` error referencing this extension, `npm install` has not been run from `~/.pi`.
 
 ## Configuration
 

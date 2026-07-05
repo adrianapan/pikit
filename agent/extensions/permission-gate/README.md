@@ -2,6 +2,16 @@
 
 Intercepts `bash` tool calls and prompts for confirmation before running commands that match dangerous patterns. Blocks silently in non-interactive mode.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/permission-gate/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-permission-gate
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## How it works
 
 On every `bash` tool call, the extension tests the command string against a list of regex patterns. If any pattern matches, the user is shown a confirmation prompt — `Yes` lets the command through, `No` blocks it and the agent is told it was blocked. When pi is running without an interactive UI (headless, piped input), the command is blocked automatically.

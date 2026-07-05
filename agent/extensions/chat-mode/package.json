@@ -1,30 +1,39 @@
 {
-  "name": "chat-mode",
+  "name": "pikit-chat-mode",
   "version": "1.0.0",
-  "private": true,
   "description": "Toggle chat mode: read-only conversational access — chat, explore, search the web, without making any changes",
   "type": "module",
+  "license": "MIT",
+  "author": "Adrian Apan",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianapan/pi-dev.git"
+    "url": "git+https://github.com/adrianapan/pikit.git",
+    "directory": "agent/extensions/chat-mode"
   },
+  "homepage": "https://github.com/adrianapan/pikit/tree/main/agent/extensions/chat-mode#readme",
   "bugs": {
-    "url": "https://github.com/adrianapan/pi-dev/issues"
+    "url": "https://github.com/adrianapan/pikit/issues"
   },
-  "homepage": "https://github.com/adrianapan/pi-dev#readme",
   "keywords": [
     "pi",
-    "extension",
-    "chat-mode",
     "pi-package",
-    "pi-coding-agent"
+    "pi-extension",
+    "pi-coding-agent",
+    "pikit",
+    "chat-mode"
   ],
+  "files": [
+    "src",
+    "chat-mode.example.json"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
   "pi": {
     "extensions": [
       "./src/index.ts"
-    ]
-  },
-  "dependencies": {},
-  "author": "Adrian Apan",
-  "license": "MIT"
+    ],
+    "video": "https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/chat-mode/preview.mp4"
+  }
 }

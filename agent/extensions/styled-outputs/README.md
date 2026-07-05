@@ -2,6 +2,17 @@
 
 Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, and MCP tools. Replaces the default flat output with prefix icons, colour-coded diffs, expandable sections, grouped tool configs, and per-tool-type rendering.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/styled-outputs/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-styled-outputs
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Features
 
 - **Assistant messages** — Prefixed lines with configurable icon and colour
@@ -16,16 +27,6 @@ Custom styled rendering for every message type in pi — assistant messages, use
 - **Group-aware config** — Override any general tool setting per group (`base`, `mcp`, `web`, `custom`); unset properties fall through to `general`
 - **Theme-aware colours** — All colour fields accept pi theme tokens (`"accent"`, `"dim"`, etc.) or hex values (`"#ff6347"`)
 - **Expand/collapse** — Tool outputs and skill blocks collapse by default; expand with a keypress
-
-## Installation
-
-Included in the pi-dev repo. Auto-discovered from `~/.pi/agent/extensions/`. No additional installation required.
-
-To use it outside this repo, copy the extension directory to your pi extensions folder or load it directly:
-
-```bash
-pi -e ./src/index.ts
-```
 
 ## Configuration
 

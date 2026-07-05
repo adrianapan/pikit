@@ -2,6 +2,16 @@
 
 Toggle plan mode via `/plan` command or configurable keyboard shortcut.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/plan-mode/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-plan-mode
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## Modes
 
 - **OFF** — Normal operation, all tools available

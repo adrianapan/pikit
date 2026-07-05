@@ -2,6 +2,16 @@
 
 Toggle chat mode via `/chat` command or configurable keyboard shortcut. Read-only conversational access — chat, explore code, search the web — without making any changes.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/chat-mode/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-chat-mode
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## Modes
 
 - **OFF** — Normal operation, all tools available

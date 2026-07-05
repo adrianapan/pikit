@@ -2,6 +2,16 @@
 
 Give the agent a way to produce visual output — PR review reports, diagrams, comparison tables, rendered diffs — as **HTML artifacts** served from a lazy localhost server and opened in the browser, instead of dumping walls of text into the terminal.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/artifacts/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-artifacts
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## The `artifact` tool
 
 One tool, action-based:

@@ -2,6 +2,17 @@
 
 A customizable two-row footer for the pi coding agent. Provides a rich status bar at the bottom of the terminal showing model info, git status, token usage, and more.
 
+<img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/footer/preview.png" alt="footer preview">
+
+## Install
+
+```bash
+pi install npm:pikit-footer
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Layout
 
 ```
@@ -22,18 +33,6 @@ Row 2 right: T: <total> (<cached> cached) ↑ <in> ↓ <out> | $<cost>
 - **Caveman mode indicator**: Shows active caveman mode when the caveman extension is loaded
 - **Nerd Font support**: Automatic detection with ASCII fallbacks
 - **Live updates**: Git status refreshes automatically as you work
-
-## Installation
-
-This extension is included in the pi-dev repo and auto-discovered from
-`~/.pi/agent/extensions/`. No additional installation is required.
-
-To use it outside this repo, copy the extension directory to your
-pi extensions folder manually or load it directly:
-
-```bash
-pi -e ./src/index.ts
-```
 
 ## Configuration
 

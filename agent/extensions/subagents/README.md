@@ -2,6 +2,14 @@
 
 Delegate tasks to specialized subagents — child pi processes that work independently with their own model, tools, extensions, and skills. Supports single, parallel, and chain modes.
 
+## Install
+
+```bash
+pi install npm:pikit-subagents
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## How it works
 
 1. Parent LLM calls the `subagent` tool in one of three modes

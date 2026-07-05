@@ -1,9 +1,46 @@
 {
-  "name": "pi-dev",
+  "name": "pikit",
   "private": true,
-  "workspaces": [
-    "agent/extensions/*"
+  "description": "An opinionated pi.dev configuration. Batteries included.",
+  "license": "MIT",
+  "author": "Adrian Apan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pikit.git"
+  },
+  "homepage": "https://github.com/adrianapan/pikit#readme",
+  "bugs": {
+    "url": "https://github.com/adrianapan/pikit/issues"
+  },
+  "keywords": [
+    "pi",
+    "pi-package",
+    "pi-coding-agent",
+    "pikit"
   ],
+  "workspaces": [
+    "agent/extensions/*",
+    "agent/themes"
+  ],
+  "scripts": {
+    "check": "tsc --noEmit",
+    "release": "npm publish --workspaces"
+  },
+  "pi": {
+    "extensions": [
+      "./agent/extensions/*/src/index.ts"
+    ],
+    "skills": [
+      "./agent/skills"
+    ],
+    "prompts": [
+      "./agent/prompts"
+    ],
+    "themes": [
+      "./agent/themes/slop.json"
+    ],
+    "image": "https://raw.githubusercontent.com/adrianapan/pikit/main/banner.png"
+  },
   "devDependencies": {
     "@earendil-works/pi-ai": "^0.80.3",
     "@earendil-works/pi-coding-agent": "^0.80.3",

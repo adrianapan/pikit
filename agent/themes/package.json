@@ -1,0 +1,32 @@
+{
+  "name": "pikit-theme-slop",
+  "version": "1.0.0",
+  "description": "Slop — a warm, earthy pi theme with terracotta primary and warm-white text, covering all 51 pi color tokens",
+  "license": "MIT",
+  "author": "Adrian Apan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianapan/pikit.git",
+    "directory": "agent/themes"
+  },
+  "homepage": "https://github.com/adrianapan/pikit/tree/main/agent/themes#readme",
+  "bugs": {
+    "url": "https://github.com/adrianapan/pikit/issues"
+  },
+  "keywords": [
+    "pi",
+    "pi-package",
+    "pi-theme",
+    "pi-coding-agent",
+    "pikit",
+    "slop"
+  ],
+  "files": [
+    "slop.json"
+  ],
+  "pi": {
+    "themes": [
+      "./slop.json"
+    ]
+  }
+}

@@ -1,30 +1,40 @@
 {
-  "name": "subagents",
+  "name": "pikit-subagents",
   "version": "1.0.0",
-  "private": true,
   "description": "Delegate tasks to specialized subagents — child pi processes that work independently",
   "type": "module",
+  "license": "MIT",
+  "author": "Adrian Apan",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianapan/pi-dev.git"
+    "url": "git+https://github.com/adrianapan/pikit.git",
+    "directory": "agent/extensions/subagents"
   },
+  "homepage": "https://github.com/adrianapan/pikit/tree/main/agent/extensions/subagents#readme",
   "bugs": {
-    "url": "https://github.com/adrianapan/pi-dev/issues"
+    "url": "https://github.com/adrianapan/pikit/issues"
   },
-  "homepage": "https://github.com/adrianapan/pi-dev#readme",
   "keywords": [
     "pi",
-    "extension",
-    "subagents",
     "pi-package",
-    "pi-coding-agent"
+    "pi-extension",
+    "pi-coding-agent",
+    "pikit",
+    "subagents"
   ],
+  "files": [
+    "src",
+    "subagents.example.json",
+    "examples"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
   "pi": {
     "extensions": [
       "./src/index.ts"
     ]
-  },
-  "dependencies": {},
-  "author": "Adrian Apan",
-  "license": "MIT"
+  }
 }

@@ -2,6 +2,15 @@
 
 Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal.
 
+## Install
+
+```bash
+pi install npm:pikit-spinners
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Features
 
 - **Curated verb list** — Unique alternatives to the default thinking message
@@ -10,11 +19,6 @@ Replaces the default **Thinking** verb with random alternatives from a curated l
 - **Live status** — Shows elapsed time and estimated token count
 - **Theme-aware colors** — Uses pi.dev theme colors with fallbacks
 - **Keyboard shortcut hint** — Shows how to expand thinking blocks
-
-## Installation
-
-Included in the pi-dev repo. Auto-discovered from `~/.pi/agent/extensions/`. No additional setup required.
-
 
 ## Configuration
 

@@ -2,6 +2,17 @@
 
 Replaces the default chat input with a configurable, boxed input. All native editor features — cursor movement, history, autocomplete, paste — work normally inside the box.
 
+<img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/chat-input/preview.png" alt="chat-input preview">
+
+## Install
+
+```bash
+pi install npm:pikit-chat-input
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
+
 ## Features
 
 - **Full box border**: With configurable inner spacing
@@ -11,18 +22,6 @@ Replaces the default chat input with a configurable, boxed input. All native edi
 - **Responsive**: Adapts to terminal width; degrades gracefully on narrow terminals
 - **Unboxed mode**: Optionally drop side borders for a minimal horizontal-rule look
 - **ASCII companion**: Cat ascii companion
-
-## Installation
-
-This extension is included in the pi-dev repo and auto-discovered from
-`~/.pi/agent/extensions/`. No additional installation is required.
-
-To use it outside this repo, copy the extension directory to your
-pi extensions folder manually or load it directly:
-
-```bash
-pi -e ./src/index.ts
-```
 
 ## Configuration
 

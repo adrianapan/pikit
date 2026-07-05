@@ -2,6 +2,16 @@
 
 Convene an LLM Council — multiple models answer a question independently, then a chairman synthesizes their answers into a unified response.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/llm-council/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-llm-council
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## How it works
 
 1. **Members** — Each council member (a different LLM) receives the same question and answers independently, in parallel
@@ -120,7 +130,3 @@ cp ~/.pi/agent/extensions/llm-council/llm-council.example.json \
 ### Color values
 
 Color fields accept **pi theme tokens** (`"text"`, `"accent"`, `"success"`, `"error"`, `"muted"`, `"dim"`, `"separator"`, `"toolTitle"`, etc.) and **hex values** (`"#ff6600"`).
-
-## Installation
-
-Included in the pi-dev repo. Auto-discovered from `~/.pi/agent/extensions/`. No additional setup required.

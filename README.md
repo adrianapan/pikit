@@ -1,14 +1,16 @@
-<img src="banner.png" alt="opinionated pi.dev configuration">
+<img src="banner.png" alt="pikit — opinionated pi.dev configuration">
 
-<h3 align="center">An opinionated <a href="https://pi.dev/">pi.dev</a> configuration. Batteries included.</h3>
+<h3 align="center">pikit — an opinionated <a href="https://pi.dev/">pi.dev</a> configuration. Batteries included.</h3>
 
 <p align="center">
   <a href="#whats-in-here">What's in here</a> &nbsp;·&nbsp;
+  <a href="#install">Install</a> &nbsp;·&nbsp;
   <a href="#extensions">Extensions</a> &nbsp;·&nbsp;
   <a href="#skills">Skills</a> &nbsp;·&nbsp;
   <a href="#prompt-templates">Prompt templates</a> &nbsp;·&nbsp;
   <a href="#theme">Theme</a> &nbsp;·&nbsp;
-  <a href="#first-run-setup">First-run setup</a> &nbsp;·&nbsp;
+  <a href="#system-prompt">System prompt</a> &nbsp;·&nbsp;
+  <a href="#setup">Setup</a> &nbsp;·&nbsp;
   <a href="#about-pidev">About pi.dev</a>
 </p>
 
@@ -20,7 +22,9 @@
 agent/
 ├── configs/
 │   ├── caveman.json             # Caveman default level — gitignored, auto-created on first use
-│   ├── footer.json              # Footer segment configuration (tracked)
+│   ├── chat-mode.json           # Chat mode settings (tracked)
+│   ├── plan-mode.json           # Plan mode settings (tracked)
+│   ├── footer.json              # Footer segment configuration — gitignored, see footer/footer.example.json
 │   ├── mcp.json                 # MCP server config — gitignored, see mcp/mcp.example.json
 │   ├── permission-gate.json     # Permission gate patterns — gitignored, see permission-gate.example.json
 │   ├── protected-paths.json     # Protected path entries — gitignored, see protected-paths.example.json
@@ -36,7 +40,7 @@ agent/
 │   ├── handoff.md               # /handoff — write a session handoff document to .pi/handoffs/
 │   └── pickup.md                # /pickup — resume work from the latest handoff document
 ├── themes/
-│   └── slop.json                # Custom warm color theme
+│   └── slop.json                # Custom warm color theme — also published as pikit-theme-slop
 └── extensions/
     ├── chat-input/              # Unicode box border around the main chat input editor
     ├── caveman/                 # Compresses LLM responses: lite (professional) / full (caveman) / ultra (max compression)
@@ -58,27 +62,71 @@ agent/
 
 ---
 
+## Install
+
+Three ways in, depending on how much of the kit you want:
+
+### 1. The full setup (recommended)
+
+Clone this repo as your `~/.pi/` directory — settings, system prompt additions, keybindings, configs, everything. Walkthrough in [Setup](#setup).
+
+```bash
+git clone https://github.com/adrianapan/pikit.git ~/.pi
+cd ~/.pi && npm install
+```
+
+### 2. Already using pi? Layer it on top
+
+Keep your existing `~/.pi` exactly as it is and install this repo as a single [pi package](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md) — all 16 extensions, 4 skills, the prompt templates, and the slop theme load alongside your current setup:
+
+```bash
+pi install git:github.com/adrianapan/pikit
+```
+
+Settings, keybindings, and the `APPEND_SYSTEM.md` prompt additions don't travel with the package — pi reads those only from `~/.pi/agent/`. Toggle individual extensions on or off with `pi config`.
+
+### 3. Individual extensions
+
+Every extension (and the theme) is published standalone on npm with the `pikit-` prefix:
+
+```bash
+pi install npm:pikit-footer
+pi install npm:pikit-caveman
+pi install npm:pikit-theme-slop
+# ... any of the extensions listed below
+```
+
+Package name = `pikit-` + the directory name in the [Extensions](#extensions) list. Browse them all in the [pi package gallery](https://pi.dev/packages).
+
+---
+
 ## Extensions
 
 ### startup
 
 Renders a welcome box at session start with the pi logo, keyboard hints, and counts of loaded extensions, skills, MCP configs, and context files. Zero config. → [`README`](agent/extensions/startup/README.md)
 
+<img src="agent/extensions/startup/preview.png" alt="startup preview">
+
 ### chat-input
 
 Replaces the default chat input with a configurable, boxed input. All native editor features — cursor movement, history, autocomplete, paste — work normally inside the box. → [`README`](agent/extensions/chat-input/README.md)
+
+<img src="agent/extensions/chat-input/preview.png" alt="chat-input preview">
 
 ### footer
 
 Replaces pi's default status bar with a configurable strip showing model, thinking level, current path, git branch, token counts, and estimated cost. Segments are defined in `footer.json`; Nerd Font icons with plain-ASCII fallbacks. → [`README`](agent/extensions/footer/README.md)
 
+<img src="agent/extensions/footer/preview.png" alt="footer preview">
+
 ### permission-gate
 
-Intercepts bash tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod 777`). Blocks silently in headless mode. Patterns are fully configurable via `permission-gate.json`. → [`README`](agent/extensions/permission-gate/README.md)
+Intercepts bash tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod 777`). Blocks silently in headless mode. Patterns are fully configurable via `permission-gate.json`. → [`README`](agent/extensions/permission-gate/README.md) · [▶ demo](agent/extensions/permission-gate/preview.mp4)
 
 ### protected-paths
 
-Blocks read, write, and edit calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes while still allowing reads. Ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `auth.json`); fully configurable via `protected-paths.json`. → [`README`](agent/extensions/protected-paths/README.md)
+Blocks read, write, and edit calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes while still allowing reads. Ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `auth.json`); fully configurable via `protected-paths.json`. → [`README`](agent/extensions/protected-paths/README.md) · [▶ demo](agent/extensions/protected-paths/preview.mp4)
 
 ### env-loader
 
@@ -98,11 +146,11 @@ Compresses pi's responses from polished prose to prehistoric grunt. Three modes 
 
 ### plan-mode
 
-Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and injects the full plan into the system prompt each turn; the LLM calls `plan_complete()` when done. → [`README`](agent/extensions/plan-mode/README.md)
+Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and injects the full plan into the system prompt each turn; the LLM calls `plan_complete()` when done. → [`README`](agent/extensions/plan-mode/README.md) · [▶ demo](agent/extensions/plan-mode/preview.mp4)
 
 ### chat-mode
 
-Toggle chat mode via `/chat` or `ctrl+shift+c`. Restricts tools to read-only and prompts the LLM to converse — answer questions, discuss, explore code, search the web — without making any changes. Bash gate blocks destructive commands. Mutually exclusive with plan-mode. `--chat` flag starts in chat mode. → [`README`](agent/extensions/chat-mode/README.md)
+Toggle chat mode via `/chat` or `ctrl+shift+c`. Restricts tools to read-only and prompts the LLM to converse — answer questions, discuss, explore code, search the web — without making any changes. Bash gate blocks destructive commands. Mutually exclusive with plan-mode. `--chat` flag starts in chat mode. → [`README`](agent/extensions/chat-mode/README.md) · [▶ demo](agent/extensions/chat-mode/preview.mp4)
 
 ### spinners
 
@@ -110,11 +158,11 @@ Replaces the default **Thinking** verb with random alternatives from a curated l
 
 ### llm-council
 
-Convene an LLM Council — multiple models answer a question independently in parallel, then a chairman synthesises their answers into a unified response. Useful when accuracy matters or perspectives diverge. Members get read-only tool access; the chairman only synthesises. Configurable council roster, system prompts, thinking levels, and display options via `llm-council.json`. → [`README`](agent/extensions/llm-council/README.md)
+Convene an LLM Council — multiple models answer a question independently in parallel, then a chairman synthesises their answers into a unified response. Useful when accuracy matters or perspectives diverge. Members get read-only tool access; the chairman only synthesises. Configurable council roster, system prompts, thinking levels, and display options via `llm-council.json`. → [`README`](agent/extensions/llm-council/README.md) · [▶ demo](agent/extensions/llm-council/preview.mp4)
 
 ### styled-outputs
 
-Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, MCP tools, and bash commands. Replaces flat output with prefix icons, colour-coded diffs, expandable sections, and grouped tool configs. All colours accept pi theme tokens or hex values. → [`README`](agent/extensions/styled-outputs/README.md)
+Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, MCP tools, and bash commands. Replaces flat output with prefix icons, colour-coded diffs, expandable sections, and grouped tool configs. All colours accept pi theme tokens or hex values. → [`README`](agent/extensions/styled-outputs/README.md) · [▶ demo](agent/extensions/styled-outputs/preview.mp4)
 
 ### subagents
 
@@ -122,7 +170,7 @@ Delegate tasks to specialized child pi processes that work independently with th
 
 ### artifacts
 
-Gives the agent a visual output surface: an `artifact` tool that renders markdown or HTML to a styled page served from a lazy localhost server and opened in the browser. Markdown handles `diff` fences (server-side diff2html), code fences (server-side highlight.js), and `mermaid` fences (client-side) automatically; `update` live-reloads an already-open tab. Storage at `.pi/artifacts/<slug>.html`. Use `/artifacts` to open the index page and browse what's been generated. → [`README`](agent/extensions/artifacts/README.md)
+Gives the agent a visual output surface: an `artifact` tool that renders markdown or HTML to a styled page served from a lazy localhost server and opened in the browser. Markdown handles `diff` fences (server-side diff2html), code fences (server-side highlight.js), and `mermaid` fences (client-side) automatically; `update` live-reloads an already-open tab. Storage at `.pi/artifacts/<slug>.html`. Use `/artifacts` to open the index page and browse what's been generated. → [`README`](agent/extensions/artifacts/README.md) · [▶ demo](agent/extensions/artifacts/preview.mp4)
 
 ---
 
@@ -168,162 +216,92 @@ A warm, earthy palette with terracotta primary (`#d67858`) and warm-white text (
 
 ---
 
-## First-run setup
+## System prompt
+
+Pi appends [`agent/APPEND_SYSTEM.md`](agent/APPEND_SYSTEM.md) to its default system prompt on every session — no extension code involved. This repo ships a trimmed version of [Andrej Karpathy's coding guidelines](https://github.com/forrestchang/andrej-karpathy-skills/blob/main/CLAUDE.md) — think before coding, simplicity first, surgical changes, goal-driven execution — plus a fifth nudge to emit visual output via the `artifact` tool.
+
+---
+
+## Setup
 
 > [!TIP]
-> For the best experience, I recommend using [Ghostty](https://ghostty.org/) as your terminal. It's a fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration
+> Best experienced with [Ghostty](https://ghostty.org/) — fast, GPU-accelerated, and Nerd Font icons work out of the box.
 
-### 1. Install pi
-
-```bash
-npm install -g @earendil-works/pi-coding-agent
-```
-
-Requires Node.js 22.19+. On macOS, the easiest way to get Node is via [nvm](https://github.com/nvm-sh/nvm) or [Homebrew](https://brew.sh).
-
-### 2. Clone this repo
-
-Pi looks for its config in `~/.pi/`. Clone this repo directly into that directory:
+Four commands, then log in:
 
 ```bash
-git clone git@github.com:adrianapan/pi-dev.git ~/.pi
-# or via HTTPS
-git clone https://github.com/adrianapan/pi-dev.git ~/.pi
+npm install -g @earendil-works/pi-coding-agent            # install pi (Node 22.19+)
+git clone https://github.com/adrianapan/pikit.git ~/.pi   # this repo becomes your pi config
+cd ~/.pi && npm install                                   # one install covers all extensions
+cp agent/settings.example.json agent/settings.json        # opinionated defaults (slop theme etc.)
 ```
 
-> If `~/.pi/` already exists from a previous pi install, back it up first: `mv ~/.pi ~/.pi.bak`
+### Authenticate
 
-### 3. Install extension dependencies
+Launch `pi`, then either:
 
-This repo uses npm workspaces. A single install at the root handles all extension dependencies:
+- **Subscription** — run `/login` and pick your provider (Claude Pro/Max, ChatGPT Plus/Pro, GitHub Copilot, Google Gemini). Tokens are stored in `agent/auth.json` and auto-refresh.
+- **API key** — export it before launching: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`, … Full list in the [providers docs](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/providers.md).
+
+That's the whole setup. Everything below is optional.
+
+<details>
+<summary><strong>Already using pi? Keep your auth, sessions, and models</strong></summary>
+<br>
+
+Your existing `~/.pi/` holds auth tokens, session history, and custom models. Move it aside, clone, then carry those over so you don't have to log in again:
 
 ```bash
-cd ~/.pi
-npm install
+mv ~/.pi ~/.pi.bak
+git clone https://github.com/adrianapan/pikit.git ~/.pi
+cd ~/.pi && npm install
+cp ~/.pi.bak/agent/auth.json ~/.pi/agent/
+cp ~/.pi.bak/agent/models.json ~/.pi/agent/
+cp -R ~/.pi.bak/agent/sessions ~/.pi/agent/
 ```
 
-### 4. Authenticate
+Prefer to keep your own config as the base? Layer the kit on top instead — `pi install git:github.com/adrianapan/pikit` (see [Install](#install)).
 
-Launch pi:
+</details>
+
+<details>
+<summary><strong>Nerd Fonts — icons in the footer and startup header</strong></summary>
+<br>
+
+Install one and most terminals (Ghostty, WezTerm, Kitty, Alacritty) pick it up automatically:
 
 ```bash
-pi
+brew install --cask font-jetbrains-mono-nerd-font   # or: brew search nerd-font
 ```
 
-**Via subscription** (Claude Pro/Max, ChatGPT Plus/Pro, GitHub Copilot, Google Gemini) — run inside pi:
+iTerm2 needs one extra step: **Settings → Profiles → Text** → set the font, and enable **Use a different font for non-ASCII text** with the same font. Icons still wrong? Force them with `export FOOTER_NERD_FONTS=1`. Without a Nerd Font everything falls back to plain ASCII.
 
-```
-/login
-```
+</details>
 
-Select your provider and complete the OAuth flow in the browser. Tokens are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
+<details>
+<summary><strong>Extension configs — permission gate, protected paths, MCP, footer, secrets</strong></summary>
+<br>
 
-**Via API key** — set the environment variable before launching:
+Every extension runs with sane defaults. To customise one, copy its example config into `agent/configs/` and edit — each extension's README documents the options:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-pi
+cd ~/.pi/agent
+cp extensions/permission-gate/permission-gate.example.json configs/permission-gate.json
+cp extensions/protected-paths/protected-paths.example.json configs/protected-paths.json
+cp extensions/mcp/mcp.example.json configs/mcp.json
+cp extensions/footer/footer.example.json configs/footer.json
+cp extensions/env-loader/.env.example configs/.env    # API tokens, gitignored — verify with /env
 ```
 
-| Provider | Environment variable |
-|----------|---------------------|
-| Anthropic | `ANTHROPIC_API_KEY` |
-| OpenAI | `OPENAI_API_KEY` |
-| Google Gemini | `GEMINI_API_KEY` |
-| OpenRouter | `OPENROUTER_API_KEY` |
-| Groq | `GROQ_API_KEY` |
+</details>
 
-See the full provider list in the [pi providers docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md).
+### Custom or local models
 
-### 5. Apply the opinionated settings
-
-Copy the example settings — slop theme, quiet startup, and a few UX preferences — into place:
-
-```bash
-cp ~/.pi/agent/settings.example.json ~/.pi/agent/settings.json
-```
-
-> If you already have a `settings.json`, merge the keys you want instead of overwriting.
-
-Alternatively, configure it manually inside pi: open `/settings`, set **Theme** to `slop`, and enable **Quiet startup**.
-
-### 6. Set up Nerd Fonts (recommended)
-
-The footer and startup extensions use Nerd Font icons for git status, model info, and other indicators. Most modern terminals (Ghostty, WezTerm, Kitty, Alacritty) auto-detect support — iTerm2 needs a small one-time config.
-
-**Install a Nerd Font on macOS:**
-
-```bash
-brew install --cask font-jetbrains-mono-nerd-font
-```
-
-Other fonts available via `brew search nerd-font`.
-
-**Configure iTerm2:**
-
-1. Open **Settings → Profiles → Text**
-2. Set **Font** to `JetBrainsMonoNL Nerd Font Propo`, size `10` (recommended)
-3. Enable **Use a different font for non-ASCII text** and set the same font there — required for icons to render correctly
-
-No config needed for Ghostty, WezTerm, Kitty, or Alacritty — icons work out of the box. If icons still look wrong, force Nerd Font mode:
-
-```bash
-export FOOTER_NERD_FONTS=1
-```
-
-### 7. Configure protected paths (optional)
-
-The `protected-paths` extension ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `~/.pi/agent/auth.json`). To customise them, copy the example config:
-
-```bash
-cp ~/.pi/agent/extensions/protected-paths/protected-paths.example.json \
-   ~/.pi/agent/configs/protected-paths.json
-```
-
-See [`agent/extensions/protected-paths/README.md`](agent/extensions/protected-paths/README.md) for the full reference.
-
-### 8. Configure permission patterns (optional)
-
-The `permission-gate` extension ships with three built-in patterns. To customise them, copy the example config:
-
-```bash
-cp ~/.pi/agent/extensions/permission-gate/permission-gate.example.json \
-   ~/.pi/agent/configs/permission-gate.json
-```
-
-See [`agent/extensions/permission-gate/README.md`](agent/extensions/permission-gate/README.md) for the full reference.
-
-### 9. Configure MCP servers (optional)
-
-Copy the example config and edit it with your servers:
-
-```bash
-cp ~/.pi/agent/extensions/mcp/mcp.example.json ~/.pi/agent/configs/mcp.json
-```
-
-See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for the full configuration reference.
-
-### 10. Set up environment variables (optional)
-
-If any extensions require API tokens (MCP servers, web-access search, etc.), store them in `~/.pi/agent/configs/.env` (gitignored) rather than your shell profile:
-
-```bash
-cp ~/.pi/agent/extensions/env-loader/.env.example ~/.pi/agent/configs/.env
-```
-
-Edit the file with your actual values. Use `/env` inside pi to verify what was loaded.
-
-See [`agent/extensions/env-loader/README.md`](agent/extensions/env-loader/README.md) for details.
-
-### 11. Add custom or local models (optional)
-
-`agent/models.json` is excluded from this repo. Create it to register local models (Ollama, LM Studio, vLLM) or any OpenAI-compatible endpoint.
-
-The file hot-reloads — edit it while pi is running and open `/model` to pick up changes. See the [custom models docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md) for the full reference.
+`agent/models.json` (gitignored, hot-reloads while pi runs) registers local models or any OpenAI-compatible endpoint — full reference in the [models docs](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md).
 
 #### Ollama — local models
 
-Point `baseUrl` at the Ollama daemon and list whichever models you have pulled. Use `apiKey: "ollama"` — the value is required but ignored locally.
+Point `baseUrl` at the Ollama daemon and list whichever models you have pulled. `apiKey` is required but ignored locally.
 
 ```json
 {
@@ -348,15 +326,7 @@ Point `baseUrl` at the Ollama daemon and list whichever models you have pulled. 
 
 #### Ollama — cloud models
 
-Ollama Cloud requires an API key and a `compat` block — cloud models don't support the `developer` role pi uses for reasoning models.
-
-Store your key in `~/.pi/agent/configs/.env` (managed by the `env-loader` extension):
-
-```
-OLLAMA_API_KEY=your-key-here
-```
-
-Then reference it in `models.json` using the shell command form so it's read from the file at runtime rather than the shell environment:
+Ollama Cloud needs an API key and a `compat` block — cloud models don't support the `developer` role pi uses for reasoning models. Store the key in `agent/configs/.env`, then read it with the shell-command form so it's resolved at runtime:
 
 ```json
 {
@@ -382,138 +352,24 @@ Then reference it in `models.json` using the shell command form so it's read fro
 }
 ```
 
-Browse available models at [ollama.com/search](https://ollama.com/search). Cloud variants use the `:cloud` tag suffix.
-
-You can also simply ask pi to handle it for you. Use prompts such as:
-```
-Add the qwen3.5 model to my Ollama cloud config
-```
-
-or
-
-```
-Add https://ollama.com/library/qwen3.5 to my Ollama cloud config
-```
-... and the [`add-ollama-cloud-model`](agent/skills/add-ollama-cloud-model/SKILL.md) skill handles the rest.
+Browse models at [ollama.com/search](https://ollama.com/search) — cloud variants use the `:cloud` suffix. Or skip the JSON and just ask pi — *"Add https://ollama.com/library/qwen3.5 to my Ollama cloud config"* — and the [`add-ollama-cloud-model`](agent/skills/add-ollama-cloud-model/SKILL.md) skill handles it.
 
 ---
 
 ## About pi.dev
 
-[Pi](https://pi.dev/) is a minimal, extensible terminal coding agent. Its philosophy is a small core with maximal extensibility — features like plan mode, permission gates, MCP, and sub-agents are left to the community to build via extensions and packages.
+[Pi](https://pi.dev/) is a minimal, extensible terminal coding agent. Its philosophy is a small core with maximal extensibility — features other agents ship built-in (plan mode, permission gates, sub-agents, even MCP support) are deliberately left to the community to build as extensions and packages. This kit is one opinionated take on that community layer: everything in it is ordinary pi extension, skill, prompt, and theme code.
 
-Below is a high-level map of what you can extend or configure.
+One design choice worth knowing up front: **pi has no built-in MCP support**. The [`mcp` extension](agent/extensions/mcp/README.md) in this kit provides a full bridge.
 
-### Extensions
+For concepts and APIs, [pi's own docs](https://github.com/earendil-works/pi/tree/main/packages/coding-agent/docs) are the source of truth — linked here so this README doesn't have to keep up with them:
 
-TypeScript modules that hook into pi's lifecycle. Auto-discovered from `~/.pi/agent/extensions/` (global) or `.pi/extensions/` (project-local). Hot-reloadable via `/reload`.
+- [Quickstart](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/quickstart.md) — install, auth, first session
+- [Extensions](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/extensions.md) — the `ExtensionAPI` everything in `agent/extensions/` is built on
+- [Skills](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/skills.md) and [Prompt templates](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/prompt-templates.md)
+- [Themes](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/themes.md)
+- [Packages](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md) — how `pi install` and the [package gallery](https://pi.dev/packages) work
+- [Models](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md) and [Providers](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/providers.md)
+- [Settings](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/settings.md) and [Keybindings](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/keybindings.md)
 
-An extension exports a default function that receives `ExtensionAPI`:
-
-```ts
-export default function myExtension(pi: ExtensionAPI) {
-  pi.on("session_start", async (_event, ctx) => {
-    ctx.ui.notify("Hello from my extension!", "info");
-  });
-}
-```
-
-**What extensions can do:**
-
-| Capability | API |
-|---|---|
-| React to lifecycle events | `pi.on("session_start" \| "turn_start" \| "turn_end" \| "message_update" \| "tool_result" \| "user_bash" \| ...)` |
-| Register LLM-callable tools | `pi.registerTool()` |
-| Register slash commands | `pi.registerCommand("/mycommand", { handler })` |
-| Intercept / block tool calls | Event hooks with `ctx.intercept()` |
-| Inject context into the session | `ctx.injectContext()` |
-| Customize conversation compaction | Override the compaction handler |
-| Persist state across restarts | `pi.appendEntry()` |
-| Prompt the user | `ctx.ui.select()`, `ctx.ui.confirm()`, `ctx.ui.input()`, `ctx.ui.notify()` |
-| Custom TUI components | `ctx.ui.custom(component)` — full keyboard input, overlays |
-| Status line items | `ctx.ui.setStatus("key", styledText)` |
-| Widgets above/below editor | `ctx.ui.setWidget("key", lines)` |
-| Replace the footer | `ctx.ui.setFooter(component)` |
-| Replace the header | `ctx.ui.setHeader(component)` |
-| Custom editor (e.g., vim mode) | `ctx.ui.setEditorComponent(factory)` |
-| Set working message | `ctx.ui.setWorkingMessage("Thinking...")` |
-
-Built-in TUI building blocks (`@mariozechner/pi-tui`): `Text`, `Box`, `Container`, `Spacer`, `Markdown`, `SelectList`, `SettingsList`, `BorderedLoader`, and more.
-
-Extension examples from the pi repo: permission gates, git checkpointing, path protection, conversation summarizers, interactive tools, a todo-list tool, even a Snake game.
-
-**Security note:** extensions run with full system access. Only install from sources you trust.
-
-### Skills
-
-Self-contained instruction packages the agent loads on demand. Each skill is a directory containing a `SKILL.md` file with YAML frontmatter (`name`, `description`) followed by markdown instructions. Supporting scripts, reference docs, or assets can live alongside it — but most skills are just the single `SKILL.md`.
-
-At startup pi reads every skill's `name` and `description` into the system prompt. When a task matches, the agent loads the full `SKILL.md` content (progressive disclosure). Skills can also be invoked explicitly with `/skill:name`.
-
-Skill locations: `~/.pi/agent/skills/`, `.pi/skills/`, `.agents/skills/`, or listed in `settings.json`.
-
-**Skills vs prompt templates:** if you're telling the agent *what to do*, use a prompt template. If you're telling it *how to behave*, use a skill. Example: a `/review` template kicks off a code review task; a `pi-extension-builder` skill shapes how the agent approaches extension work without you having to invoke it manually.
-
-### MCP (Model Context Protocol)
-
-Pi has **no built-in MCP support** — this is a deliberate design choice. The `mcp` extension in this repo provides a full MCP bridge. See [`agent/extensions/mcp/README.md`](agent/extensions/mcp/README.md) for configuration details.
-
-The two general approaches for adding external tools to pi:
-
-1. **Skills** — wrap any external tool in a `SKILL.md`. The agent reads the instructions and invokes it via shell commands. No protocol needed; a well-documented script is enough.
-2. **Extensions** — register tools directly via `pi.registerTool()`. The key thing to understand is how the LLM learns about a tool: every registered tool's `name`, `description`, and parameter schema are injected into the system prompt automatically. The LLM picks the right tool by reading those descriptions — exactly like any built-in tool.
-
-### Prompt Templates
-
-Markdown files that expand into prompts via `/name`. Filename becomes the command. Supports positional arguments (`$1`, `$2`, `$@`).
-
-```markdown
----
-description: Review staged git changes
-argument-hint: "[focus area]"
----
-Review `git diff --cached`. Focus on: $@
-```
-
-Saved to `~/.pi/agent/prompts/` (global) or `.pi/prompts/` (project). Invoked with `/review` or `/review security`.
-
-### System Prompt Customization
-
-Pi supports two special Markdown files for injecting content into the system prompt — no extension or code required.
-
-| File | Behavior |
-|------|----------|
-| `SYSTEM.md` | **Replaces** the default system prompt entirely |
-| `APPEND_SYSTEM.md` | **Appends** to the default system prompt |
-
-Both are discovered in the same locations: `~/.pi/agent/` (global) or `.pi/` (project-level). Project files take precedence over global ones.
-
-This repo ships with `~/.pi/agent/APPEND_SYSTEM.md` — a trimmed version of [Andrej Karpathy's coding guidelines](https://github.com/forrestchang/andrej-karpathy-skills/blob/main/CLAUDE.md) covering four rules (think before coding, simplicity first, surgical changes, goal-driven execution) plus a fifth nudge to emit visual output via the `artifact` tool. It's appended on every session without touching pi's built-in prompt.
-
-### Themes
-
-JSON files with exactly 51 color tokens covering: core UI, backgrounds, markdown rendering, syntax highlighting, thinking level indicators, and diff colors. Placed in `~/.pi/agent/themes/` and activated via `"theme": "name"` in `settings.json`. Hot-reloaded when the file changes.
-
-### Packages
-
-Bundle extensions, skills, prompt templates, and themes for sharing. Distributed via npm or git:
-
-```bash
-pi install npm:@foo/my-pi-package
-pi install git:github.com/user/repo
-pi install ./local/path
-```
-
-Declare resources in `package.json` under the `"pi"` key, or use conventional directories (`extensions/`, `skills/`, `prompts/`, `themes/`). Tag with `pi-package` keyword for gallery discoverability.
-
-### Model Configuration
-
-Defined in `~/.pi/agent/models.json`. Supports 15+ providers: Anthropic, OpenAI, Google, Ollama, LM Studio, vLLM, Azure, and more. Models can be configured with custom context windows, token limits, reasoning support, and OpenAI-compatible API endpoints for local inference. Hot-reloaded when the file changes.
-
-### Keybindings
-
-Configured in `~/.pi/agent/keybindings.json`. Supports modifiers (`ctrl`, `shift`, `alt`), chord bindings, and remapping of any core action.
-
-### Settings
-
-Global: `~/.pi/agent/settings.json`. Project: `.pi/settings.json`. Nested objects merge rather than replace, so project settings layer on top of global ones. Covers model defaults, thinking level, UI preferences, session behavior, and resource toggles.
+> **Security note:** pi extensions run with full system access — that applies to this kit and anything else you install. Review the source before trusting a package; everything here is small enough to read in one sitting.

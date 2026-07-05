@@ -25,3 +25,4 @@ agent/configs/*
 !agent/configs/chat-mode.json
 !agent/configs/plan-mode.json
 agent/trust.json
+/PUBLISHING.md

@@ -2,24 +2,15 @@
 
 Compresses pi's LLM responses from polished prose to prehistoric grunt. Three modes cover the full spectrum from professional-but-tight to maximum compression.
 
-<table>
-<tr>
-<td width="50%">
 
-### 🗣️ Normal (69 tokens)
 
-> "The reason your React component is re-rendering is likely because you're creating a new object reference on each render cycle. When you pass an inline object as a prop, React's shallow comparison sees it as a different object every time, which triggers a re-render. I'd recommend using useMemo to memoize the object."
+## Install
 
-</td>
-<td width="50%">
+```bash
+pi install npm:pikit-caveman
+```
 
-### 🪨 Caveman (19 tokens)
-
-> "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`."
-
-</td>
-</tr>
-</table>
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
 
 ## Commands
 
@@ -58,7 +49,3 @@ Valid values for `defaultLevel`: `"off"` (default, don't auto-enable), `"lite"`,
 ## How it works
 
 Hooks into `before_agent_start` and appends mode-specific instructions to the system prompt each turn. No post-processing — the LLM adjusts its output directly. Disabling caveman removes the instruction immediately on the next turn. Auto-clarity rules tell the model to drop caveman for security warnings or irreversible action confirmations, then resume after.
-
-## Installation
-
-Included in the pi-dev repo. Auto-discovered from `~/.pi/agent/extensions/`. No additional setup required.

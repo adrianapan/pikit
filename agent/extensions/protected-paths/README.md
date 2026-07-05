@@ -2,6 +2,16 @@
 
 Blocks `read`, `write`, and/or `edit` tool calls to protected paths. Each entry defines a path and an explicit `deny` list — so you can block writes to `node_modules/` while still allowing the agent to read it for docs and type references. The agent is told why it was blocked and recovers gracefully.
 
+▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/protected-paths/preview.mp4)
+
+## Install
+
+```bash
+pi install npm:pikit-protected-paths
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## Philosophy
 
 pi prioritizes flexibility. Extensions should be able to modify almost everything—skills, prompts, themes, even other extensions. This extension enforces **minimal, focused restrictions** on only the highest-risk vectors:

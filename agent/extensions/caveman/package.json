@@ -1,29 +1,36 @@
 {
-  "name": "caveman",
+  "name": "pikit-caveman",
   "version": "1.0.0",
-  "private": true,
   "description": "Caveman speak mode for pi — compresses LLM responses from professional to prehistoric",
   "type": "module",
+  "license": "MIT",
+  "author": "Adrian Apan",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianapan/pi-dev.git"
+    "url": "git+https://github.com/adrianapan/pikit.git",
+    "directory": "agent/extensions/caveman"
   },
+  "homepage": "https://github.com/adrianapan/pikit/tree/main/agent/extensions/caveman#readme",
   "bugs": {
-    "url": "https://github.com/adrianapan/pi-dev/issues"
+    "url": "https://github.com/adrianapan/pikit/issues"
   },
-  "homepage": "https://github.com/adrianapan/pi-dev#readme",
   "keywords": [
     "pi",
-    "extension",
-    "caveman",
     "pi-package",
-    "pi-coding-agent"
+    "pi-extension",
+    "pi-coding-agent",
+    "pikit",
+    "caveman"
   ],
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
   "pi": {
     "extensions": [
       "./src/index.ts"
     ]
-  },
-  "author": "Adrian Apan",
-  "license": "MIT"
+  }
 }

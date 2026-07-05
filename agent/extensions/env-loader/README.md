@@ -2,6 +2,14 @@
 
 Injects `~/.pi/agent/configs/.env` into `process.env` at startup. A pi-native alternative to adding secrets to your shell profile (`~/.zshrc`, etc.) — tokens stay in one place, scoped to pi, and never get committed.
 
+## Install
+
+```bash
+pi install npm:pikit-env-loader
+```
+
+Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+
 ## How it works
 
 The extension loads synchronously in its factory function, before `session_start` and before any other extension runs. Shell environment always takes precedence: if a key is already set in your shell, the file value is silently skipped.
