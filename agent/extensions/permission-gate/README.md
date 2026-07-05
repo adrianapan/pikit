@@ -2,7 +2,7 @@
 
 Intercepts `bash` tool calls and prompts for confirmation before running commands that match dangerous patterns. Blocks silently in non-interactive mode.
 
-▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/permission-gate/preview.mp4)
+https://github.com/user-attachments/assets/cef479b8-6d1c-4c57-89f5-175009e9b856
 
 ## Install
 

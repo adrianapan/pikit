@@ -1,6 +1,6 @@
 # spinners
 
-Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal.
+Replaces the default **Thinking** verb with Claude-style random alternatives from a curated list, cycling periodically with a typewriter reveal.
 
 ## Install
 

@@ -2,7 +2,7 @@
 
 Convene an LLM Council — multiple models answer a question independently, then a chairman synthesizes their answers into a unified response.
 
-▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/llm-council/preview.mp4)
+https://github.com/user-attachments/assets/031066b9-c47e-4ece-9491-a648d2cc545f
 
 ## Install
 

@@ -2,7 +2,7 @@
 
 Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, and MCP tools. Replaces the default flat output with prefix icons, colour-coded diffs, expandable sections, grouped tool configs, and per-tool-type rendering.
 
-▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/styled-outputs/preview.mp4)
+https://github.com/user-attachments/assets/6bcf414f-9114-405e-af9e-392a8f4e8bdc
 
 ## Install
 

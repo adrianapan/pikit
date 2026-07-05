@@ -2,7 +2,7 @@
 
 Blocks `read`, `write`, and/or `edit` tool calls to protected paths. Each entry defines a path and an explicit `deny` list — so you can block writes to `node_modules/` while still allowing the agent to read it for docs and type references. The agent is told why it was blocked and recovers gracefully.
 
-▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/protected-paths/preview.mp4)
+https://github.com/user-attachments/assets/4e41c2f5-0702-404c-97ae-487ce52970dc
 
 ## Install
 

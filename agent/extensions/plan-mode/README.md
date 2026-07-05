@@ -2,7 +2,7 @@
 
 Toggle plan mode via `/plan` command or configurable keyboard shortcut.
 
-▶ [Demo video](https://github.com/adrianapan/pikit/blob/main/agent/extensions/plan-mode/preview.mp4)
+https://github.com/user-attachments/assets/eb70370e-3f75-4c22-a0eb-901bf91bae00
 
 ## Install
 
