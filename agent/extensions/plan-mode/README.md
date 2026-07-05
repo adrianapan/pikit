@@ -10,7 +10,7 @@ Toggle plan mode via `/plan` command or configurable keyboard shortcut.
 
 ### Tool Restriction Mechanism
 
-Plan mode restricts tools via `pi.setActiveTools()`. On entering plan mode, the full tool list is saved and replaced with a read-only subset (`read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`). On exiting (to OFF or EXECUTE), the original tool list is restored via `pi.setActiveTools()` with the saved names. Bash commands receive a second layer of defense — the `tool_call` event handler blocks destructive commands even though `bash` itself remains available for exploration.
+Plan mode restricts tools via `pi.setActiveTools()`. On entering plan mode, the full tool list is saved and replaced with a read-only subset (`read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`, `artifact`). On exiting (to OFF or EXECUTE), the original tool list is restored via `pi.setActiveTools()` with the saved names. Bash commands receive a second layer of defense — the `tool_call` event handler blocks destructive commands even though `bash` itself remains available for exploration.
 
 ## Commands
 

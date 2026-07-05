@@ -25,6 +25,7 @@ export const PLAN_MODE_TOOLS: string[] = [
   "web_search",
   "fetch_content",
   "get_search_content",
+  "artifact",
 ];
 
 // ─── Bash Safety ─────────────────────────────────────────────────────────────
