@@ -9,7 +9,6 @@
   <a href="#skills">Skills</a> &nbsp;·&nbsp;
   <a href="#prompt-templates">Prompt templates</a> &nbsp;·&nbsp;
   <a href="#theme">Theme</a> &nbsp;·&nbsp;
-  <a href="#system-prompt">System prompt</a> &nbsp;·&nbsp;
   <a href="#setup">Setup</a> &nbsp;·&nbsp;
   <a href="#about-pidev">About pi.dev</a>
 </p>
@@ -122,11 +121,15 @@ Replaces pi's default status bar with a configurable strip showing model, thinki
 
 ### permission-gate
 
-Intercepts bash tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod 777`). Blocks silently in headless mode. Patterns are fully configurable via `permission-gate.json`. → [`README`](agent/extensions/permission-gate/README.md) · [▶ demo](agent/extensions/permission-gate/preview.mp4)
+Intercepts bash tool calls and prompts for confirmation before running commands that match dangerous patterns (`rm -rf`, `sudo`, `chmod 777`). Blocks silently in headless mode. Patterns are fully configurable via `permission-gate.json`. → [`README`](agent/extensions/permission-gate/README.md)
+
+https://github.com/user-attachments/assets/cef479b8-6d1c-4c57-89f5-175009e9b856
 
 ### protected-paths
 
-Blocks read, write, and edit calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes while still allowing reads. Ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `auth.json`); fully configurable via `protected-paths.json`. → [`README`](agent/extensions/protected-paths/README.md) · [▶ demo](agent/extensions/protected-paths/preview.mp4)
+Blocks read, write, and edit calls to sensitive files and directories. Each entry defines a path and an explicit deny list, so you can block writes while still allowing reads. Ships with four built-in entries (`.env`, `.git/`, `node_modules/`, `auth.json`); fully configurable via `protected-paths.json`. → [`README`](agent/extensions/protected-paths/README.md)
+
+https://github.com/user-attachments/assets/4e41c2f5-0702-404c-97ae-487ce52970dc
 
 ### env-loader
 
@@ -146,23 +149,31 @@ Compresses pi's responses from polished prose to prehistoric grunt. Three modes 
 
 ### plan-mode
 
-Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and injects the full plan into the system prompt each turn; the LLM calls `plan_complete()` when done. → [`README`](agent/extensions/plan-mode/README.md) · [▶ demo](agent/extensions/plan-mode/preview.mp4)
+Toggle plan mode via `/plan` or via the shortcut. PLAN restricts tools to read-only and prompts the LLM to produce a numbered action plan; EXECUTE restores all tools and injects the full plan into the system prompt each turn; the LLM calls `plan_complete()` when done. → [`README`](agent/extensions/plan-mode/README.md)
+
+https://github.com/user-attachments/assets/eb70370e-3f75-4c22-a0eb-901bf91bae00
 
 ### chat-mode
 
-Toggle chat mode via `/chat` or `ctrl+shift+c`. Restricts tools to read-only and prompts the LLM to converse — answer questions, discuss, explore code, search the web — without making any changes. Bash gate blocks destructive commands. Mutually exclusive with plan-mode. `--chat` flag starts in chat mode. → [`README`](agent/extensions/chat-mode/README.md) · [▶ demo](agent/extensions/chat-mode/preview.mp4)
+Toggle chat mode via `/chat` or `ctrl+shift+c`. Restricts tools to read-only and prompts the LLM to converse — answer questions, discuss, explore code, search the web — without making any changes. Bash gate blocks destructive commands. Mutually exclusive with plan-mode. `--chat` flag starts in chat mode. → [`README`](agent/extensions/chat-mode/README.md)
+
+https://github.com/user-attachments/assets/fc337d4c-bd23-4d28-80e2-01253f7bc89e
 
 ### spinners
 
-Replaces the default **Thinking** verb with random alternatives from a curated list, cycling periodically with a typewriter reveal. Shows elapsed time and estimated token count as the turn progresses. Icon and colors are fully customisable via `spinners.json`. → [`README`](agent/extensions/spinners/README.md)
+Replaces the default **Thinking** verb with Claude-style random alternatives from a curated list, cycling periodically with a typewriter reveal. Shows elapsed time and estimated token count as the turn progresses. Icon and colors are fully customisable via `spinners.json`. → [`README`](agent/extensions/spinners/README.md)
 
 ### llm-council
 
-Convene an LLM Council — multiple models answer a question independently in parallel, then a chairman synthesises their answers into a unified response. Useful when accuracy matters or perspectives diverge. Members get read-only tool access; the chairman only synthesises. Configurable council roster, system prompts, thinking levels, and display options via `llm-council.json`. → [`README`](agent/extensions/llm-council/README.md) · [▶ demo](agent/extensions/llm-council/preview.mp4)
+Convene an LLM Council — multiple models answer a question independently in parallel, then a chairman synthesises their answers into a unified response. Useful when accuracy matters or perspectives diverge. Members get read-only tool access; the chairman only synthesises. Configurable council roster, system prompts, thinking levels, and display options via `llm-council.json`. → [`README`](agent/extensions/llm-council/README.md)
+
+https://github.com/user-attachments/assets/031066b9-c47e-4ece-9491-a648d2cc545f
 
 ### styled-outputs
 
-Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, MCP tools, and bash commands. Replaces flat output with prefix icons, colour-coded diffs, expandable sections, and grouped tool configs. All colours accept pi theme tokens or hex values. → [`README`](agent/extensions/styled-outputs/README.md) · [▶ demo](agent/extensions/styled-outputs/preview.mp4)
+Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, MCP tools, and bash commands. Replaces flat output with prefix icons, colour-coded diffs, expandable sections, and grouped tool configs. All colours accept pi theme tokens or hex values. → [`README`](agent/extensions/styled-outputs/README.md)
+
+https://github.com/user-attachments/assets/6bcf414f-9114-405e-af9e-392a8f4e8bdc
 
 ### subagents
 
@@ -170,7 +181,9 @@ Delegate tasks to specialized child pi processes that work independently with th
 
 ### artifacts
 
-Gives the agent a visual output surface: an `artifact` tool that renders markdown or HTML to a styled page served from a lazy localhost server and opened in the browser. Markdown handles `diff` fences (server-side diff2html), code fences (server-side highlight.js), and `mermaid` fences (client-side) automatically; `update` live-reloads an already-open tab. Storage at `.pi/artifacts/<slug>.html`. Use `/artifacts` to open the index page and browse what's been generated. → [`README`](agent/extensions/artifacts/README.md) · [▶ demo](agent/extensions/artifacts/preview.mp4)
+Gives the agent a visual output surface: an `artifact` tool that renders markdown or HTML to a styled page served from a lazy localhost server and opened in the browser. Markdown handles `diff` fences (server-side diff2html), code fences (server-side highlight.js), and `mermaid` fences (client-side) automatically; `update` live-reloads an already-open tab. Storage at `.pi/artifacts/<slug>.html`. Use `/artifacts` to open the index page and browse what's been generated. → [`README`](agent/extensions/artifacts/README.md)
+
+https://github.com/user-attachments/assets/b84e0ebd-84db-45ec-ba77-52aede167b4e
 
 ---
 
