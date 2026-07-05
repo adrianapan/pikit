@@ -1,6 +1,6 @@
 {
   "name": "@adrianapan/pikit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An opinionated pi.dev configuration. Batteries included — 16 extensions, 4 skills, prompt templates, and the slop theme in one package.",
   "license": "MIT",
   "author": "Adrian Apan",
