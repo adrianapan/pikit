@@ -14,6 +14,18 @@
     "safePatterns": null,
     "destructivePatterns": null
   },
+  "_comment_allowedTools": "Replace-only: providing an array replaces ALL default CHAT mode tools. Omit (or null) to keep defaults.",
+  "allowedTools": [
+    "read",
+    "bash",
+    "grep",
+    "find",
+    "ls",
+    "web_search",
+    "fetch_content",
+    "get_search_content",
+    "artifact"
+  ],
   "labels": {
     "chat": {
       "notify": "✓ Chat mode ON",

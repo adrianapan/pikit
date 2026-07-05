@@ -15,8 +15,8 @@ export const PLAN_FILE_PREFIX = "plan-";
 
 // ─── Tool Lists ─────────────────────────────────────────────────────────────
 
-/** Tool names available in PLAN mode (read-only). */
-export const PLAN_MODE_TOOLS: string[] = [
+/** Default tool names available in PLAN mode (read-only). */
+const DEFAULT_PLAN_MODE_TOOLS: string[] = [
   "read",
   "bash",
   "grep",
@@ -212,6 +212,12 @@ export const DESTRUCTIVE_PATTERNS: RegExp[] = resolvePatterns(
   userConfig.bashPatterns?.destructivePatterns,
   DEFAULT_DESTRUCTIVE_PATTERNS,
 );
+
+/** Tool names available in PLAN mode (read-only). Replace-only: user-provided list replaces defaults. */
+export const PLAN_MODE_TOOLS: string[] =
+  userConfig.allowedTools && userConfig.allowedTools.length > 0
+    ? userConfig.allowedTools
+    : DEFAULT_PLAN_MODE_TOOLS;
 
 export const USER_CONFIG = {
   cleanup: {

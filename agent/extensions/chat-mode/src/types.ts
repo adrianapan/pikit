@@ -45,4 +45,6 @@ export interface ChatModeUserConfig {
   shortcuts?: ShortcutsUserConfig;
   labels?: LabelsUserConfig;
   bashPatterns?: BashPatternsUserConfig;
+  /** Replace-only: provide a list of tool names to replace the default CHAT mode tool set. Omit to keep defaults. */
+  allowedTools?: string[];
 }

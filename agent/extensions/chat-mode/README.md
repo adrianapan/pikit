@@ -9,7 +9,7 @@ Toggle chat mode via `/chat` command or configurable keyboard shortcut. Read-onl
 
 ### Tool Restriction Mechanism
 
-Chat mode restricts tools via `pi.setActiveTools()`. On entering chat mode, the full tool list is saved and replaced with a read-only subset (`read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`, `artifact`). On exiting, the original tool list is restored via `pi.setActiveTools()` with the saved names. Bash commands receive a second layer of defense — the `tool_call` event handler blocks destructive commands even though `bash` itself remains available for inspection.
+Chat mode restricts tools via `pi.setActiveTools()`. On entering chat mode, the full tool list is saved and replaced with a read-only subset (`read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`, `artifact`) — configurable via `allowedTools` (see Configuration). On exiting, the original tool list is restored via `pi.setActiveTools()` with the saved names. Bash commands receive a second layer of defense — the `tool_call` event handler blocks destructive commands even though `bash` itself remains available for inspection.
 
 ## Commands
 
@@ -42,6 +42,7 @@ Create `~/.pi/agent/configs/chat-mode.json` to customize behavior. An example fi
 |---|---|---|---|
 | `bashPatterns.safePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own safe command regex patterns to **replace** all defaults. Omit to keep built-in safe patterns |
 | `bashPatterns.destructivePatterns` | string[] (regex) | *(built-in list)* | Replace-only: provide your own destructive command regex patterns to **replace** all defaults. Omit to keep built-in destructive patterns |
+| `allowedTools` | string[] | *(built-in list)* | Replace-only: provide a list of tool names to **replace** the default CHAT mode tool set. Omit to keep built-in defaults (`read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`, `artifact`) |
 | `ui.hideNotify` | boolean | `false` | Suppress toast notifications on mode transitions |
 | `ui.hideWidget` | boolean | `true` | Hide the widget when in chat mode |
 | `shortcuts.toggleMode` | string | `"ctrl+shift+c"` | Keybinding action for toggling chat mode on/off |
@@ -76,6 +77,18 @@ Example — allow only `ls` and `cat` as safe, and block `rm` and `sudo` as dest
     "safePatterns": ["^\\s*ls\\b", "^\\s*cat\\b"],
     "destructivePatterns": ["\\brm\\b", "\\bsudo\\b"]
   }
+}
+```
+
+### Allowed tools (replace-only)
+
+`allowedTools` is **replace-only** — if you provide an array, it entirely replaces the built-in default tool set for CHAT mode. There is no merge/append. Omit the field (or set to `null`) to keep the defaults: `read`, `bash`, `grep`, `find`, `ls`, `web_search`, `fetch_content`, `get_search_content`, `artifact`.
+
+Example — allow only the read-only file tools plus `artifact`:
+
+```json
+{
+  "allowedTools": ["read", "grep", "find", "ls", "artifact"]
 }
 ```
 

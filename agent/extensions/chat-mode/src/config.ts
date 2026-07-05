@@ -7,8 +7,8 @@ import type { ChatModeUserConfig } from "./types.js";
 
 // ─── Tool Lists ─────────────────────────────────────────────────────────────
 
-/** Tool names available in CHAT mode (read-only). */
-export const CHAT_MODE_TOOLS: string[] = [
+/** Default tool names available in CHAT mode (read-only). */
+const DEFAULT_CHAT_MODE_TOOLS: string[] = [
   "read",
   "bash",
   "grep",
@@ -135,6 +135,12 @@ export const DESTRUCTIVE_PATTERNS: RegExp[] = resolvePatterns(
   userConfig.bashPatterns?.destructivePatterns,
   DEFAULT_DESTRUCTIVE_PATTERNS,
 );
+
+/** Tool names available in CHAT mode (read-only). Replace-only: user-provided list replaces defaults. */
+export const CHAT_MODE_TOOLS: string[] =
+  userConfig.allowedTools && userConfig.allowedTools.length > 0
+    ? userConfig.allowedTools
+    : DEFAULT_CHAT_MODE_TOOLS;
 
 export const USER_CONFIG = {
   ui: {
