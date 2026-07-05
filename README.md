@@ -108,7 +108,7 @@ curl -fsSL https://raw.githubusercontent.com/adrianapan/pikit/main/agent/configs
 
 ## Extensions
 
-### 🤖 Workflows & Modes
+### Workflows & Modes
 
 * **plan-mode** — Adds a `/plan` workflow. Restricts tools to read-only mode while the LLM drafts a structured execution roadmap, then unlocks full capabilities once execution begins. → [`README`](agent/extensions/plan-mode/README.md)
 * **chat-mode** — Toggled via `/chat` or `Ctrl+Shift+C`. Locks the filesystem to read-only so you can freely discuss, search, and parse code without risk of accidental changes. → [`README`](agent/extensions/chat-mode/README.md)
