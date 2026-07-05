@@ -1,4 +1,4 @@
-# slop
+# pikit-theme-slop — warm earthy color theme for [pi.dev](https://pi.dev)
 
 A warm, earthy pi theme: terracotta primary (`#d67858`), warm-white text (`#f5f2ee`), covering all 51 pi color tokens including syntax highlighting, diff colors, and thinking level indicators.
 
@@ -10,7 +10,8 @@ Activate inside pi via `/settings → Theme → slop`, or set `"theme": "slop"` 
 pi install npm:pikit-theme-slop
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this theme ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this theme.
 
 ## Packaging note
 

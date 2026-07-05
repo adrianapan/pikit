@@ -1,6 +1,6 @@
 {
   "name": "pikit-env-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Injects ~/.pi/agent/configs/.env into process.env at startup",
   "type": "module",
   "license": "MIT",

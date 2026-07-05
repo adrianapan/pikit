@@ -1,4 +1,4 @@
-# spinners
+# pikit-spinners — custom thinking-verb spinners for [pi.dev](https://pi.dev)
 
 Replaces the default **Thinking** verb with Claude-style random alternatives from a curated list, cycling periodically with a typewriter reveal.
 
@@ -8,7 +8,8 @@ Replaces the default **Thinking** verb with Claude-style random alternatives fro
 pi install npm:pikit-spinners
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features

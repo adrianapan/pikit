@@ -1,6 +1,6 @@
 {
   "name": "pikit-caveman",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Caveman speak mode for pi — compresses LLM responses from professional to prehistoric",
   "type": "module",
   "license": "MIT",

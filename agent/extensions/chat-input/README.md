@@ -1,4 +1,4 @@
-# chat-input
+# pikit-chat-input — configurable boxed chat input for [pi.dev](https://pi.dev)
 
 Replaces the default chat input with a configurable, boxed input. All native editor features — cursor movement, history, autocomplete, paste — work normally inside the box.
 
@@ -10,7 +10,8 @@ Replaces the default chat input with a configurable, boxed input. All native edi
 pi install npm:pikit-chat-input
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features

@@ -1,4 +1,4 @@
-# web-access
+# pikit-web-access — web search & content extraction for [pi.dev](https://pi.dev)
 
 Web search and content extraction for pi. Search the web via Gemini AI, fetch and read web pages, and extract text from PDFs — all from within the agent.
 
@@ -8,7 +8,8 @@ Web search and content extraction for pi. Search the web via Gemini AI, fetch an
 pi install npm:pikit-web-access
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features

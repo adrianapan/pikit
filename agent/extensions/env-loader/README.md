@@ -1,4 +1,4 @@
-# env-loader
+# pikit-env-loader — env-file injection for [pi.dev](https://pi.dev)
 
 Injects `~/.pi/agent/configs/.env` into `process.env` at startup. A pi-native alternative to adding secrets to your shell profile (`~/.zshrc`, etc.) — tokens stay in one place, scoped to pi, and never get committed.
 
@@ -8,7 +8,8 @@ Injects `~/.pi/agent/configs/.env` into `process.env` at startup. A pi-native al
 pi install npm:pikit-env-loader
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 

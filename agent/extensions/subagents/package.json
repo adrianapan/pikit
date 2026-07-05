@@ -1,6 +1,6 @@
 {
   "name": "pikit-subagents",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Delegate tasks to specialized subagents — child pi processes that work independently",
   "type": "module",
   "license": "MIT",

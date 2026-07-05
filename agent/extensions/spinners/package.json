@@ -1,6 +1,6 @@
 {
   "name": "pikit-spinners",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Replaces the default 'Thinking' verb with random alternatives from a curated list of verbs",
   "type": "module",
   "license": "MIT",

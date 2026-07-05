@@ -1,6 +1,6 @@
 {
   "name": "pikit-chat-mode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Toggle chat mode: read-only conversational access — chat, explore, search the web, without making any changes",
   "type": "module",
   "license": "MIT",

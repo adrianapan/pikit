@@ -1,4 +1,4 @@
-# styled-outputs
+# pikit-styled-outputs — custom styled message rendering for [pi.dev](https://pi.dev)
 
 Custom styled rendering for every message type in pi — assistant messages, user messages, thinking blocks, tool executions, skill invocations, and MCP tools. Replaces the default flat output with prefix icons, colour-coded diffs, expandable sections, grouped tool configs, and per-tool-type rendering.
 
@@ -10,7 +10,8 @@ https://github.com/user-attachments/assets/6bcf414f-9114-405e-af9e-392a8f4e8bdc
 pi install npm:pikit-styled-outputs
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## Features

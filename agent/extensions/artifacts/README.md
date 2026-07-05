@@ -1,4 +1,4 @@
-# artifacts
+# pikit-artifacts — visual HTML artifacts for [pi.dev](https://pi.dev)
 
 Give the agent a way to produce visual output — PR review reports, diagrams, comparison tables, rendered diffs — as **HTML artifacts** served from a lazy localhost server and opened in the browser, instead of dumping walls of text into the terminal.
 
@@ -10,7 +10,8 @@ https://github.com/user-attachments/assets/b84e0ebd-84db-45ec-ba77-52aede167b4e
 pi install npm:pikit-artifacts
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## The `artifact` tool
 

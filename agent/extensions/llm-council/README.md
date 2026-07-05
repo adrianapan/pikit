@@ -1,4 +1,4 @@
-# llm-council
+# pikit-llm-council — multi-LLM council synthesis for [pi.dev](https://pi.dev)
 
 Convene an LLM Council — multiple models answer a question independently, then a chairman synthesizes their answers into a unified response.
 
@@ -10,7 +10,8 @@ https://github.com/user-attachments/assets/031066b9-c47e-4ece-9491-a648d2cc545f
 pi install npm:pikit-llm-council
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 

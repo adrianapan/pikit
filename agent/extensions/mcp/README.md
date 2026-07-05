@@ -1,4 +1,4 @@
-# mcp
+# pikit-mcp — MCP server bridge for [pi.dev](https://pi.dev)
 
 MCP bridge extension for pi. Connects to configured MCP servers on-demand and exposes their tools via a single proxy tool — keeping context window usage minimal — with optional per-server direct tool registration. Supports both **stdio** (local process) and **HTTP** (Streamable HTTP, MCP spec 2025-03-26) transports.
 
@@ -11,7 +11,8 @@ MCP bridge extension for pi. Connects to configured MCP servers on-demand and ex
 pi install npm:pikit-mcp
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 
 ## How it works

@@ -1,6 +1,6 @@
 {
   "name": "pikit-artifacts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Visual HTML artifacts for pi — markdown and html rendered to a lazy localhost server with live reload",
   "type": "module",
   "license": "MIT",

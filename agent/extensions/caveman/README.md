@@ -1,4 +1,4 @@
-# caveman
+# pikit-caveman — compressed-response mode for [pi.dev](https://pi.dev)
 
 Compresses pi's LLM responses from polished prose to prehistoric grunt. Three modes cover the full spectrum from professional-but-tight to maximum compression.
 
@@ -10,7 +10,8 @@ Compresses pi's LLM responses from polished prose to prehistoric grunt. Three mo
 pi install npm:pikit-caveman
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## Commands
 

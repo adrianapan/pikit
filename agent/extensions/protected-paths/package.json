@@ -1,6 +1,6 @@
 {
   "name": "pikit-protected-paths",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Blocks write and edit operations to protected paths",
   "type": "module",
   "license": "MIT",

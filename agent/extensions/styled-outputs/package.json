@@ -1,6 +1,6 @@
 {
   "name": "pikit-styled-outputs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Custom styled outputs for tools, assistant messages, diff viewer, and more.",
   "type": "module",
   "license": "MIT",

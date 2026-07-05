@@ -1,6 +1,6 @@
 {
   "name": "pikit-llm-council",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convene an LLM Council — multiple models answer a question, then a chairman synthesizes their answers",
   "type": "module",
   "license": "MIT",

@@ -1,4 +1,4 @@
-# Subagents
+# pikit-subagents — specialized subagent delegation for [pi.dev](https://pi.dev)
 
 Delegate tasks to specialized subagents — child pi processes that work independently with their own model, tools, extensions, and skills. Supports single, parallel, and chain modes.
 
@@ -8,7 +8,8 @@ Delegate tasks to specialized subagents — child pi processes that work indepen
 pi install npm:pikit-subagents
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## How it works
 

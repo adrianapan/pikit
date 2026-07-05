@@ -1,4 +1,4 @@
-# Plan Mode Extension
+# pikit-plan-mode — read-only planning mode for [pi.dev](https://pi.dev)
 
 Toggle plan mode via `/plan` command or configurable keyboard shortcut.
 
@@ -10,7 +10,8 @@ https://github.com/user-attachments/assets/eb70370e-3f75-4c22-a0eb-901bf91bae00
 pi install npm:pikit-plan-mode
 ```
 
-Or grab the whole [pikit](https://github.com/adrianapan/pikit) setup — this extension ships with it and loads automatically.
+> [!TIP]
+> Or grab the entire [pikit](https://github.com/adrianapan/pikit) setup, an opinionated pi.dev configuration that includes this extension.
 
 ## Modes
 
