@@ -16,6 +16,11 @@
     "pi",
     "pi-package",
     "pi-coding-agent",
+    "pi-extension",
+    "pi-skill",
+    "pi-theme",
+    "pi-prompt",
+    "pi-dev",
     "pikit"
   ],
   "files": [
