@@ -24,7 +24,7 @@ export default function startup(pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     if (!ctx.hasUI) return;
 
-    const counts = discoverLoadedCounts();
+    const counts = discoverLoadedCounts(pi.getCommands());
     const kb = getKeybindings();
     const keyMap: KeyMap = {
       "app.model.cycleForward": kb.getKeys("app.model.cycleForward")[0] ?? "ctrl+p",

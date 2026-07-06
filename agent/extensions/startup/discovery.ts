@@ -1,5 +1,5 @@
 import { readdirSync, existsSync, statSync, readFileSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join } from "node:path";
 import { homedir as osHomedir } from "node:os";
 
 export interface LoadedCounts {
@@ -71,58 +71,26 @@ function countExtensions(homeDir: string, cwd: string): number {
   return seen.size;
 }
 
-function countSkills(homeDir: string, cwd: string): number {
+type CommandLike = ReadonlyArray<{ source: string; name: string }>;
+
+// Count skills from pi's command registry so package-installed skills are
+// included, not just those under ~/.pi/agent/skills.
+function countSkills(commands: CommandLike): number {
   const seen = new Set<string>();
-  const dirs = [
-    join(homeDir, ".pi", "agent", "skills"),
-    join(cwd, ".pi", "skills"),
-    join(cwd, "skills"),
-  ];
-  for (const dir of dirs) {
-    if (!existsSync(dir)) continue;
-    try {
-      for (const entry of readdirSync(dir)) {
-        const entryPath = join(dir, entry);
-        try {
-          if (statSync(entryPath).isDirectory() && existsSync(join(entryPath, "SKILL.md"))) {
-            seen.add(entry);
-          }
-        } catch {}
-      }
-    } catch {}
+  for (const c of commands) {
+    if (c.source === "skill") seen.add(c.name);
   }
   return seen.size;
 }
 
-function collectTemplateNames(dir: string): Set<string> {
-  const names = new Set<string>();
-  if (!existsSync(dir)) return names;
-  try {
-    const entries = readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        for (const name of collectTemplateNames(join(dir, entry.name))) names.add(name);
-      } else if (entry.isFile() && entry.name.endsWith(".md")) {
-        names.add(basename(entry.name, ".md"));
-      }
-    }
-  } catch {}
-  return names;
-}
-
-function countTemplates(homeDir: string, cwd: string): number {
-  const dirs = [
-    join(homeDir, ".pi", "agent", "prompts"),
-    join(homeDir, ".pi", "agent", "commands"),
-    join(homeDir, ".claude", "commands"),
-    join(cwd, ".pi", "commands"),
-    join(cwd, ".claude", "commands"),
-  ];
-  const allNames = new Set<string>();
-  for (const dir of dirs) {
-    for (const name of collectTemplateNames(dir)) allNames.add(name);
+// Count prompt templates from pi's command registry so package-installed
+// prompts are included, not just those under ~/.pi/agent/prompts.
+function countTemplates(commands: CommandLike): number {
+  const seen = new Set<string>();
+  for (const c of commands) {
+    if (c.source === "prompt") seen.add(c.name);
   }
-  return allNames.size;
+  return seen.size;
 }
 
 function countModels(homeDir: string, cwd: string): number {
@@ -156,15 +124,15 @@ function countMcpServers(homeDir: string): number {
   return 0;
 }
 
-export function discoverLoadedCounts(): LoadedCounts {
+export function discoverLoadedCounts(commands: CommandLike): LoadedCounts {
   const homeDir = osHomedir();
   const cwd = process.cwd();
   return {
     models: countModels(homeDir, cwd),
     contextFiles: countContextFiles(homeDir, cwd),
     extensions: countExtensions(homeDir, cwd),
-    skills: countSkills(homeDir, cwd),
-    promptTemplates: countTemplates(homeDir, cwd),
+    skills: countSkills(commands),
+    promptTemplates: countTemplates(commands),
     mcpServers: countMcpServers(homeDir),
   };
 }
