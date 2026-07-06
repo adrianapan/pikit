@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # setup.sh — scaffolds Pikit's opinionated files into ~/.pi/agent from the
-# installed package. Bash port of the former /setup extension.
+# installed package.
 #
 # Sources are resolved relative to this script (dirname BASH_SOURCE), so the
 # version matches exactly what the user installed — never a git branch.
@@ -122,28 +122,30 @@ syncSettings() {
 
   if [[ ! -f "$dest" ]]; then
     cp "$src" "$dest"
-    notes+=("created|settings.json|theme set to 'slop'")
+    notes+=("created|settings.json|theme set to 'slop', quiet startup enabled")
     return
   fi
 
   if ! jq empty "$dest" >/dev/null 2>&1; then
     backup "settings.json" "$dest"
     cp "$src" "$dest"
-    notes+=("recovered|settings.json|recovered from corrupt file, theme set to 'slop'")
+    notes+=("recovered|settings.json|recovered from corrupt file, theme set to 'slop', quiet startup enabled")
     return
   fi
 
-  local current; current=$(jq -r '.theme // ""' "$dest")
-  if [[ "$current" == "slop" ]]; then
+  local theme quiet
+  theme=$(jq -r '.theme // ""' "$dest")
+  quiet=$(jq -r '.quietStartup // ""' "$dest")
+  if [[ "$theme" == "slop" && "$quiet" == "true" ]]; then
     notes+=("skipped|settings.json|skipped")
     return
   fi
 
   backup "settings.json" "$dest"
   local tmp; tmp=$(mktemp)
-  jq '.theme = "slop"' "$dest" > "$tmp"
+  jq '.theme = "slop" | .quietStartup = true' "$dest" > "$tmp"
   mv "$tmp" "$dest"
-  notes+=("updated|settings.json|theme set to 'slop'")
+  notes+=("updated|settings.json|theme set to 'slop', quiet startup enabled")
 }
 
 # APPEND_SYSTEM.md: write ours, or back up + overwrite if it changed.
