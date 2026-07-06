@@ -2,7 +2,7 @@
 
 A customizable two-row footer for the pi coding agent. Provides a rich status bar at the bottom of the terminal showing model info, git status, token usage, and more.
 
-<img src="https://raw.githubusercontent.com/adrianapan/pikit/main/agent/extensions/footer/preview.png" alt="footer preview">
+<img width="2074" height="1080" alt="preview" src="https://github.com/user-attachments/assets/b0e90d1b-2f93-4a94-a373-94d2f85d6bf8" />
 
 
 ## Layout
