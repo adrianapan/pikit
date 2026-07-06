@@ -23,15 +23,15 @@ A startup header for the pi coding agent. Displays a three-column welcome box at
 
 ## Loaded counts discovery
 
-The extension scans standard pi paths to count what is active:
+The extension counts what is active via pi's command registry and standard pi paths:
 
-| Type | Paths scanned |
-|------|---------------|
+| Type | Source |
+|------|--------|
 | Models | `~/.pi/agent/settings.json`, `<cwd>/.pi/settings.json` (`enabledModels`) |
 | Context files | `~/.pi/agent/AGENTS.md`, `~/.claude/AGENTS.md`, `<cwd>/AGENTS.md`, `<cwd>/CLAUDE.md`, `<cwd>/.pi/AGENTS.md` |
-| Extensions | `~/.pi/agent/settings.json`, `<cwd>/.pi/settings.json` (npm packages), plus `~/.pi/agent/extensions/`, `<cwd>/.pi/extensions/`, `<cwd>/extensions/` (local dirs) |
-| Skills | `~/.pi/agent/skills/`, `<cwd>/.pi/skills/`, `<cwd>/skills/` (dirs with `SKILL.md`) |
-| Prompt templates | `~/.pi/agent/prompts/`, `~/.pi/agent/commands/`, `~/.claude/commands/`, `<cwd>/.pi/commands/`, `<cwd>/.claude/commands/` |
+| Extensions | `~/.pi/agent/settings.json`, `<cwd>/.pi/settings.json` (each package's `package.json` `pi.extensions` manifest — glob-expanded, with `!`/`+`/`-` overrides — under `npm/node_modules/<name>` and `git/<host>/<path>`, user + project scope; packages with no manifest fall back to a convention `extensions/` dir; object-form entries may additionally filter via an `extensions` array, where `[]` disables all), plus local dirs `~/.pi/agent/extensions/`, `<cwd>/.pi/extensions/`, `<cwd>/extensions/` (smart discovery: flat `.ts`/`.js` files and `index.ts` subdirs, mirroring pi's `collectAutoExtensionEntries`) |
+| Skills | pi command registry — `pi.getCommands()` with `source: "skill"` (local + package-installed) |
+| Prompt templates | pi command registry — `pi.getCommands()` with `source: "prompt"` (local + package-installed) |
 | MCP servers | `~/.pi/agent/configs/mcp.json` |
 
 ## Icons
