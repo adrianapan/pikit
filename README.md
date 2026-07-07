@@ -109,7 +109,10 @@ If you decide to clone the repo directly into your `~/.pi` folder instead of ins
 git clone git@github.com:adrianapan/pikit.git
 cd ~/.pi
 npm i
+```
+
 ---
+
 
 ## Extensions
 
