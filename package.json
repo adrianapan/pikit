@@ -1,6 +1,6 @@
 {
   "name": "@adrianapan/pikit",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "An opinionated Pi agent configuration. Includes: custom theme, plan mode, artifacts, subagents, LLM council, configurable restrictions, MCP support and a styled UI.",
   "license": "MIT",
   "author": "Adrian Apan",
