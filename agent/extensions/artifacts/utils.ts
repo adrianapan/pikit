@@ -115,10 +115,18 @@ export function safeArtifactPath(reqPath: string): string | null {
   return target;
 }
 
-/** Open a URL in the default browser: `open` (darwin), `start` (win32), `xdg-open` (linux). */
+/**
+ * Open a URL in the default browser.
+ * On darwin: `open`; on win32: `rundll32 url.dll,FileProtocolHandler` (avoids `start` which
+ * is a cmd.exe built-in and cannot be spawned directly); on linux: `xdg-open`.
+ */
 export function openInBrowser(url: string): void {
-  const cmd = process.platform === "darwin" ? "open"
-    : process.platform === "win32" ? "start"
-    : "xdg-open";
-  spawn(cmd, [url], { detached: true, stdio: "ignore" }).unref();
+  const [cmd, args] = process.platform === "darwin"
+    ? ["open", [url]]
+    : process.platform === "win32"
+      ? ["rundll32", ["url.dll,FileProtocolHandler", url]]
+      : ["xdg-open", [url]];
+  spawn(cmd, args, { detached: true, stdio: "ignore" })
+    .on("error", (err) => console.warn(`openInBrowser: ${cmd} failed: ${err.message}`))
+    .unref();
 }
