@@ -22,10 +22,16 @@ export function isOAuthUrl(raw: string): boolean {
 }
 
 export function openBrowser(url: string): void {
-  const cmd = process.platform === "darwin" ? "open"
-    : process.platform === "win32" ? "start"
-    : "xdg-open";
-  spawn(cmd, [url], { detached: true, stdio: "ignore" }).unref();
+  // win32: `start` is a cmd.exe built-in and cannot be spawned directly, so use
+  // rundll32 url.dll,FileProtocolHandler instead.
+  const [cmd, args] = process.platform === "darwin"
+    ? ["open", [url]]
+    : process.platform === "win32"
+      ? ["rundll32", ["url.dll,FileProtocolHandler", url]]
+      : ["xdg-open", [url]];
+  spawn(cmd, args, { detached: true, stdio: "ignore" })
+    .on("error", (err) => console.warn(`openBrowser: ${cmd} failed: ${err.message}`))
+    .unref();
 }
 
 export function sanitize(s: string): string {
