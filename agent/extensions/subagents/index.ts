@@ -263,7 +263,7 @@ function buildExecArgs(exec: ExecConfig): string[] {
   } else {
     args.push("--no-extensions");
     for (const name of exec.extensions) {
-      args.push("-e", path.join(os.homedir(), ".pi", "agent", "extensions", name, "src", "index.ts"));
+      args.push("-e", resolveExtensionPath(name));
     }
   }
 
@@ -281,6 +281,16 @@ function buildExecArgs(exec: ExecConfig): string[] {
   args.push("--no-context-files");
 
   return args;
+}
+
+function resolveExtensionPath(name: string): string {
+  const extDir = path.join(os.homedir(), ".pi", "agent", "extensions", name);
+  // Both layouts are valid per pi's extension docs: <name>/index.ts and <name>/src/index.ts
+  for (const candidate of [path.join(extDir, "index.ts"), path.join(extDir, "src", "index.ts")]) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  // Fall back to the documented <name>/index.ts so the error message is meaningful
+  return path.join(extDir, "index.ts");
 }
 
 function getPiInvocation(args: string[]): { command: string; args: string[] } {
