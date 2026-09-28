@@ -15,6 +15,7 @@ import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import { getMarkdownTheme } from "@earendil-works/pi-coding-agent";
 import { Markdown, Text } from "@earendil-works/pi-tui";
@@ -273,7 +274,7 @@ function buildExecArgs(exec: ExecConfig): string[] {
   } else {
     args.push("--no-skills");
     for (const name of exec.skills) {
-      args.push("--skill", path.join(os.homedir(), ".pi", "agent", "skills", name, "SKILL.md"));
+      args.push("--skill", resolveSkillPath(name));
     }
   }
 
@@ -283,14 +284,34 @@ function buildExecArgs(exec: ExecConfig): string[] {
   return args;
 }
 
+const PIKIT_EXTENSIONS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const PIKIT_SKILLS_DIR = path.join(PIKIT_EXTENSIONS_DIR, "..", "skills");
+
 function resolveExtensionPath(name: string): string {
-  const extDir = path.join(os.homedir(), ".pi", "agent", "extensions", name);
+  const candidateDirs = [
+    path.join(PIKIT_EXTENSIONS_DIR, name),
+    path.join(os.homedir(), ".pi", "agent", "extensions", name),
+  ];
   // Both layouts are valid per pi's extension docs: <name>/index.ts and <name>/src/index.ts
-  for (const candidate of [path.join(extDir, "index.ts"), path.join(extDir, "src", "index.ts")]) {
+  for (const extDir of candidateDirs) {
+    for (const candidate of [path.join(extDir, "index.ts"), path.join(extDir, "src", "index.ts")]) {
+      if (fs.existsSync(candidate)) return candidate;
+    }
+  }
+  // Fall back to the documented ~/.pi/agent/extensions/<name>/index.ts so the error message is meaningful
+  return path.join(os.homedir(), ".pi", "agent", "extensions", name, "index.ts");
+}
+
+function resolveSkillPath(name: string): string {
+  const candidates = [
+    path.join(PIKIT_SKILLS_DIR, name, "SKILL.md"),
+    path.join(os.homedir(), ".pi", "agent", "skills", name, "SKILL.md"),
+  ];
+  for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return candidate;
   }
-  // Fall back to the documented <name>/index.ts so the error message is meaningful
-  return path.join(extDir, "index.ts");
+  // Fall back to the documented ~/.pi/agent/skills/<name>/SKILL.md so the error message is meaningful
+  return path.join(os.homedir(), ".pi", "agent", "skills", name, "SKILL.md");
 }
 
 function getPiInvocation(args: string[]): { command: string; args: string[] } {
